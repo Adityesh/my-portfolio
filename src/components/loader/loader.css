@@ -1,0 +1,57 @@
+.spinner {
+    position: relative;
+    height: 30px;
+    width: 30px;
+}
+
+.spinner div {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    border: 10px solid transparent;
+    border-top-color:coral;
+    border-radius: 50%;
+    animation: spinnerOne 1.2s linear infinite;
+}
+
+.spinner div:last-child {
+    border-bottom-color: coral;
+    animation: spinnerTwo 1.2s linear infinite;
+}
+
+
+@keyframes spinnerOne {
+    0% {
+        transform: rotate(0deg);
+        border-width: 5px;
+    }
+
+    50% {
+        transform: rotate(180deg);
+        border-width: 1px;
+    }
+
+
+    100% {
+        transform: rotate(360deg);
+        border-width: 5px;
+    }
+}
+
+@keyframes spinnerTwo {
+    0% {
+        transform: rotate(0deg);
+        border-width: 1px;
+    }
+
+    50% {
+        transform: rotate(180deg);
+        border-width: 5px;
+    }
+
+
+    100% {
+        transform: rotate(360deg);
+        border-width: 1px;
+    }
+}

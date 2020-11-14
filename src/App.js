@@ -1,24 +1,26 @@
-import logo from './logo.svg';
 import './App.css';
+import React, {lazy, Suspense, useState} from 'react';
+import { ThemeProvider } from './context/ThemeContext';
+
+const Landing = lazy(() => import('./components/landing/landing'));
+const Project = lazy(() => import('./components/project/projectSection'));
+const Contact = lazy(() => import('./components/contact/contact'));
+const Footer = lazy(() => import('./components/footer/footer'));
 
 function App() {
+  const [isDark, setDark] = useState(false);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <ThemeProvider value={[isDark, setDark]}>
+      <div className="App">
+      <Suspense fallback={<span>Loading Component...</span>}>
+
+        <Landing />
+        <Project />
+        <Contact/>
+        <Footer />
+      </Suspense>
     </div>
+    </ThemeProvider>
   );
 }
 
