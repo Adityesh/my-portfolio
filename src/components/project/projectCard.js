@@ -1,5 +1,6 @@
 import React from 'react';
 import ImageLoader from 'react-load-image';
+import './project.css';
 import { Code, Book } from '../../icons/icons'
 const Spinner = React.lazy(() => import('../loader/loaderSpinner'));
 
@@ -7,9 +8,12 @@ function Preloader(props) {
     return <Spinner/>;
 }
 
+
+
 const ProjectCard = (props) => {
     
-    const {title, description, projectImage, projectGithub, projectDemo} = props.project;
+    const {title, description, projectImage, projectGithub, projectDemo, projectTags} = props.project;
+    
     return (
         
             
@@ -20,6 +24,15 @@ const ProjectCard = (props) => {
                     <p className="project-description">
                         {description}
                     </p>
+                    <div className='project-tags'>
+                        <p>Tags: </p>
+                        {projectTags.map((tag, index) => {
+                            console.log(tag)
+                            return (
+                                <span className='project-tag' key={index}>{tag}</span>
+                            )
+                        })}
+                    </div>
                     <div className="project-buttons">
                         <button className="project-btn" onClick={() => window.open(projectGithub, '_blank')}>Code<Book /></button>
                         <button className="project-btn" onClick={() => window.open(projectDemo, '_blank')}>Live Demo<Code /> </button>
@@ -27,13 +40,14 @@ const ProjectCard = (props) => {
                 </div>
                 <div className="right-card">
                     <ImageLoader
+                        
                         src={projectImage}
                     >
                         <img alt=""/>
                         <div>Error!</div>
-                        <div style={{width : '100px', height : '100px', display : 'flex', alignItems : 'center', margin : '0 auto'}}>
+                        
                         <Preloader />
-                        </div>
+                        
                     </ImageLoader>
                     
                 </div>

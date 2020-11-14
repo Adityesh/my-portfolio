@@ -1,0 +1,31 @@
+.left-card {
+    position: relative;
+    overflow: hidden;
+    background: inherit;
+    color: rgb(255, 255, 255);
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+}
+
+.right-card img {
+    vertical-align: top;
+}
+
+.left-card::after {
+    display: block;
+    width: 100%;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    margin: -2px;
+    background: inherit;
+    background-image: url(https://images.unsplash.com/photo-1477346611705-65d1883cee1e?dpr=0.800000011920929&auto=format&fit=crop&w=1199&h=800&q=80&cs=tinysrgb&crop=);
+    content: ' ';
+    z-index: -1;
+    filter: blur(10px);
+    transform: scale(1.1);
+    box-shadow: inset 0 0 2000px rgba(255, 255, 255, 0.5);
+}
+

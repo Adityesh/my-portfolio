@@ -64,21 +64,16 @@ button:hover {
   justify-content: space-between;
 }
 
-.project-description {
-  padding-left: 10px;
-}
+
 
 .project-title {
-  flex: 2;
+ 
+  padding: 10px 0 0 0;
+  border-bottom: 1px solid white;
 }
 
-.project-description {
-  flex : 3;
-}
 
-.project-buttons {
-  flex : 1
-}
+
 
 .project-btn {
   display: flex;
@@ -232,7 +227,8 @@ button:hover {
       align-items: center;
       text-align: center;
       flex-direction: column;
-      
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
     }
 
     
@@ -247,6 +243,22 @@ button:hover {
       font-size: 18px;
       overflow-y: scroll;
       height: 100px;
+    }
+
+    .project-tags {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    .project-tag {
+      overflow-x: scroll;
+      border-radius: 10px;
+      color: rgb(255, 255, 255);
+      margin: 5px 5px;
+      padding: 6px 8px;
+      background-color: rgb(146, 145, 144);
     }
 
     /* Landing section */
@@ -348,12 +360,12 @@ button:hover {
   }
 
   /* Project Section */
-  /* Project Section */
 
   .project-card {
-    height: 300px;
+    height: 600px;
     width: 600px;
     display: flex;
+    position: relative;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
@@ -367,12 +379,7 @@ button:hover {
           0 100px 80px rgba(0, 0, 0, 0.12)
   }
 
-  .project-card {
-    position: relative;
-  }
-
   .right-card img {
-    padding: 0;
     object-fit: cover;
     height: 300px;
     width: 300px;
@@ -387,20 +394,45 @@ button:hover {
     align-items: center;
     text-align: center;
     flex-direction: column;
-    
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 5px;
   }
 
   
 
   .project-title {
     font-size: 30px;
-    
+    margin: 0;
   }
 
   .project-description {
-    overflow: hidden;
-    font-size: 20px;
-    width: 400px;
+    font-size: 18px;
+    padding: 0;
+    width: 300px;
+    text-align: center;
+    height: 480px;
+  }
+
+
+  .project-tags {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    margin: 10px 0;
+    width: 100%;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+
+  }
+
+  .project-tag {
+    scrollbar-width: 2px;
+    border-radius: 10px;
+    color: rgb(255, 255, 255);
+    margin: 5px 5px;
+    padding: 6px 8px;
+    background-color: rgb(146, 145, 144);
   }
 
   /* Landing section */
@@ -459,7 +491,6 @@ button:hover {
   }
 
   .right-card img {
-    padding: 0;
     object-fit: cover;
     height: 300px;
     width: 300px;
@@ -543,7 +574,6 @@ button:hover {
   }
 
   .right-card img {
-    padding: 0;
     object-fit: cover;
     height: 400px;
     width: 400px;
