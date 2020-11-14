@@ -54,10 +54,16 @@ button:hover {
   opacity: 0.5;
 }
 
+.project-tag:hover {
+  padding: 6px 8px;
+  background-color: rgb(207, 205, 202);
+  color: black;
+  border-radius: 10px;
+}
 
 
 .project-section {
-
+  flex: 2;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -67,7 +73,7 @@ button:hover {
 
 
 .project-title {
- 
+  flex: 1;
   padding: 10px 0 0 0;
   border-bottom: 1px solid white;
 }
@@ -94,7 +100,13 @@ button:hover {
   -webkit-font-smoothing: antialiased;
 }
 
+.project-tags {
+  flex: 2
+}
+
+
 .project-buttons {
+  flex: 1;
   display: flex;
   align-items: center;
 }
@@ -231,6 +243,29 @@ button:hover {
       border-bottom-right-radius: 10px;
     }
 
+    .project-tags {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      column-gap: 4px;
+      row-gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .project-tag {
+      padding: 6px 8px;
+      background-color: rgb(141, 140, 138);
+      color: white;
+      border-radius: 10px;
+    }
+
+    .project-tag:hover {
+      padding: 6px 8px;
+      background-color: rgb(207, 205, 202);
+      color: white;
+      border-radius: 10px;
+    }
+
     
 
     .project-title {
@@ -245,21 +280,7 @@ button:hover {
       height: 100px;
     }
 
-    .project-tags {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow-x: hidden;
-    }
-
-    .project-tag {
-      overflow-x: scroll;
-      border-radius: 10px;
-      color: rgb(255, 255, 255);
-      margin: 5px 5px;
-      padding: 6px 8px;
-      background-color: rgb(146, 145, 144);
-    }
+    
 
     /* Landing section */
     .landing-section {
@@ -410,30 +431,30 @@ button:hover {
     padding: 0;
     width: 300px;
     text-align: center;
-    height: 480px;
+    height: 300px;
   }
 
-
   .project-tags {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 0;
-    margin: 10px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    column-gap: 4px;
+    row-gap: 4px;
+    margin: 10px;
     width: 100%;
-    border-top: 1px solid white;
-    border-bottom: 1px solid white;
-
+    padding: 0 5px;
   }
 
   .project-tag {
-    scrollbar-width: 2px;
-    border-radius: 10px;
-    color: rgb(255, 255, 255);
-    margin: 5px 5px;
     padding: 6px 8px;
-    background-color: rgb(146, 145, 144);
+    background-color: rgb(141, 140, 138);
+    color: white;
+    text-align: center;
+    border-radius: 10px;
   }
+
+  
+
 
   /* Landing section */
   .landing-section {
@@ -516,7 +537,7 @@ button:hover {
   }
 
   .project-description {
-    margin: 50px 0;
+    
     font-size: 20px;
     
   }

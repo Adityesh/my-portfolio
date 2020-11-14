@@ -6,7 +6,7 @@ module.exports = {
             projectImage : 'https://i.pinimg.com/originals/4a/3c/8c/4a3c8c74375e8fbe5adf99db215ca0e2.jpg',
             projectGithub : 'https://github.com/Adityesh',
             projectDemo : '//',
-            projectTags : ['React', 'HTML', 'NodeJS', 'CSS']
+            projectTags : ['React', 'HTML', 'NodeJS', 'CSS','React', 'HTML', 'NodeJS', 'CSS']
         },
         {
             title : 'Project Title 2',
