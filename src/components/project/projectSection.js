@@ -6,7 +6,8 @@ const ProjectCard = React.lazy(() => import('./projectCard'));
 
 const Project = () => {
     return(
-        <div className="project-section">
+        <div className="project-section" >
+            <h1 className="contact-header">My Projects</h1>
             {projects.map((project, index) => {
                     return (
                         <ProjectCard key={index} project={project} />

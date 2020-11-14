@@ -20,6 +20,7 @@ const Contact = () => {
     return (
         <div className="contact-section">
             <h1 className="contact-header">Contact Me</h1>
+            <h2 style={{textAlign : 'center'}}>Let's work together.</h2>
             <Formik
                 initialValues={{
                     name: '',

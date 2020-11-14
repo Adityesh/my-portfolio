@@ -6,13 +6,13 @@
     display: flex;
     width: 100%;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
 }
 
 .landing-buttons button {
   display: flex;
   align-items: center;
-  margin: 0 0 10px 0;
+  margin: 0 10px 10px 10px;
   padding: 0.45rem 0.75rem;
   border: 0;
   border-radius: 0.317rem;

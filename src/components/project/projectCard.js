@@ -21,7 +21,7 @@ const ProjectCard = (props) => {
                         {description}
                     </p>
                     <div className="project-buttons">
-                        <button className="project-btn" onClick={() => window.open(projectGithub, '_blank')}>View Code<Book /></button>
+                        <button className="project-btn" onClick={() => window.open(projectGithub, '_blank')}>Code<Book /></button>
                         <button className="project-btn" onClick={() => window.open(projectDemo, '_blank')}>Live Demo<Code /> </button>
                     </div>
                 </div>
