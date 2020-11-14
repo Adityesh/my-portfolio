@@ -8,6 +8,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Overpass', sans-serif;
+
 }
 
 textarea {
@@ -60,10 +61,23 @@ button:hover {
   display: flex;
   align-items: center;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .project-description {
   padding-left: 10px;
+}
+
+.project-title {
+  flex: 2;
+}
+
+.project-description {
+  flex : 3;
+}
+
+.project-buttons {
+  flex : 1
 }
 
 .project-btn {
@@ -103,6 +117,7 @@ button:hover {
   width: 50vw;
   height: auto;
 }
+
 
 
  /* Extra small devices (phones, 600px and down) */
@@ -228,10 +243,31 @@ button:hover {
     }
 
     .project-description {
-      margin: 50px 0;
+      
       font-size: 18px;
       overflow-y: scroll;
       height: 100px;
+    }
+
+    /* Landing section */
+    .landing-section {
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .landing-section h1 {
+      font-size: 32px;
+      margin: 20px 0;
+    }
+
+    .landing-section h2 {
+      font-size: 25px;
+      font-weight: 200;
+      margin-bottom: 20px;
     }
 
     
@@ -358,14 +394,13 @@ button:hover {
 
   .project-title {
     font-size: 30px;
-    margin: 5px 0 5px 0;
+    
   }
 
   .project-description {
-    margin: 50px 0;
+    overflow: hidden;
     font-size: 20px;
-    overflow-y: scroll;
-    height: 100px;
+    width: 400px;
   }
 
   
@@ -425,8 +460,7 @@ button:hover {
   .project-description {
     margin: 50px 0;
     font-size: 20px;
-    overflow-y: scroll;
-    height: 100px;
+    
   }
 
  }
@@ -483,8 +517,7 @@ button:hover {
   .project-description {
     margin: 50px 0;
     font-size: 20px;
-    overflow-y: scroll;
-    height: 100px;
+    
   }
 
  }

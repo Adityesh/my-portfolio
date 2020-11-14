@@ -11,9 +11,8 @@ function App() {
   const [isDark, setDark] = useState(false);
   return (
     <ThemeProvider value={[isDark, setDark]}>
-      <div className="App">
+      <div className="App" style={{position : 'relative'}}>
       <Suspense fallback={<span>Loading Component...</span>}>
-
         <Landing />
         <Project />
         <Contact/>

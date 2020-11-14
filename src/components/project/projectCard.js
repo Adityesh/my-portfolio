@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import ImageLoader from 'react-load-image';
 import { Code, Book } from '../../icons/icons'
 const Spinner = React.lazy(() => import('../loader/loaderSpinner'));
@@ -8,9 +8,12 @@ function Preloader(props) {
 }
 
 const ProjectCard = (props) => {
+    
     const {title, description, projectImage, projectGithub, projectDemo} = props.project;
     return (
         
+            
+                
                 <div className="project-card">
                 <div className="left-card">
                     <h1 className="project-title">{title}</h1>
@@ -18,8 +21,8 @@ const ProjectCard = (props) => {
                         {description}
                     </p>
                     <div className="project-buttons">
-                        <button className="project-btn">View Code<Book /></button>
-                        <button className="project-btn">Live Demo<Code /> </button>
+                        <button className="project-btn" onClick={() => window.open(projectGithub, '_blank')}>View Code<Book /></button>
+                        <button className="project-btn" onClick={() => window.open(projectDemo, '_blank')}>Live Demo<Code /> </button>
                     </div>
                 </div>
                 <div className="right-card">
@@ -28,12 +31,16 @@ const ProjectCard = (props) => {
                     >
                         <img alt=""/>
                         <div>Error!</div>
+                        <div style={{width : '100px', height : '100px', display : 'flex', alignItems : 'center', margin : '0 auto'}}>
                         <Preloader />
+                        </div>
                     </ImageLoader>
                     
                 </div>
             </div>
-
+        
+            
+        
             
     )
 

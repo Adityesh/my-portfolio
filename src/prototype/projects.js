@@ -4,7 +4,7 @@ module.exports = {
             title : 'Project Title 1',
             description : 'Project Description for testing Project Description for testing afasdasdas dasd asd asdwfsdfsdfsdfsd sdfsdfsdfsdfsdfsdfsdf sdf sdf sdfs dfsd fsdfsdfsdf  fsdfsdafasdasdas dasd asd asdwfsdfsdfsdfsd sdfsdfsdfsdfsdfsdfsdf sdf sdf sdfs dfsd fsdfsdfsdf',
             projectImage : 'https://i.pinimg.com/originals/4a/3c/8c/4a3c8c74375e8fbe5adf99db215ca0e2.jpg',
-            projectGithub : '//',
+            projectGithub : 'https://github.com/Adityesh',
             projectDemo : '//'
         },
         {

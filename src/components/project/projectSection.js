@@ -8,9 +8,9 @@ const Project = () => {
     return(
         <div className="project-section">
             {projects.map((project, index) => {
-                return (
-                    <ProjectCard key={index} project={project}/>
-                )
+                    return (
+                        <ProjectCard key={index} project={project} />
+                    )
             })}
         </div>
     )
