@@ -24,5 +24,7 @@ module.exports = {
             projectDemo : '//',
             projectTags : ['React', 'HTML', 'NodeJS', 'CSS']
         }
-    ]
+    ],
+
+    resume : 'https://drive.google.com/file/d/1PUarr1Vlkh2lskyvBB0Uo_7d4tvMLduQ/view?usp=sharing'
 }

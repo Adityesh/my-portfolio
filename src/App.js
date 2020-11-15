@@ -6,13 +6,13 @@ const Landing = lazy(() => import('./components/landing/landing'));
 const Project = lazy(() => import('./components/project/projectSection'));
 const Contact = lazy(() => import('./components/contact/contact'));
 const Footer = lazy(() => import('./components/footer/footer'));
-
+const LoaderBalls = lazy(() => import('./components/loader/loaderBalls'));
 function App() {
   const [isDark, setDark] = useState(false);
   return (
     <ThemeProvider value={[isDark, setDark]}>
       <div className="App" style={{position : 'relative'}}>
-      <Suspense fallback={<span>Loading Component...</span>}>
+      <Suspense fallback={() => <LoaderBalls/>}>
         <Landing />
         <Project />
         <Contact/>

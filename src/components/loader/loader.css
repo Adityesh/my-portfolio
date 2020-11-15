@@ -9,7 +9,7 @@
     height: 100%;
     width: 100%;
     border: 10px solid transparent;
-    border-top-color:coral;
+    border-top-color: coral;
     border-radius: 50%;
     animation: spinnerOne 1.2s linear infinite;
 }
@@ -19,19 +19,15 @@
     animation: spinnerTwo 1.2s linear infinite;
 }
 
-
 @keyframes spinnerOne {
     0% {
         transform: rotate(0deg);
         border-width: 5px;
     }
-
     50% {
         transform: rotate(180deg);
         border-width: 1px;
     }
-
-
     100% {
         transform: rotate(360deg);
         border-width: 5px;
@@ -43,15 +39,65 @@
         transform: rotate(0deg);
         border-width: 1px;
     }
-
     50% {
         transform: rotate(180deg);
         border-width: 5px;
     }
-
-
     100% {
         transform: rotate(360deg);
         border-width: 1px;
+    }
+}
+
+.loader-container {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.balls {
+    height: 100px;
+    width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.balls div {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    background-color: red;
+    margin: 0 10px;
+    animation: bounce 0.5s cubic-bezier(0.19, 0.57, 0.3, 0.98) infinite alternate;
+}
+
+.balls div:nth-child(2) {
+    animation-delay: 0.1s;
+    background-color: rgb(248, 52, 52);
+}
+
+.balls div:nth-child(3) {
+    animation-delay: 0.2s;
+    background-color: rgb(252, 103, 103);
+
+}
+
+.balls div:nth-child(4) {
+    animation-delay: 0.3s;
+    background-color: rgb(250, 162, 162);
+
+}
+
+
+@keyframes bounce {
+    from {
+        transform: translateX(0px);
+    }
+
+    to {
+        transform: translateY(-90px);
     }
 }

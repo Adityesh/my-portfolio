@@ -15,6 +15,16 @@ textarea {
   resize: vertical;
 }
 
+.landing-buttons button:first-child {
+  background-color: white;
+  color: black;
+}
+
+.resume-btn {
+  background-color: black;
+  color: white;
+}
+
 .form-submit {
   display: flex;
   align-items: center;
@@ -50,9 +60,7 @@ textarea {
   font-size: 16px;
 }
 
-button:hover {
-  opacity: 0.5;
-}
+
 
 .project-tag:hover {
   padding: 6px 8px;
@@ -262,7 +270,7 @@ button:hover {
     .project-tag:hover {
       padding: 6px 8px;
       background-color: rgb(207, 205, 202);
-      color: white;
+      color: black;
       border-radius: 10px;
     }
 
@@ -484,6 +492,8 @@ button:hover {
   }
 
   
+
+  
  }
  
  /* Medium devices (landscape tablets, 768px and up) */
@@ -568,6 +578,9 @@ button:hover {
     align-items: center;
     font-size: 30px;
   }
+
+  /* Loader section */
+  
 
  }
  
