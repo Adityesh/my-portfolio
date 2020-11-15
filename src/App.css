@@ -8,7 +8,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Overpass', sans-serif;
-
+  scroll-behavior: smooth;
 }
 
 textarea {
@@ -133,6 +133,12 @@ textarea {
   height: auto;
 }
 
+.contact-section {
+  height: 80vh;
+}
+
+
+
 
 
  /* Extra small devices (phones, 600px and down) */
@@ -179,7 +185,8 @@ textarea {
 
     .contact-header {
       text-align: center;
-      margin: 20px 0;
+      margin-top: 20px;
+      font-size: 40px;
     }
 
     .contact-form {
@@ -288,6 +295,23 @@ textarea {
       height: 100px;
     }
 
+    /* About Section */
+    .about-header {
+      font-size: 40px;
+      text-align: left;
+      width: 300px;
+      margin-top: 20px;
+    }
+
+    .about-content {
+      font-size: 25px;
+      width: 300px;
+    }
+
+    .about-section svg {
+      margin-top: 10px;
+    }
+
     
 
     /* Landing section */
@@ -355,7 +379,8 @@ textarea {
 
   .contact-header {
     text-align: center;
-    margin: 20px 0;
+    margin-top: 20px;
+    font-size: 60px;
   }
 
   .contact-form {
@@ -461,6 +486,19 @@ textarea {
     border-radius: 10px;
   }
 
+
+  /* About Section */
+  .about-header {
+    font-size: 60px;
+    text-align: left;
+    width: 600px;
+    margin-top: 40px;
+  }
+
+  .about-content {
+    font-size: 35px;
+    width: 600px;
+  }
   
 
 
@@ -550,6 +588,19 @@ textarea {
     
     font-size: 20px;
     
+  }
+
+  /* About Section */
+  .about-header {
+    font-size: 65px;
+    text-align: left;
+    width: 1000px;
+    margin-top: 50px;
+  }
+
+  .about-content {
+    font-size: 35px;
+    width: 1000px;
   }
 
   /* Landing section */

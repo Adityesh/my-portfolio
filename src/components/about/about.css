@@ -1,0 +1,16 @@
+.about-section {
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.contact-link {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.about-header {
+    margin-top: 40px;
+    text-align: center;
+}

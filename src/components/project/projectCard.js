@@ -28,7 +28,6 @@ const ProjectCard = (props) => {
                     <div className='project-tags'>
 
                         {projectTags.map((tag, index) => {
-                            console.log(tag)
                             return (
                                 <span className='project-tag' key={index}>{tag}</span>
                             )

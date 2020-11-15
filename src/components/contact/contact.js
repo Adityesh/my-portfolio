@@ -4,13 +4,13 @@ import { Formik } from 'formik';
 import {Send} from '../../icons/icons'
 
 const validationSchema = yup.object().shape({
-    name: yup.string().required("Name cannot be empty"),
-    email: yup.string().email("Not a valid email").required("Email cannot be empty"),
-    message: yup.string().required("Message cannot be empty")
+    name: yup.string().required("*Name cannot be empty"),
+    email: yup.string().email("*Not a valid email").required("*Email cannot be empty"),
+    message: yup.string().required("*Message cannot be empty")
 })
 
 
-const Contact = () => {
+const Contact = (props) => {
 
     const handleSubmit = ({ email, name, message }) => {
         console.log(email, name, message);
@@ -18,7 +18,7 @@ const Contact = () => {
 
 
     return (
-        <div className="contact-section">
+        <div className="contact-section" ref={props.reference}>
             <h1 className="contact-header">Contact Me</h1>
             <h2 style={{textAlign : 'center', paddingBottom : '20px'}}>Let's work together.</h2>
             <Formik

@@ -139,4 +139,19 @@
       top: 110%;
     }
   }
+
+  .landing-contact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.5);;
+    padding: 10px 0;
+  }
+
+  .landing-contact svg {
+    margin:20px 5px 0 5px;
+    border-radius: 50%;
+    padding: 2px;
+  }
   
