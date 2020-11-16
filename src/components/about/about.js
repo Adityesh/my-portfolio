@@ -3,7 +3,7 @@ import './about.css'
 const About = (props) => {
     return(
         <div className="about-section">
-            <div classNam="about-content">
+            <div className="about-content">
                 <h1 className="about-header">About Me</h1>
                 <p className="about-content">
                     I am an undergraduate in my final year doing my Bachelor in Technology (C.S.E) from C.E.T, Bhubaneswar, Odisha. 

@@ -5,7 +5,6 @@ const ProjectCard = React.lazy(() => import('./projectCard'));
 
 
 const Project = (props) => {
-    console.log(props.ref)
     return(
         <div className="project-section" ref={props.reference}>
             <h1 className="contact-header">My Work</h1>

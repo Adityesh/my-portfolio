@@ -1,28 +1,37 @@
 module.exports = {
     projects : [
         {
-            title : 'Project Title 1',
-            description : 'Project Description for testing Project Description for testing ',
-            projectImage : 'https://i.pinimg.com/originals/4a/3c/8c/4a3c8c74375e8fbe5adf99db215ca0e2.jpg',
-            projectGithub : 'https://github.com/Adityesh',
-            projectDemo : '//',
-            projectTags : ['React', 'HTML', 'NodeJS', 'CSS','React', 'HTML', 'NodeJS', 'CSS']
+            title : 'Book Manager',
+            description : "Full Stack Web application where users can add and trade books.",
+            projectImage : 'https://i.lensdump.com/i/0mrESe.md.png',
+            projectGithub : 'https://github.com/Adityesh/bookManager',
+            projectDemo : 'https://www.youtube.com/watch?v=k1gLhwjv5LQ',
+            projectTags : ['React', 'Redux', 'CSS','NodeJS', 'Express', 'PassportJS', 'MongoDB']
         },
         {
-            title : 'Project Title 2',
-            description : 'Project Description for testing2',
-            projectImage : 'https://41.media.tumblr.com/efd15be8d41b12a7b0ef17fba27c3e20/tumblr_mqqy59HMaf1qzattso1_1280.jpg',
-            projectGithub : '//',
-            projectDemo : '//',
-            projectTags : ['React', 'HTML', 'NodeJS', 'CSS']
+            title : 'torrent-Scraper',
+            description : 'Scrape torrents and download it using a torrent client.',
+            projectImage : 'https://i.lensdump.com/i/0mrC1x.png',
+            projectGithub : 'https://github.com/Adityesh/torrentScrape',
+            projectDemo : 'https://torrent-scraper-frontend.vercel.app/',
+            projectTags : ['React', 'ReactRouter', 'CSS', 'NodeJS', 'Express', 'Puppeteer']
         },
         {
-            title : 'Project Title 3',
-            description : 'Project Description for testing3',
-            projectImage : 'https://41.media.tumblr.com/efd15be8d41b12a7b0ef17fba27c3e20/tumblr_mqqy59HMaf1qzattso1_1280.jpg',
-            projectGithub : '//',
-            projectDemo : '//',
-            projectTags : ['React', 'HTML', 'NodeJS', 'CSS']
+            title : 'Random-Meal-Generator',
+            description : 'Receive random meals with detailed instructions at the click of a button.',
+            projectImage : 'https://i1.lensdump.com/i/0mrTCa.png',
+            projectGithub : 'https://github.com/Adityesh/Random-Meal-Generator',
+            projectDemo : 'https://random-meal-generator-two.vercel.app/',
+            projectTags : ['React', 'HTML', 'CSS']
+        },
+
+        {
+            title : 'Markdown-Previewer ',
+            description : 'Edit and View Markdown in Real-Time',
+            projectImage : 'https://i.lensdump.com/i/0mrdBK.png',
+            projectGithub : 'https://github.com/Adityesh/Markdown-Previewer',
+            projectDemo : 'https://markdown-previewer-delta.vercel.app/',
+            projectTags : ['React', 'HTML-Parser', 'CSS']
         }
     ],
 
