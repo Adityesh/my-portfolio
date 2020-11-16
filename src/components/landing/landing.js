@@ -9,7 +9,7 @@ const Landing = (props) => {
 
     return (
 
-        <div className="landing-section">
+        <div className="landing-section" ref={props.reference}>
             <div className="hero">
                 <h1>HI. I'M ADITYESH</h1>
                 <h2>Full Stack Developer</h2>

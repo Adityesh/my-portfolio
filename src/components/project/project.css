@@ -21,7 +21,8 @@
     bottom: 0;
     margin: -2px;
     background: inherit;
-    background-image: url(https://images.unsplash.com/photo-1477346611705-65d1883cee1e?dpr=0.800000011920929&auto=format&fit=crop&w=1199&h=800&q=80&cs=tinysrgb&crop=);
+    background-image: url(../../assets/project.jpg);
+    background-size: 200%;
     content: ' ';
     z-index: -1;
     filter: blur(10px);

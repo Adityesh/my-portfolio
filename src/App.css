@@ -15,6 +15,8 @@ textarea {
   resize: vertical;
 }
 
+
+
 .landing-buttons button:first-child {
   background-color: white;
   color: black;
@@ -51,6 +53,8 @@ textarea {
   font-size: 15px;
   color: red;
 }
+
+
 
 .contact-form p {
   position: relative;
@@ -135,6 +139,20 @@ textarea {
 
 .contact-section {
   height: 80vh;
+  background-color: #171717;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  color: white;
+}
+
+.contact-header {
+  text-decoration: underline;
+}
+
+.contact {
+  color: white;
 }
 
 
@@ -151,7 +169,7 @@ textarea {
       justify-content: space-around;
       height: 150px;
       width: 100%;
-      background-color: rgb(61, 59, 59);
+      background-color: #171717;
     }
 
     .footer-social {
@@ -291,21 +309,28 @@ textarea {
     .project-description {
       
       font-size: 18px;
-      overflow-y: scroll;
+      
       height: 100px;
     }
 
     /* About Section */
+    .about-section {
+      margin: 20px 0 50px 0;
+    }
+
     .about-header {
       font-size: 40px;
       text-align: left;
       width: 300px;
       margin-top: 20px;
+      margin-bottom: 30px;
+      text-decoration: underline;
     }
 
     .about-content {
       font-size: 25px;
       width: 300px;
+      text-align: center;
     }
 
     .about-section svg {
@@ -347,7 +372,7 @@ textarea {
     justify-content: space-around;
     height: 150px;
     width: 100%;
-    background-color: rgb(61, 59, 59);
+    background-color: #171717;
   }
 
   .footer-social {
@@ -414,13 +439,11 @@ textarea {
   }
 
   /* Project Section */
-
   .project-card {
     height: 600px;
-    width: 600px;
+    width: 320px;
     display: flex;
-    position: relative;
-    flex-direction: row;
+    flex-direction: column-reverse;
     align-items: center;
     justify-content: space-between;
     margin: 40px 0;
@@ -433,10 +456,15 @@ textarea {
           0 100px 80px rgba(0, 0, 0, 0.12)
   }
 
-  .right-card img {
+  .project-card {
+    border-radius: 10px;
+    position: relative;
+  }
+
+  .project-card img {
     object-fit: cover;
-    height: 300px;
-    width: 300px;
+    height: 320px;
+    width: 320px;
   }
 
 
@@ -488,16 +516,22 @@ textarea {
 
 
   /* About Section */
+  .about-section {
+    height: 50vh;
+  }
   .about-header {
-    font-size: 60px;
+    font-size: 55px;
     text-align: left;
     width: 600px;
-    margin-top: 40px;
+    text-decoration: underline;
+    
   }
 
   .about-content {
-    font-size: 35px;
+    font-size: 25px;
     width: 600px;
+    text-align: center;
+    margin-top: 50px;
   }
   
 
@@ -591,16 +625,23 @@ textarea {
   }
 
   /* About Section */
+
+  .about-section {
+    height: 70vh;
+  }
   .about-header {
-    font-size: 65px;
+    font-size: 60px;
     text-align: left;
-    width: 1000px;
-    margin-top: 50px;
+    width: 750px;
+    text-decoration: underline;
+    
   }
 
   .about-content {
-    font-size: 35px;
-    width: 1000px;
+    font-size: 30px;
+    width: 700px;
+    line-height: 40px;
+    text-align: center;
   }
 
   /* Landing section */
@@ -687,6 +728,27 @@ textarea {
     margin: 50px 0;
     font-size: 20px;
     
+  }
+
+  /* About Section */
+  .about-section {
+    height: 90vh;
+    justify-content: center;
+  }
+  .about-header {
+    font-size: 60px;
+    text-align: left;
+    width: 900px;
+    text-decoration: underline;
+    
+  }
+
+  .about-content {
+    font-size: 30px;
+    width: 900px;
+    line-height: 40px;
+    text-align: center;
+    margin-bottom: 50px;
   }
 
   /* Landing section */

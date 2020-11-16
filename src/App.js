@@ -11,19 +11,21 @@ const LoaderBalls = lazy(() => import('./components/loader/loaderBalls'));
 function App() {
   const myRef = useRef(null);
   const myRef2 = useRef(null);
+  const myRef3 = useRef(null);
   const [isDark, setDark] = useState(false);
   const scrollToProject = () => myRef.current.scrollIntoView();
   const scrollToContact = () => myRef2.current.scrollIntoView();
+  const scrollToLanding = () => myRef3.current.scrollIntoView();
   
   return (
     <ThemeProvider value={[isDark, setDark]}>
       <div className="App" style={{position : 'relative'}}>
       <Suspense fallback={() => <LoaderBalls/>}>
-        <Landing scroll={scrollToProject}/>
+        <Landing scroll={scrollToProject} reference={myRef3}/>
         <About scroll={scrollToContact}/>
         <Project reference={myRef}/>
         <Contact reference={myRef2}/>
-        <Footer />
+        <Footer scroll={scrollToLanding}/>
       </Suspense>
     </div>
     </ThemeProvider>

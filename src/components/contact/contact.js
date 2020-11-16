@@ -19,7 +19,7 @@ const Contact = (props) => {
 
     return (
         <div className="contact-section" ref={props.reference}>
-            <h1 className="contact-header">Contact Me</h1>
+            <h1 className="contact-header contact">Contact Me</h1>
             <h2 style={{textAlign : 'center', paddingBottom : '20px'}}>Let's work together.</h2>
             <Formik
                 initialValues={{
