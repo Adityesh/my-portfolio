@@ -315,7 +315,7 @@ textarea {
     /* About Section */
     .about-section {
       margin: 20px 0 50px 0;
-      height: 70vh;
+      height: 80vh;
     }
 
     .about-header {
@@ -368,7 +368,7 @@ textarea {
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    height: 150px;
+    height: 165px;
     width: 100%;
     background-color: #171717;
   }
@@ -515,7 +515,7 @@ textarea {
 
   /* About Section */
   .about-section {
-    height: 80vh;
+    height: 100vh;
   }
   .about-header {
     font-size: 55px;
@@ -625,7 +625,7 @@ textarea {
   /* About Section */
 
   .about-section {
-    height: 90vh;
+    height: 80vh;
   }
   .about-header {
     font-size: 60px;

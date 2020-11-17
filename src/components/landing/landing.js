@@ -1,7 +1,7 @@
 import React from 'react';
 import "./landing.css";
 import { Download, ArrowRight, GithubContact, LinkedinContact } from '../../icons/icons'
-import { resume } from '../../prototype/projects';
+import { resume, github, linkedin } from '../../prototype/projects';
 
 
 const Landing = (props) => {
@@ -15,12 +15,12 @@ const Landing = (props) => {
                 <h2>Full Stack Developer</h2>
                 <div className="landing-buttons">
                     <button onClick={() => props.scroll()}>View Work <ArrowRight /></button>
-                    <button className="resume-btn" onClick={() => window.open(resume, '_blank')}>RESUME <Download /></button>
+                    <button className="resume-btn" onClick={() => window.open(resume, '_blank')}>Resume <Download /></button>
                 </div>
                 <div className="landing-contact">
                     
-                    <a href="" ><GithubContact /></a>
-                    <a href="" ><LinkedinContact /></a>
+                    <a href={github} target="_blank"><GithubContact /></a>
+                    <a href={linkedin} target="_blank"><LinkedinContact /></a>
                 </div>
             </div>
 
