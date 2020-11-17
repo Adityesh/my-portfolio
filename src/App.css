@@ -315,6 +315,7 @@ textarea {
     /* About Section */
     .about-section {
       margin: 20px 0 50px 0;
+      height: 70vh;
     }
 
     .about-header {
@@ -332,9 +333,7 @@ textarea {
       text-align: center;
     }
 
-    .about-section svg {
-      margin-top: 10px;
-    }
+    
 
     
 
@@ -516,7 +515,7 @@ textarea {
 
   /* About Section */
   .about-section {
-    height: 50vh;
+    height: 80vh;
   }
   .about-header {
     font-size: 55px;
@@ -626,7 +625,7 @@ textarea {
   /* About Section */
 
   .about-section {
-    height: 70vh;
+    height: 90vh;
   }
   .about-header {
     font-size: 60px;
