@@ -31,12 +31,12 @@ const Contact = (props) => {
     });
     const handleSubmit = async ({email, name, message, subject},resetForm) => {
         try {
-            const result = await emailjs.send(process.env.REACT_APP_SERVICE_ID, process.env.REACT_APP_TEMPLATE_ID ,{
+            const result = await emailjs.send('service_ed84brs', 'template_ava5qvp' ,{
                 subject,
                 name,
                 email,
                 message,
-                }, process.env.REACT_APP_USER_ID);
+                }, 'user_FFesXyDJ3SmB4f6fKeOu6');
                 openSnackbar('Email sent successfully!',[2000])
             resetForm();
         } catch(err) {
