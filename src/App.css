@@ -45,6 +45,10 @@ textarea {
   -webkit-font-smoothing: antialiased;
 }
 
+
+
+
+
 .form-error {
   position: absolute;
   right: 10px;
@@ -137,13 +141,14 @@ textarea {
 }
 
 .contact-section {
-  height: 80vh;
+  height: 90vh;
   background-color: #171717;
   justify-content: center;
   display: flex;
   align-items: center;
   flex-direction: column;
   color: white;
+  padding-bottom: 20px;
 }
 
 .contact-header {
@@ -314,8 +319,8 @@ textarea {
 
     /* About Section */
     .about-section {
-      margin: 20px 0 50px 0;
-      height: 80vh;
+      margin: 20px 0 90px 0;
+      height: 100vh;
     }
 
     .about-header {
@@ -515,7 +520,7 @@ textarea {
 
   /* About Section */
   .about-section {
-    height: 100vh;
+    height: 90vh;
   }
   .about-header {
     font-size: 55px;
@@ -609,6 +614,17 @@ textarea {
     
   }
 
+  .project-tags {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    column-gap: 4px;
+    row-gap: 4px;
+    margin: 10px;
+    width: 100%;
+    padding: 0 5px;
+  }
+
   
 
   .project-title {
@@ -625,7 +641,7 @@ textarea {
   /* About Section */
 
   .about-section {
-    height: 80vh;
+    height: 60vh;
   }
   .about-header {
     font-size: 60px;
@@ -640,6 +656,7 @@ textarea {
     width: 700px;
     line-height: 40px;
     text-align: center;
+  
   }
 
   /* Landing section */

@@ -1,6 +1,7 @@
 import './App.css';
 import React, {lazy, Suspense, useState, useRef} from 'react';
 import { ThemeProvider } from './context/ThemeContext';
+import SnackbarProvider from 'react-simple-snackbar'
 
 const Landing = lazy(() => import('./components/landing/landing'));
 const About = lazy(() => import('./components/about/about'));
@@ -18,6 +19,7 @@ function App() {
   const scrollToLanding = () => myRef3.current.scrollIntoView();
   
   return (
+    <SnackbarProvider>
     <ThemeProvider value={[isDark, setDark]}>
       <div className="App" style={{position : 'relative'}}>
       <Suspense fallback={() => <LoaderBalls/>}>
@@ -29,6 +31,7 @@ function App() {
       </Suspense>
     </div>
     </ThemeProvider>
+    </SnackbarProvider>
   );
 }
 

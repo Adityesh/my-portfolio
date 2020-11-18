@@ -1,19 +1,48 @@
 import React from 'react';
 import * as yup from 'yup';
 import { Formik } from 'formik';
-import {Send} from '../../icons/icons'
+import emailjs from 'emailjs-com';
+import { useSnackbar } from 'react-simple-snackbar';
 
 const validationSchema = yup.object().shape({
     name: yup.string().required("*Name cannot be empty"),
     email: yup.string().email("*Not a valid email").required("*Email cannot be empty"),
+    subject : yup.string().required('*Subject cannot be empty'),
     message: yup.string().required("*Message cannot be empty")
 })
 
 
 const Contact = (props) => {
 
-    const handleSubmit = ({ email, name, message }) => {
-        console.log(email, name, message);
+    const [openSnackbar, closeSnackbar] = useSnackbar({
+        position: 'bottom-center',
+        style: {
+          backgroundColor: 'black',
+          border: '2px solid black',
+          color: 'white',
+          fontFamily: 'Menlo, monospace',
+          fontSize: '20px',
+          textAlign: 'center',
+        },
+        closeStyle: {
+          color: 'lightcoral',
+          fontSize: '16px',
+        }
+    });
+    const handleSubmit = async ({email, name, message, subject},resetForm) => {
+        try {
+            const result = await emailjs.send(process.env.REACT_APP_SERVICE_ID, process.env.REACT_APP_TEMPLATE_ID ,{
+                subject,
+                name,
+                email,
+                message,
+                }, process.env.REACT_APP_USER_ID);
+                openSnackbar('Email sent successfully!',[2000])
+            resetForm();
+        } catch(err) {
+            console.log(err);
+            openSnackbar('Error sending email.',[2000])
+        }
     }
 
 
@@ -25,10 +54,11 @@ const Contact = (props) => {
                 initialValues={{
                     name: '',
                     email: '',
+                    subject : '',
                     message: ''
                 }}
                 validationSchema={validationSchema}
-                onSubmit={(values) => handleSubmit(values)}
+                onSubmit={(values, {resetForm}) => handleSubmit(values, resetForm)}
             >
 
                 {({ errors, values, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => {
@@ -45,18 +75,23 @@ const Contact = (props) => {
                                 <span className="form-error">{touched.name && errors.name}</span>
                             </p>
                             <p>
+                                <label htmlFor="subject" className="form-label">Subject</label>
+                                <input type="text" name="subject" id="subject" value={values.subject} onChange={handleChange('subject')} onBlur={handleBlur('subject')}/>
+                                <span className="form-error">{touched.subject && errors.subject}</span>
+                            </p>
+                            <p>
                                 <label htmlFor="message" className="form-label">Message</label>
                                 <textarea id="message" name="message" value={values.message} onChange={handleChange('message')} onBlur={handleBlur('message')}/>
                                 <span className="form-error">{touched.message && errors.message}</span>
                             </p>
-                            <button type="submit" className="form-submit">
-                                Submit <Send />
-                        </button>
+                            <input type="submit" className="form-submit" value="Submit"></input>
+                                
                         </form>
                     )
                 }}
 
             </Formik>
+
         </div>
     )
 
