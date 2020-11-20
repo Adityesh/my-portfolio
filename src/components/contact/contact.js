@@ -84,9 +84,9 @@ const Contact = (props) => {
                                 <textarea id="message" name="message" value={values.message} onChange={handleChange('message')} onBlur={handleBlur('message')}/>
                                 <span className="form-error">{touched.message && errors.message}</span>
                             </p>
-                            <div style={{textAlign : 'center'}}>
+                            
                             <input type="submit" className="form-submit" value="Submit"></input>
-                            </div>
+                            
                                 
                         </form>
                     )
