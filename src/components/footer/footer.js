@@ -7,12 +7,12 @@ const Footer = (props) => {
         <div className="footer-section">
         
         <div className="footer-logo footer-element" onClick={() => props.scroll()} style={{cursor : 'pointer'}}>
-            <img src={logo} height={50} width={50}/>
+            <img src={logo} height={50} width={50} alt="footer-logo"/>
         </div>
         <div className="footer-social footer-element">
-            <a href={github} target="_blank"><Github /></a>
-            <a href={linkedin} target="_blank"><Linkedin/></a>
-            <a href={youtube} target="_blank"><Youtube/></a>
+            <a href={github} target="_blank" rel="noreferrer"><Github /></a>
+            <a href={linkedin} target="_blank" rel="noreferrer"><Linkedin/></a>
+            <a href={youtube} target="_blank" rel="noreferrer"><Youtube/></a>
 
             
         </div>

@@ -1,7 +1,6 @@
 import React from 'react';
 import * as yup from 'yup';
 import { Formik } from 'formik';
-import emailjs from 'emailjs-com';
 import { useSnackbar } from 'react-simple-snackbar';
 
 const validationSchema = yup.object().shape({
@@ -14,7 +13,7 @@ const validationSchema = yup.object().shape({
 
 const Contact = (props) => {
 
-    const [openSnackbar, closeSnackbar] = useSnackbar({
+    const [openSnackbar] = useSnackbar({
         position: 'bottom-center',
         style: {
           backgroundColor: 'black',
@@ -31,12 +30,6 @@ const Contact = (props) => {
     });
     const handleSubmit = async ({email, name, message, subject},resetForm) => {
         try {
-            const result = await emailjs.send('service_ed84brs', 'template_ava5qvp' ,{
-                subject,
-                name,
-                email,
-                message,
-                }, 'user_FFesXyDJ3SmB4f6fKeOu6');
                 openSnackbar('Email sent successfully!',[2000])
             resetForm();
         } catch(err) {
@@ -61,7 +54,7 @@ const Contact = (props) => {
                 onSubmit={(values, {resetForm}) => handleSubmit(values, resetForm)}
             >
 
-                {({ errors, values, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => {
+                {({ errors, values, touched, handleChange, handleBlur, handleSubmit }) => {
                     return (
                         <form onSubmit={handleSubmit} className="contact-form">
                             <p>

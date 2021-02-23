@@ -19,8 +19,8 @@ const Landing = (props) => {
                 </div>
                 <div className="landing-contact">
                     
-                    <a href={github} target="_blank"><GithubContact /></a>
-                    <a href={linkedin} target="_blank"><LinkedinContact /></a>
+                    <a href={github} target="_blank" rel="noreferrer"><GithubContact /></a>
+                    <a href={linkedin} target="_blank" rel="noreferrer"><LinkedinContact /></a>
                 </div>
             </div>
 
