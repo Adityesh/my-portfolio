@@ -3,7 +3,7 @@ module.exports = {
         {
             title : 'Book Manager',
             description : "Full Stack Web application where users can add and trade books.",
-            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/bookmanager.webp?token=AJPFQ4LBQSW3UEJX3E4NJP3AGTFTQ',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/bookmanager.webp',
             projectGithub : 'https://github.com/Adityesh/bookManager',
             projectDemo : 'https://www.youtube.com/watch?v=k1gLhwjv5LQ',
             projectTags : ['React', 'Redux', 'CSS','NodeJS', 'Express', 'PassportJS', 'MongoDB']
@@ -11,7 +11,7 @@ module.exports = {
         {
             title : 'Wally',
             description : "Wallpaper App for Android",
-            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/wally.webp?token=AJPFQ4JEQRSEWTPO6OX432TAGTG3I',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/wally.webp',
             projectGithub : '#',
             projectDemo : 'https://drive.google.com/file/d/1pXW7sAnGzWzxeioVMfLvLsR1Qx1EXcb3/view?usp=sharing',
             projectTags : ['React', 'ReactNative', 'React-Navigation','PixabayApi']
@@ -19,7 +19,7 @@ module.exports = {
         {
             title : 'Safe-Keeper',
             description : "App that lets you keep sensitive data.",
-            projectImage : 'https://github.com/Adityesh/my-portfolio/blob/master/src/assets/safekeeper.jpg',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/safekeeper.jpg',
             projectGithub : 'https://github.com/Adityesh/Safe-Keeper-Frontend',
             projectDemo : 'https://drive.google.com/file/d/15hW3lYpEoG117r-2Qb2MOWVGGbBbDRq2/view?usp=sharing',
             projectTags : ['React', 'ReactNative', 'React-Navigation','Express', 'JWT', 'MongoDB', 'mongoose', 'NodeJS']
@@ -27,7 +27,7 @@ module.exports = {
         {
             title : 'torrent-Scraper',
             description : 'Scrape torrents and download it using a torrent client.',
-            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/torrent.webp?token=AJPFQ4KC62ZRWEQEMIQKHYTAGTF7Y',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/torrent.webp',
             projectGithub : 'https://github.com/Adityesh/torrentScrape',
             projectDemo : 'https://torrent-scraper-frontend.vercel.app/',
             projectTags : ['React', 'ReactRouter', 'CSS', 'NodeJS', 'Express', 'Puppeteer']
@@ -35,7 +35,7 @@ module.exports = {
         {
             title : 'Pension-Calculator',
             description : 'Calculate pension for central govt. employees of India',
-            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/pension.webp?token=AJPFQ4ILIZGSPUV7L3GAXNDAGTF56',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/pension.webp',
             projectGithub : 'https://github.com/Adityesh/Pension-Calculator',
             projectDemo : 'https://abhishekdhal2401.github.io/pensioncalculator/',
             projectTags : ['Bootstrap', 'HTML', 'CSS', 'Javascript']
@@ -43,7 +43,7 @@ module.exports = {
         {
             title : 'Random-Meal-Generator',
             description : 'Receive random meals with detailed instructions at the click of a button.',
-            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/random.webp?token=AJPFQ4O6DTFQR6IYLR6VRJLAGTF7S',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/random.webp',
             projectGithub : 'https://github.com/Adityesh/Random-Meal-Generator',
             projectDemo : 'https://random-meal-generator-two.vercel.app/',
             projectTags : ['React', 'HTML', 'CSS']
@@ -52,7 +52,7 @@ module.exports = {
         {
             title : 'Markdown-Previewer ',
             description : 'Edit and View Markdown in Real-Time',
-            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/markdown.webp?token=AJPFQ4NA7JAMJSYMM562WMTAGTF3M',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/markdown.webp',
             projectGithub : 'https://github.com/Adityesh/Markdown-Previewer',
             projectDemo : 'https://markdown-previewer-delta.vercel.app/',
             projectTags : ['React', 'HTML-Parser', 'CSS']

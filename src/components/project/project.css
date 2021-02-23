@@ -21,7 +21,7 @@
     bottom: 0;
     margin: -2px;
     background: inherit;
-    background-image: url(../../assets/project.jpg);
+    background-image: url(https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/project.jpg);
     background-size: 150%;
     content: ' ';
     z-index: -1;

@@ -1,13 +1,12 @@
 import React from 'react';
 import { Github, Linkedin, Youtube } from '../../icons/icons';
-import logo from '../../assets/ic_launcher.png';
 import { github, youtube, linkedin  } from '../../prototype/projects';
 const Footer = (props) => {
     return (
         <div className="footer-section">
         
         <div className="footer-logo footer-element" onClick={() => props.scroll()} style={{cursor : 'pointer'}}>
-            <img src={logo} height={50} width={50} alt="footer-logo"/>
+            <img src={'https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/ic_launcher.webp'} height={50} width={50} alt="footer-logo"/>
         </div>
         <div className="footer-social footer-element">
             <a href={github} target="_blank" rel="noreferrer"><Github /></a>
