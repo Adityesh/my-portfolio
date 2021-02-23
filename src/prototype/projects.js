@@ -3,7 +3,7 @@ module.exports = {
         {
             title : 'Book Manager',
             description : "Full Stack Web application where users can add and trade books.",
-            projectImage : '../assets/bookmanager.webp',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/bookmanager.webp?token=AJPFQ4LBQSW3UEJX3E4NJP3AGTFTQ',
             projectGithub : 'https://github.com/Adityesh/bookManager',
             projectDemo : 'https://www.youtube.com/watch?v=k1gLhwjv5LQ',
             projectTags : ['React', 'Redux', 'CSS','NodeJS', 'Express', 'PassportJS', 'MongoDB']
