@@ -133,7 +133,7 @@ textarea {
 
 .project-card img {
   max-width: 400px;
-  width: 50vw;
+  width: 100%;
   height: auto;
 }
 

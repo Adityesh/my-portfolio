@@ -4,7 +4,7 @@ import './project.css';
 import { Code, Book } from '../../icons/icons'
 const Spinner = React.lazy(() => import('../loader/loaderSpinner'));
 
-function Preloader(props) {
+function Preloader() {
     return <Spinner/>;
 }
 
