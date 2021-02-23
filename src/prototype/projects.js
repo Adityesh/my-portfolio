@@ -11,7 +11,7 @@ module.exports = {
         {
             title : 'Wally',
             description : "Wallpaper App for Android",
-            projectImage : 'https://i1.lensdump.com/i/0mQc4m.jpg',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/wally.webp?token=AJPFQ4JEQRSEWTPO6OX432TAGTG3I',
             projectGithub : '#',
             projectDemo : 'https://drive.google.com/file/d/1pXW7sAnGzWzxeioVMfLvLsR1Qx1EXcb3/view?usp=sharing',
             projectTags : ['React', 'ReactNative', 'React-Navigation','PixabayApi']
