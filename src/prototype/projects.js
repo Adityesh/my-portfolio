@@ -19,7 +19,7 @@ module.exports = {
         {
             title : 'Safe-Keeper',
             description : "App that lets you keep sensitive data.",
-            projectImage : 'https://i.lensdump.com/i/0mQyM2.md.jpg',
+            projectImage : 'https://github.com/Adityesh/my-portfolio/blob/master/src/assets/safekeeper.jpg',
             projectGithub : 'https://github.com/Adityesh/Safe-Keeper-Frontend',
             projectDemo : 'https://drive.google.com/file/d/15hW3lYpEoG117r-2Qb2MOWVGGbBbDRq2/view?usp=sharing',
             projectTags : ['React', 'ReactNative', 'React-Navigation','Express', 'JWT', 'MongoDB', 'mongoose', 'NodeJS']
@@ -27,7 +27,7 @@ module.exports = {
         {
             title : 'torrent-Scraper',
             description : 'Scrape torrents and download it using a torrent client.',
-            projectImage : 'https://i1.lensdump.com/i/0mQUrP.png',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/torrent.webp?token=AJPFQ4KC62ZRWEQEMIQKHYTAGTF7Y',
             projectGithub : 'https://github.com/Adityesh/torrentScrape',
             projectDemo : 'https://torrent-scraper-frontend.vercel.app/',
             projectTags : ['React', 'ReactRouter', 'CSS', 'NodeJS', 'Express', 'Puppeteer']
@@ -35,7 +35,7 @@ module.exports = {
         {
             title : 'Pension-Calculator',
             description : 'Calculate pension for central govt. employees of India',
-            projectImage : 'https://i1.lensdump.com/i/0mQhl5.png',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/pension.webp?token=AJPFQ4ILIZGSPUV7L3GAXNDAGTF56',
             projectGithub : 'https://github.com/Adityesh/Pension-Calculator',
             projectDemo : 'https://abhishekdhal2401.github.io/pensioncalculator/',
             projectTags : ['Bootstrap', 'HTML', 'CSS', 'Javascript']
@@ -43,7 +43,7 @@ module.exports = {
         {
             title : 'Random-Meal-Generator',
             description : 'Receive random meals with detailed instructions at the click of a button.',
-            projectImage : 'https://i1.lensdump.com/i/0mQxd9.png',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/random.webp?token=AJPFQ4O6DTFQR6IYLR6VRJLAGTF7S',
             projectGithub : 'https://github.com/Adityesh/Random-Meal-Generator',
             projectDemo : 'https://random-meal-generator-two.vercel.app/',
             projectTags : ['React', 'HTML', 'CSS']
@@ -52,7 +52,7 @@ module.exports = {
         {
             title : 'Markdown-Previewer ',
             description : 'Edit and View Markdown in Real-Time',
-            projectImage : 'https://i.lensdump.com/i/0mQXPi.png',
+            projectImage : 'https://raw.githubusercontent.com/Adityesh/my-portfolio/master/src/assets/markdown.webp?token=AJPFQ4NA7JAMJSYMM562WMTAGTF3M',
             projectGithub : 'https://github.com/Adityesh/Markdown-Previewer',
             projectDemo : 'https://markdown-previewer-delta.vercel.app/',
             projectTags : ['React', 'HTML-Parser', 'CSS']
