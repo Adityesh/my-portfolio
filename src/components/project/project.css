@@ -1,43 +1,169 @@
-.left-card {
-    position: relative;
-    overflow: hidden;
-    background: inherit;
-    color: rgb(255, 255, 255);
-    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+.projects-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.right-card img {
-    vertical-align: top;
+.projects-meta {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: -8px;
+  margin-bottom: 8px;
 }
 
-.left-card::after {
-    display: block;
-    width: 100%;
-    position: absolute;
-    height: 100%;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    margin: -2px;
-    background: inherit;
-    background-image: url(https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/project.jpg);
-    background-size: 150%;
-    content: ' ';
-    z-index: -1;
-    -webkit-backface-visibility: visible;
-    backface-visibility: visible;
-    -moz-backface-visibility: visible;
-    filter: blur(10px);
-    transform: scale(1.1);
-    box-shadow: inset 0 0 2000px rgba(255, 255, 255, 0.5);
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
 }
 
+.project-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  position: relative;
+}
 
+.project-card:hover {
+  border-color: var(--accent-cyan);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.5), 0 0 12px -2px rgba(56, 189, 248, 0.15);
+}
 
+.card-terminal-header {
+  background: var(--bg-terminal-header);
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+}
 
+.card-path {
+  color: var(--text-secondary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
+.card-badge {
+  color: var(--accent-green);
+  font-size: 12px;
+  font-weight: 600;
+}
 
+.project-image-wrap {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: #000;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-color);
+}
 
+.project-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
 
+.project-card:hover .project-image-wrap img {
+  transform: scale(1.04);
+}
 
+.card-content {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 12px;
+}
+
+.project-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.project-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  flex: 1;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.project-tag {
+  background: rgba(252, 211, 77, 0.12);
+  border: 1px solid rgba(252, 211, 77, 0.35);
+  color: #fde68a;
+  font-size: 11.5px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.card-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 10px 16px;
+  min-height: 44px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex: 1;
+  justify-content: center;
+}
+
+.card-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.card-btn.primary {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: var(--accent-cyan);
+}
+
+.card-btn.primary:hover {
+  background: var(--accent-cyan);
+  color: #000;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}

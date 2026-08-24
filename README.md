@@ -1,70 +1,122 @@
-# Getting Started with Create React App
+# Adityesh Mishra — Terminal Portfolio
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A minimal, high-performance developer portfolio website engineered with **React 18**, **TypeScript**, and **Vite**, powered by **pnpm**.
 
-## Available Scripts
+Built around an authentic **Unix / CLI terminal aesthetic**, featuring window controls, command prompts, a responsive navigation tab bar, interactive project showcases, and a type-safe contact transmission form.
 
-In the project directory, you can run:
+---
 
-### `yarn start`
+## ⚡ Key Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Interactive Terminal Window**:
+  - macOS / Unix-style window chrome with functional traffic light buttons:
+    - 🔴 **Close**: Terminates the session with a `$ exit` screen and reconnect capability.
+    - 🟡 **Minimize**: Collapses the terminal into a compact header bar.
+    - 🟢 **Maximize**: Toggles fullscreen edge-to-edge workstation view.
+- **Command-Line Navigation & Sections**:
+  - `➜ ~ whoami` ➔ Hero section with role overview, status indicator, and quick-action CLI buttons.
+  - `➜ ~ cat about.md` ➔ Engineering background and structured tech stack matrix (Frontend, Backend, Databases & Tooling).
+  - `➜ ~ ls -la ./projects/` ➔ Interactive project cards with live previews, technology tags, source code links, and demo URLs.
+  - `➜ ~ ./send-message.sh` ➔ Interactive CLI-style form with parameter flags and real-time validation powered by `react-hook-form`.
+- **Vim / tmux Statusline Footer**: Live status bar displaying editor mode, git branch, environment specs, and navigation shortcuts.
+- **Performance & Accessibility**:
+  - **100% Self-Hosted Fonts**: Zero render-blocking external font requests using local `.woff2` subsets.
+  - **Mobile-Adaptive Layout**: Dynamic tab labels, touch-friendly tap targets (≥ 44px), and zero horizontal overflow across all screen sizes.
+  - **WCAG AAA / AA Contrast**: High-contrast syntax tokens for dark mode readability.
+  - **Zero Layout Shifts**: Fully optimized image dimensions and static component loading (`CLS = 0.000`).
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+---
 
-### `yarn test`
+## 🛠️ Tech Stack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Technology | Purpose |
+| :--- | :--- |
+| **[React 18](https://react.dev/)** | Component architecture & modern state primitives |
+| **[TypeScript 5.9](https://www.typescriptlang.org/)** | Full end-to-end static type safety |
+| **[Vite 6](https://vitejs.dev/)** | Next-generation frontend tooling & lightning-fast ESM bundling |
+| **[pnpm 10](https://pnpm.io/)** | Fast, disk-efficient package management |
+| **[React Hook Form](https://react-hook-form.com/)** | Lightweight, performant form state & validation |
+| **[@fontsource/jetbrains-mono](https://fontsource.org/)** | Self-hosted monospace typography for CLI aesthetics |
 
-### `yarn build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📁 Project Structure
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```text
+my-portfolio/
+├── public/                  # Static web assets & favicons
+├── src/
+│   ├── components/
+│   │   ├── about/           # About section & skill matrix (cat about.md)
+│   │   ├── common/          # Reusable ImageLoader, Snackbar notification hooks
+│   │   ├── contact/         # Interactive CLI contact form (send-message.sh)
+│   │   ├── footer/          # Vim/tmux style statusline footer
+│   │   ├── landing/         # Hero identity & social links (whoami)
+│   │   ├── loader/          # Terminal spinner animations
+│   │   ├── navbar/          # Terminal tab navigation bar
+│   │   └── project/         # Project showcase grid (ls -la ./projects/)
+│   ├── context/             # Theme & global application contexts
+│   ├── icons/               # Typed custom SVG icon definitions
+│   ├── prototype/           # Strongly typed project data & external links
+│   ├── App.tsx              # Root terminal window container & layout
+│   ├── App.css              # Terminal design system, CSS variables & animations
+│   ├── main.tsx             # Application bootstrap & self-hosted font imports
+│   └── vite-env.d.ts        # Vite TypeScript declarations
+├── index.html               # Clean HTML5 entry point
+├── package.json             # Dependencies & build scripts
+├── tsconfig.json            # TypeScript configuration
+└── vite.config.ts           # Vite build & chunking configuration
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `yarn eject`
+## 🚀 Getting Started
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Prerequisites
+- **Node.js**: `v18.0.0` or higher (tested on Node v24)
+- **pnpm**: `v9.0.0` or higher (`npm install -g pnpm`)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Installation
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+# Clone the repository
+git clone https://github.com/Adityesh/my-portfolio.git
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+# Navigate to project root
+cd my-portfolio
 
-## Learn More
+# Install dependencies with pnpm
+pnpm install
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Development Server
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Start the Vite development server with Hot Module Replacement (HMR):
 
-### Code Splitting
+```bash
+pnpm dev
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 📦 Production Build
 
-### Making a Progressive Web App
+```bash
+# Type-check and build for production
+pnpm build
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+# Preview the production build locally
+pnpm preview
+```
 
-### Advanced Configuration
+The optimized production artifacts will be generated in the `dist/` directory.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 📬 Connect
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **GitHub**: [@Adityesh](https://github.com/Adityesh)
+- **LinkedIn**: [Adityesh Mishra](https://www.linkedin.com/in/adityesh-mishra-b3446716b/)
+- **YouTube**: [Adityesh](https://www.youtube.com/channel/UCsFX7Jk8vV_hQfb0rMeYxZQ)

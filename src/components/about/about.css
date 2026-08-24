@@ -1,25 +1,95 @@
-.about-section {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+.about-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.contact-link {
-    text-decoration: underline;
-    cursor: pointer;
+.about-output {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--accent-green);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.about-header {
-    margin-top: 40px;
-    text-align: center;
-    text-decoration: underline;
+.markdown-header {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.about-content{
-    border: 2px solid black;
-    padding: 10px 20px;
-    border-top-right-radius: 10px;
-    border-bottom-left-radius: 10px;
+.about-text {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.8;
 }
-  
-  
+
+.about-link {
+  color: var(--accent-cyan);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-weight: 600;
+  display: inline-block;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.about-link:hover {
+  color: #7dd3fc;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.skills-matrix {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.skill-category {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--accent-amber);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.category-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-badge {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+  font-size: 12.5px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.skill-badge:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.12);
+}
