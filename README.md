@@ -15,7 +15,7 @@ Built around an authentic **Unix / CLI terminal aesthetic**, featuring window co
     - 🟢 **Maximize**: Toggles fullscreen edge-to-edge workstation view.
 - **Command-Line Navigation & Sections**:
   - `➜ ~ whoami` ➔ Hero section with role overview, status indicator, and quick-action CLI buttons.
-  - `➜ ~ cat about.md` ➔ Engineering background and structured tech stack matrix (Frontend, Backend, Databases & Tooling).
+  - `➜ ~ cat about.md` ➔ Engineering background and structured tech stack matrix (Backend, Frontend, Databases, Testing & Tools, Cloud & DevOps).
   - `➜ ~ ls -la ./projects/` ➔ Interactive project cards with live previews, technology tags, source code links, and demo URLs.
   - `➜ ~ ./send-message.sh` ➔ Interactive CLI-style form with parameter flags and real-time validation powered by `react-hook-form`.
 - **Vim / tmux Statusline Footer**: Live status bar displaying editor mode, git branch, environment specs, and navigation shortcuts.
@@ -119,4 +119,3 @@ The optimized production artifacts will be generated in the `dist/` directory.
 
 - **GitHub**: [@Adityesh](https://github.com/Adityesh)
 - **LinkedIn**: [Adityesh Mishra](https://www.linkedin.com/in/adityesh-mishra-b3446716b/)
-- **YouTube**: [Adityesh](https://www.youtube.com/channel/UCsFX7Jk8vV_hQfb0rMeYxZQ)

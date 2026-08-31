@@ -5,6 +5,47 @@ interface AboutProps {
   scroll: () => void;
 }
 
+interface SkillGroup {
+  category: string;
+  skills: string[];
+}
+
+const skillMatrix: SkillGroup[] = [
+  {
+    category: '// Backend & Architecture',
+    skills: ['C#', 'ASP.NET Core', 'Entity Framework Core', 'REST API design', 'Node.js', 'Express.js', 'OOP'],
+  },
+  {
+    category: '// Frontend Ecosystem',
+    skills: [
+      'React.js',
+      'Next.js',
+      'TypeScript',
+      'JavaScript (ES6+)',
+      'Redux Toolkit',
+      'RTK Query',
+      'React Query',
+      'Micro Frontend',
+      'Tailwind CSS',
+      'MaterialUI',
+      'HTML5',
+      'CSS3',
+    ],
+  },
+  {
+    category: '// Databases & Storage',
+    skills: ['Microsoft SQL Server', 'PostgreSQL', 'MongoDB', 'SQL', 'Sequelize ORM'],
+  },
+  {
+    category: '// Testing & Developer Tools',
+    skills: ['Jest', 'React Testing Library', 'Storybook', 'Postman', 'Git', 'GitHub Copilot', 'Claude'],
+  },
+  {
+    category: '// Cloud & DevOps',
+    skills: ['Docker', 'Kubernetes', 'Azure', 'Linux', 'CI/CD pipelines'],
+  },
+];
+
 const About: React.FC<AboutProps> = ({ scroll }) => {
   return (
     <section className="about-block" id="about">
@@ -36,38 +77,18 @@ const About: React.FC<AboutProps> = ({ scroll }) => {
         </p>
 
         <div className="skills-matrix">
-          <div className="skill-category">
-            <span className="category-title">// Frontend Ecosystem</span>
-            <div className="category-skills">
-              {['React 18', 'TypeScript', 'Next.js', 'Redux Toolkit', 'JavaScript (ES6+)', 'HTML5 / CSS3', 'Tailwind CSS'].map((s) => (
-                <span key={s} className="skill-badge">
-                  {s}
-                </span>
-              ))}
+          {skillMatrix.map((group) => (
+            <div className="skill-category" key={group.category}>
+              <span className="category-title">{group.category}</span>
+              <div className="category-skills">
+                {group.skills.map((s) => (
+                  <span key={s} className="skill-badge">
+                    {s}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
-
-          <div className="skill-category">
-            <span className="category-title">// Backend &amp; Architecture</span>
-            <div className="category-skills">
-              {['Node.js', 'Express', 'RESTful APIs', 'JWT Authentication', 'PassportJS', 'Puppeteer'].map((s) => (
-                <span key={s} className="skill-badge">
-                  {s}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="skill-category">
-            <span className="category-title">// Databases &amp; Tooling</span>
-            <div className="category-skills">
-              {['MongoDB', 'Mongoose', 'Git / GitHub', 'Vite', 'pnpm', 'Linux / Bash', 'Docker Basics'].map((s) => (
-                <span key={s} className="skill-badge">
-                  {s}
-                </span>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

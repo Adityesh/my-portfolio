@@ -12,8 +12,6 @@ const Footer: React.FC<FooterProps> = ({ scroll }) => {
         <span className="mode-badge">NORMAL</span>
         <span className="footer-branch">git:(main ⚡)</span>
         <span className="footer-meta footer-hide-mobile">utf-8</span>
-        <span className="footer-meta footer-hide-mobile">TypeScript 5.9</span>
-        <span className="footer-meta footer-hide-mobile">React 18</span>
       </div>
 
       <div className="footer-right">

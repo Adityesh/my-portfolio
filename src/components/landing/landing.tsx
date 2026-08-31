@@ -1,7 +1,7 @@
 import React from 'react';
 import './landing.css';
-import { ArrowRight, Download, Github, Linkedin, Youtube } from '../../icons/icons';
-import { resume, github, linkedin, youtube } from '../../prototype/projects';
+import { ArrowRight, Download, Github, Linkedin } from '../../icons/icons';
+import { resume, github, linkedin } from '../../prototype/projects';
 
 interface LandingProps {
   scroll: () => void;
@@ -51,11 +51,6 @@ const Landing: React.FC<LandingProps> = ({ scroll, reference }) => {
             <Linkedin />
             <span className="social-full">linkedin.com/in/adityesh-mishra</span>
             <span className="social-short">LinkedIn</span>
-          </a>
-          <a href={youtube} target="_blank" rel="noreferrer" className="social-link" title="YouTube">
-            <Youtube />
-            <span className="social-full">youtube.com</span>
-            <span className="social-short">YouTube</span>
           </a>
         </div>
       </div>
