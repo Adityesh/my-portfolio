@@ -36,18 +36,24 @@ const Landing: React.FC<LandingProps> = ({ scroll, reference }) => {
           <button className="cli-btn primary" onClick={scroll}>
             ./view-work.sh <ArrowRight />
           </button>
-          <button className="cli-btn" onClick={() => window.open(resume, '_blank')}>
+          <a
+            href={resume}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cli-btn"
+            title="Download / View Resume PDF"
+          >
             curl resume.pdf <Download />
-          </button>
+          </a>
         </div>
 
         <div className="social-bar">
-          <a href={github} target="_blank" rel="noreferrer" className="social-link" title="GitHub">
+          <a href={github} target="_blank" rel="noopener noreferrer" className="social-link" title="GitHub">
             <Github />
             <span className="social-full">github.com/Adityesh</span>
             <span className="social-short">GitHub</span>
           </a>
-          <a href={linkedin} target="_blank" rel="noreferrer" className="social-link" title="LinkedIn">
+          <a href={linkedin} target="_blank" rel="noopener noreferrer" className="social-link" title="LinkedIn">
             <Linkedin />
             <span className="social-full">linkedin.com/in/adityesh-mishra</span>
             <span className="social-short">LinkedIn</span>

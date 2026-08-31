@@ -45,22 +45,26 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
 
         <div className="card-actions">
           {projectGithub && projectGithub !== '#' && (
-            <button
+            <a
               className="card-btn"
-              onClick={() => window.open(projectGithub, '_blank')}
+              href={projectGithub}
+              target="_blank"
+              rel="noopener noreferrer"
               title="View Source Code"
             >
               <Book /> git repo
-            </button>
+            </a>
           )}
           {projectDemo && projectDemo !== '#' && (
-            <button
+            <a
               className="card-btn primary"
-              onClick={() => window.open(projectDemo, '_blank')}
+              href={projectDemo}
+              target="_blank"
+              rel="noopener noreferrer"
               title="Open Live Application"
             >
               <Code /> live demo ↗
-            </button>
+            </a>
           )}
         </div>
       </div>

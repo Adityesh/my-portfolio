@@ -142,6 +142,7 @@
   transition: all 0.15s ease;
   flex: 1;
   justify-content: center;
+  text-decoration: none;
 }
 
 .card-btn:hover {

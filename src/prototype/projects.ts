@@ -2,6 +2,8 @@ import movieAppImg from '../assets/movie-app.png';
 import pensionCalcImg from '../assets/pension-calculator.png';
 import mealGeneratorImg from '../assets/meal-generator.png';
 import markdownPreviewerImg from '../assets/markdown-previewer.png';
+import bookManagerImg from '../assets/book-manager.webp';
+import wallyImg from '../assets/wally.webp';
 
 export interface ProjectItem {
   title: string;
@@ -40,7 +42,7 @@ export const projects: ProjectItem[] = [
   {
     title: 'Book Manager',
     description: 'Full-stack web platform enabling community book discovery, real-time cataloging, and seamless peer-to-peer book trading workflows.',
-    projectImage: 'https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/bookmanager.webp',
+    projectImage: bookManagerImg,
     projectGithub: 'https://github.com/Adityesh/bookManager',
     projectDemo: 'https://www.youtube.com/watch?v=k1gLhwjv5LQ',
     projectTags: ['React', 'Redux', 'CSS', 'NodeJS', 'Express', 'PassportJS', 'MongoDB'],
@@ -48,7 +50,7 @@ export const projects: ProjectItem[] = [
   {
     title: 'Wally',
     description: 'React Native Android application integrating high-resolution Pixabay APIs with smooth infinite-scroll media galleries.',
-    projectImage: 'https://raw.githubusercontent.com/Adityesh/assets-portfolio/main/wally.webp',
+    projectImage: wallyImg,
     projectGithub: '#',
     projectDemo: 'https://drive.google.com/file/d/1pXW7sAnGzWzxeioVMfLvLsR1Qx1EXcb3/view?usp=sharing',
     projectTags: ['React', 'ReactNative', 'React-Navigation', 'PixabayApi'],

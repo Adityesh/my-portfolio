@@ -45,15 +45,17 @@ export const TerminalNavbar: React.FC<TerminalNavbarProps> = ({ onNavClick, acti
         </button>
       </div>
 
-      <button
+      <a
+        href={resume}
+        target="_blank"
+        rel="noopener noreferrer"
         className="nav-resume-btn"
-        onClick={() => window.open(resume, '_blank')}
         title="Open Resume"
       >
         <Download />
         <span className="tab-label-full">resume.pdf</span>
         <span className="tab-label-short">cv</span>
-      </button>
+      </a>
     </nav>
   );
 };

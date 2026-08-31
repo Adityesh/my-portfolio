@@ -71,7 +71,18 @@ const About: React.FC<AboutProps> = ({ scroll }) => {
         <p className="about-text" style={{ marginTop: '-6px' }}>
           When I'm not writing code, I explore distributed systems patterns, experiment with developer tooling, and contribute to modern open-source web technologies.
           If you are looking for an engineer to help build high-quality products or solve challenging problems, feel free to{' '}
-          <span onClick={scroll} className="about-link">
+          <span
+            onClick={scroll}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                scroll();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            className="about-link"
+          >
             dispatch a message
           </span>.
         </p>
