@@ -13,7 +13,7 @@ function App() {
         camera={{ position: [10, 10, 10], zoom: 60, near: 0.1, far: 100 }}
         dpr={[1, 2]}
         frameloop="demand"
-        shadows
+        shadows="percentage"
       >
         <Suspense fallback={null}>
           <Experience />

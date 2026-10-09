@@ -13,6 +13,8 @@ import type * as THREE from 'three'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 const MODEL_URL = '/models/room.glb'
+// Self-hosted Draco decoder, copied from three/examples/jsm/libs/draco/gltf.
+const DRACO_PATH = '/draco/'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -40,7 +42,7 @@ type GLTFResult = GLTF & {
 }
 
 function Room(props: ThreeElements['group']) {
-  const { nodes, materials } = useGLTF(MODEL_URL) as unknown as GLTFResult
+  const { nodes, materials } = useGLTF(MODEL_URL, DRACO_PATH) as unknown as GLTFResult
   return (
     <group {...props} dispose={null}>
       {/* Walls */}
@@ -64,6 +66,6 @@ function Room(props: ThreeElements['group']) {
   )
 }
 
-useGLTF.preload(MODEL_URL)
+useGLTF.preload(MODEL_URL, DRACO_PATH)
 
 export default Room

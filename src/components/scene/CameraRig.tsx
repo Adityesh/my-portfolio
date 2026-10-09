@@ -1,14 +1,13 @@
 import { CameraControls, CameraControlsImpl } from '@react-three/drei'
 import { useEffect, useRef, type RefObject } from 'react'
 import type * as THREE from 'three'
-import { useResponsiveCamera } from '../../hooks/useResponsiveCamera.ts'
+import { CAMERA_AZIMUTH, CAMERA_POLAR, useResponsiveCamera } from '../../hooks/useResponsiveCamera.ts'
 
 const { ACTION } = CameraControlsImpl
 const DEG = Math.PI / 180
-// Isometric polar angle: acos(1 / sqrt(3)) ≈ 54.7°. Azimuth for (1, 1, 1) is 45°.
-// Rotation is kept close to it so the open (cut-away) sides of the room always face the camera.
-const POLAR_RANGE: [number, number] = [40 * DEG, 65 * DEG]
-const AZIMUTH_RANGE: [number, number] = [25 * DEG, 65 * DEG]
+// Rotation is kept close to the default view so the open (cut-away) sides of the room always face the camera.
+const POLAR_RANGE: [number, number] = [CAMERA_POLAR - 12 * DEG, CAMERA_POLAR + 8 * DEG]
+const AZIMUTH_RANGE: [number, number] = [CAMERA_AZIMUTH - 20 * DEG, CAMERA_AZIMUTH + 20 * DEG]
 
 type CameraRigProps = {
   targetRef: RefObject<THREE.Object3D | null>

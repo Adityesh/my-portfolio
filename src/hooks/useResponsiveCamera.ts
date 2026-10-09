@@ -3,8 +3,12 @@ import { useThree } from '@react-three/fiber'
 import { useEffect, type RefObject } from 'react'
 import * as THREE from 'three'
 
-// Isometric view: camera sits along (1, 1, 1) from the room center.
-export const VIEW_DIRECTION = new THREE.Vector3(1, 1, 1).normalize()
+const DEG = Math.PI / 180
+// Camera angles around the room center. Azimuth 45° faces the room's open corner.
+// Polar is measured from straight up: true isometric is ~54.7°, higher values look more from the side.
+export const CAMERA_POLAR = 62 * DEG
+export const CAMERA_AZIMUTH = 45 * DEG
+export const VIEW_DIRECTION = new THREE.Vector3().setFromSphericalCoords(1, CAMERA_POLAR, CAMERA_AZIMUTH)
 const CAMERA_DISTANCE = 20
 // Fraction of the viewport the room should fill.
 const FILL = 0.9
