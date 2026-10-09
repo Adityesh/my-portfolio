@@ -53,6 +53,7 @@ src/
       Lights.tsx            # dim late-night lighting, intensities faded in by the intro
       introTimeline.ts      # intro timings (lights fade up, monitor power-on flicker)
       Effects.tsx           # EffectComposer: N8AO, bloom, tone mapping, grain (each toggled by quality level)
+      ClampNegativeEffect.ts # clamps the colour grade to >= 0 so the sRGB conversions never produce NaN (white screens)
       PerformanceGovernor.tsx # frame pacing (30/60) and automatic quality stepping
       MonitorHitArea.tsx    # invisible plane over the screen that opens the projects view
       LightSwitch.tsx       # wall switch by the door: toggles the ceiling light (store roomLight), click sound, locator LED
