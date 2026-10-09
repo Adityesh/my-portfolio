@@ -68,3 +68,10 @@ export const PROPS = {
 
 /** Top surface of the bed's blanket (sabana mesh). */
 export const BED_TOP_Y = 0.94
+
+/** Door on the x-min wall (z range and top edge). */
+export const DOOR = { minZ: 1.92, maxZ: 4.57, topY: 4.98 } as const
+
+/** Neon name sign: on the x-min wall, centred above the door and scaled to fit within its width; faces +x. */
+export const NAME_SIGN_CENTER: Vec3 = [LEFT_WALL_X + 0.03, 5.65, (DOOR.minZ + DOOR.maxZ) / 2]
+export const NAME_SIGN_MAX_WIDTH = (DOOR.maxZ - DOOR.minZ) * 0.92

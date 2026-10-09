@@ -14,6 +14,7 @@ import FrameDriver from './FrameDriver.tsx'
 import { IntroContext } from './introTimeline.ts'
 import Lights from './Lights.tsx'
 import MonitorHitArea from './MonitorHitArea.tsx'
+import NeonNameSign from './NeonNameSign.tsx'
 import Room from './Room.tsx'
 import RoomProps from './RoomProps.tsx'
 import { FLOOR_Y } from './roomLayout.ts'
@@ -51,6 +52,7 @@ function Experience() {
       <Clock />
       <RoomProps />
       <Curtains />
+      <NeonNameSign />
       <StringLights animate={!reducedMotion} glow={!isMobile} />
       <MonitorHitArea />
       {socials.map((social) => (
