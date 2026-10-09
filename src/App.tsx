@@ -2,8 +2,8 @@ import { Canvas } from '@react-three/fiber'
 import { Suspense } from 'react'
 import { NeutralToneMapping } from 'three'
 import Experience from './components/scene/Experience.tsx'
-import BackButton from './components/ui/BackButton.tsx'
 import LoadingScreen from './components/ui/LoadingScreen.tsx'
+import ProjectOverlay from './components/ui/ProjectOverlay.tsx'
 import ViewProjectsButton from './components/ui/ViewProjectsButton.tsx'
 
 function App() {
@@ -29,7 +29,7 @@ function App() {
         </Suspense>
       </Canvas>
       <ViewProjectsButton />
-      <BackButton />
+      <ProjectOverlay />
       <LoadingScreen />
     </main>
   )
