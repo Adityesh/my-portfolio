@@ -12,7 +12,8 @@
       {
         "allowConstantExport": true
       }
-    ]
+    ],
+    "react/immutability": "off"
   },
   "ignorePatterns": [
     "public/**",

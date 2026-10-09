@@ -1,6 +1,6 @@
 import type { CameraControls } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
-import { useEffect, type RefObject } from 'react'
+import { useEffect, useRef, type RefObject } from 'react'
 import * as THREE from 'three'
 
 const DEG = Math.PI / 180
@@ -15,6 +15,10 @@ const FILL = 0.9
 // Zoom limits relative to the fitted zoom.
 const MIN_ZOOM_FACTOR = 0.9
 const MAX_ZOOM_FACTOR = 2.5
+// Intro: the camera starts rotated and zoomed out, then eases into the fitted view.
+const INTRO_AZIMUTH_OFFSET = 18 * DEG
+const INTRO_POLAR_OFFSET = -8 * DEG
+const INTRO_ZOOM_FACTOR = 0.8
 
 const WORLD_UP = new THREE.Vector3(0, 1, 0)
 
@@ -46,11 +50,16 @@ function computeFitZoom(box: THREE.Box3, width: number, height: number): number 
   return Math.min(width / (maxX - minX), height / (maxY - minY)) * FILL
 }
 
-/** Frames `targetRef` isometrically and refits the zoom whenever the viewport resizes. */
+/**
+ * Frames `targetRef` and refits the zoom whenever the viewport resizes.
+ * With `intro`, the first fit eases in from a rotated, zoomed-out pose.
+ */
 export function useResponsiveCamera(
   controlsRef: RefObject<CameraControls | null>,
   targetRef: RefObject<THREE.Object3D | null>,
+  intro: boolean,
 ) {
+  const hasFitted = useRef(false)
   const width = useThree((state) => state.size.width)
   const height = useThree((state) => state.size.height)
   const invalidate = useThree((state) => state.invalidate)
@@ -65,10 +74,24 @@ export function useResponsiveCamera(
     const position = center.clone().addScaledVector(VIEW_DIRECTION, CAMERA_DISTANCE)
     const zoom = computeFitZoom(box, width, height)
 
-    controls.minZoom = zoom * MIN_ZOOM_FACTOR
+    controls.minZoom = zoom * MIN_ZOOM_FACTOR * (intro && !hasFitted.current ? INTRO_ZOOM_FACTOR : 1)
     controls.maxZoom = zoom * MAX_ZOOM_FACTOR
-    void controls.setLookAt(position.x, position.y, position.z, center.x, center.y, center.z, false)
-    void controls.zoomTo(zoom, false)
+
+    if (intro && !hasFitted.current) {
+      const start = new THREE.Vector3()
+        .setFromSphericalCoords(CAMERA_DISTANCE, CAMERA_POLAR + INTRO_POLAR_OFFSET, CAMERA_AZIMUTH + INTRO_AZIMUTH_OFFSET)
+        .add(center)
+      void controls.setLookAt(start.x, start.y, start.z, center.x, center.y, center.z, false)
+      void controls.zoomTo(zoom * INTRO_ZOOM_FACTOR, false)
+      void controls.setLookAt(position.x, position.y, position.z, center.x, center.y, center.z, true)
+      void controls.zoomTo(zoom, true).then(() => {
+        controls.minZoom = zoom * MIN_ZOOM_FACTOR
+      })
+    } else {
+      void controls.setLookAt(position.x, position.y, position.z, center.x, center.y, center.z, false)
+      void controls.zoomTo(zoom, false)
+    }
+    hasFitted.current = true
     invalidate()
-  }, [controlsRef, targetRef, width, height, invalidate])
+  }, [controlsRef, targetRef, width, height, invalidate, intro])
 }

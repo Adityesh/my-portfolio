@@ -11,6 +11,9 @@ import { useGLTF } from '@react-three/drei'
 import type { ThreeElements } from '@react-three/fiber'
 import type * as THREE from 'three'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { usePcRgb } from '../../hooks/usePcRgb.ts'
+import { useAnimationsEnabled } from './introTimeline.ts'
+import MonitorScreen from './MonitorScreen.tsx'
 
 const MODEL_URL = '/models/room.glb'
 // Self-hosted Draco decoder, copied from three/examples/jsm/libs/draco/gltf.
@@ -43,6 +46,7 @@ type GLTFResult = GLTF & {
 
 function Room(props: ThreeElements['group']) {
   const { nodes, materials } = useGLTF(MODEL_URL, DRACO_PATH) as unknown as GLTFResult
+  usePcRgb(materials.pcinsidenormal, useAnimationsEnabled())
   return (
     <group {...props} dispose={null}>
       {/* Walls */}
@@ -52,10 +56,12 @@ function Room(props: ThreeElements['group']) {
       {/* Most furniture, merged by --transform */}
       <mesh name="Object_6" castShadow receiveShadow geometry={nodes.Object_6.geometry} material={materials.PaletteMaterial001} position={[0.095, -0.373, 0.14]} scale={4.819} />
       <mesh name="Object_16" castShadow receiveShadow geometry={nodes.Object_16.geometry} material={materials.base_cama} position={[-1.049, -0.692, 1.149]} scale={1.419} />
-      {/* PC tower interior */}
+      {/* PC tower glass panel (RGB glow via usePcRgb) */}
       <mesh name="Object_31" castShadow receiveShadow geometry={nodes.Object_31.geometry} material={materials.pcinsidenormal} position={[-3.958, 1.431, -3.489]} scale={0.077} />
-      {/* Monitor screen: separate mesh, target for the zoom-in click */}
-      <mesh name="Object_34" castShadow receiveShadow geometry={nodes.Object_34.geometry} material={materials.screen} position={[-3.781, 2.47, -1.132]} scale={1.456} />
+      {/* Monitor screen: separate mesh, target for the zoom-in click. Shows the animated editor. */}
+      <mesh name="Object_34" geometry={nodes.Object_34.geometry} position={[-3.781, 2.47, -1.132]} scale={1.456}>
+        <MonitorScreen />
+      </mesh>
       {/* Mouse light */}
       <mesh name="Object_37" castShadow receiveShadow geometry={nodes.Object_37.geometry} material={materials.PaletteMaterial002} position={[-2.793, 1.422, -2.237]} scale={[0.137, 0.04, 0.083]} />
       {/* Keyboard keys */}
