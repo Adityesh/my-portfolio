@@ -4,6 +4,7 @@ import { NeutralToneMapping } from 'three'
 import Experience from './components/scene/Experience.tsx'
 import LoadingScreen from './components/ui/LoadingScreen.tsx'
 import ProjectOverlay from './components/ui/ProjectOverlay.tsx'
+import SocialLinks from './components/ui/SocialLinks.tsx'
 import ViewProjectsButton from './components/ui/ViewProjectsButton.tsx'
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
         </Suspense>
       </Canvas>
       <ViewProjectsButton />
+      <SocialLinks />
       <ProjectOverlay />
       <LoadingScreen />
     </main>

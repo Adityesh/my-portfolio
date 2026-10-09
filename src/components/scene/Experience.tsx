@@ -2,6 +2,7 @@ import { ContactShadows } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import type * as THREE from 'three'
+import { socials } from '../../data/socials.ts'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useReducedMotion } from '../../hooks/useReducedMotion.ts'
 import CameraRig from './CameraRig.tsx'
@@ -13,6 +14,7 @@ import Lights from './Lights.tsx'
 import MonitorHitArea from './MonitorHitArea.tsx'
 import Room from './Room.tsx'
 import { FLOOR_Y } from './roomLayout.ts'
+import SocialIcon3D from './SocialIcon3D.tsx'
 import WindowBackdrop from './WindowBackdrop.tsx'
 import WindowShaft from './WindowShaft.tsx'
 
@@ -43,6 +45,9 @@ function Experience() {
         <Room />
       </group>
       <MonitorHitArea />
+      {socials.map((social) => (
+        <SocialIcon3D key={social.id} social={social} />
+      ))}
       <WindowBackdrop />
       <WindowShaft />
       {!reducedMotion && <DustMotes density={isMobile ? 0.5 : 1} />}
