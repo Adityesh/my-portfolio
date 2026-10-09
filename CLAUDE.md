@@ -76,8 +76,11 @@ export type Project = {
   title: string;
   description?: string;
   image: string;        // path under /images/projects/
+  imageFit?: 'cover' | 'contain'; // 'contain' for tall phone screenshots
   tags: string[];       // technologies used, e.g. ['ASP.NET Core', 'React']
-  url: string;          // live site
+  url: string;          // live site or demo (the card's main link)
+  urlLabel?: string;    // label for url, default "Live site" (e.g. "Watch demo")
+  source?: string;      // source code, shown as a separate "Code" link
 };
 
 // src/data/socials.ts
