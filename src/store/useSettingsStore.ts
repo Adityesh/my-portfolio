@@ -38,6 +38,8 @@ type SettingsState = {
   learnedQuality: QualityLevel | null
   cameraDrift: boolean
   dust: boolean
+  /** Sound effects (the cat). They only ever play right after the visitor touches something. */
+  sound: boolean
   /** Show the FPS / renderer stats overlay. */
   debug: boolean
   /** Animation frame cap: 'auto' tries 60 and falls back to 30 if the device can't keep up. */
@@ -47,6 +49,7 @@ type SettingsState = {
   setLearnedQuality: (level: QualityLevel) => void
   setCameraDrift: (on: boolean) => void
   setDust: (on: boolean) => void
+  setSound: (on: boolean) => void
   setDebug: (on: boolean) => void
   setFrameRate: (rate: FrameRateSetting) => void
   reset: () => void
@@ -58,6 +61,7 @@ const DEFAULTS = {
   quality: 'auto' as QualitySetting,
   cameraDrift: true,
   dust: true,
+  sound: true,
   debug: false,
   frameRate: 'auto' as FrameRateSetting,
 }
@@ -73,6 +77,7 @@ export const useSettingsStore = create<SettingsState>()(
       setLearnedQuality: (learnedQuality) => set({ learnedQuality }),
       setCameraDrift: (on) => set({ cameraDrift: on }),
       setDust: (on) => set({ dust: on }),
+      setSound: (on) => set({ sound: on }),
       setDebug: (on) => set({ debug: on }),
       setFrameRate: (frameRate) => set({ frameRate }),
       reset: () => set(DEFAULTS),

@@ -17,7 +17,7 @@ function SettingsMenu() {
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const settings = useSceneSettings()
-  const { setAnimations, setQuality, setCameraDrift, setDust, setDebug, setFrameRate, reset } = useSettingsStore()
+  const { setAnimations, setQuality, setCameraDrift, setDust, setSound, setDebug, setFrameRate, reset } = useSettingsStore()
   const frameRate = useSettingsStore((s) => s.frameRate)
   const quality = useSettingsStore((s) => s.quality)
   // Level in use (shown for Auto), and whether the safety net had to override the chosen level.
@@ -26,6 +26,7 @@ function SettingsMenu() {
   const setQualityOverride = useAppStore((s) => s.setQualityOverride)
   const rawDrift = useSettingsStore((s) => s.cameraDrift)
   const rawDust = useSettingsStore((s) => s.dust)
+  const sound = useSettingsStore((s) => s.sound)
 
   // Close on Esc (returning focus to the button) or on a click outside the menu.
   useEffect(() => {
@@ -98,6 +99,7 @@ function SettingsMenu() {
             disabled={!settings.animations}
             onChange={setDust}
           />
+          <ToggleSwitch label="Sound" description="Sound effects when you poke things" checked={sound} onChange={setSound} />
           <SegmentedControl
             label="Frame rate"
             description="Auto uses 60 when the device keeps up"

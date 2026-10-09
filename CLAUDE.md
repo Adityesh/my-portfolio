@@ -43,7 +43,10 @@ src/
       SceneCanvas.tsx       # <Canvas> (frameloop="demand", dpr from quality level); lazy-loaded so the fallback never downloads three.js
       Experience.tsx        # camera rig, lights, room, props, contact shadows, lazy Effects
       Room.tsx              # gltfjsx-generated room model (water bottle cut out of the merged mesh and moved)
-      RoomProps.tsx         # rug, mug, plant, whiteboard, cat, headphones placement + small idle animations
+      RoomProps.tsx         # rug, mug, plant, whiteboard, headphones placement + small idle animations
+      Cat.tsx               # the cat: breathing, idle glances, turns toward the pointer, hops on tap, spins on 3 quick taps
+      CatHearts.tsx         # hearts floating up from the cat when tapped
+      ContactBlob.tsx       # soft fake contact shadow for objects that cast no real shadow
       FittedModel.tsx       # loads a prop GLB and scales it to a real-world size
       roomLayout.ts         # world-space positions of room features (walls, desk, screen, window...)
       CameraRig.tsx         # CameraControls: fitted room view, intro ease-in, idle drift, monitor zoom, rotation limits
@@ -67,7 +70,7 @@ src/
       ProjectCard.tsx, TagChip.tsx, BackButton.tsx
       LoadingScreen.tsx     # solid -> blurred while loading, then focus-pull reveal
       FallbackView.tsx      # plain 2D page for no-WebGL / low-memory devices
-      SettingsMenu.tsx      # hamburger menu: animations, frame rate, quality, camera drift, dust, debug, credits
+      SettingsMenu.tsx      # hamburger menu: animations, frame rate, quality, camera drift, dust, sound, debug, credits
       SegmentedControl.tsx, ToggleSwitch.tsx
       DebugOverlay.tsx      # FPS / renderer stats panel
       SocialLinks.tsx       # visually hidden real links (keyboard / screen readers / SEO)
@@ -85,6 +88,8 @@ src/
     useQuality.ts           # current quality level + config with phone limits
     useSceneSettings.ts     # visitor settings with automatic defaults filled in
     usePcRgb.ts             # RGB cycling on the PC's glass panel
+  audio/
+    sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch); files in public/sounds/
   store/
     useAppStore.ts          # view ('room' | 'monitor'), transitions, loading, sceneReady, debug stats, frame cap, quality
     useSettingsStore.ts     # persisted visitor preferences (localStorage with safe fallback)
@@ -95,6 +100,7 @@ public/
   draco/                    # self-hosted Draco decoder
   hdri/night_256.hdr        # self-hosted environment map
   fonts/                    # Pacifico (SIL OFL)
+  sounds/                   # sound effects (meow.mp3; sources in sounds/CREDITS.txt)
   og-image.jpg, favicon.svg, robots.txt
 .env.development / .env.production  # VITE_SITE_URL, used in index.html for canonical, Open Graph and JSON-LD
 vercel.json                 # cache and security headers
@@ -196,4 +202,4 @@ The original build order (all done, 22 commits on `feat/3d-portfolio`):
 - When changing camera positions or light intensities, state the old and new values so they are easy to tune.
 - Run `npm run build` (and `npm run lint`) after structural changes to catch type errors.
 - If the production URL changes, update `.env.production`.
-- Third-party models: room (CC BY 4.0, amurin; credited in `data/credits.ts`, shown in the settings menu), wall clock (Sketchfab Standard, hitheredearjohn), and CC0 props (rug, mug, plant, whiteboard, cat, headphones, curtains, lava lamp; no credit needed). **Open item:** the owner must confirm that the clock's license allows serving the GLB on a public site. The site is already deployed. Source files live in `models-src/` (gitignored, not present in this checkout).
+- Third-party models: room (CC BY 4.0, amurin; credited in `data/credits.ts`, shown in the settings menu), wall clock (Sketchfab Standard, hitheredearjohn), and CC0 props (rug, mug, plant, whiteboard, cat, headphones, curtains, lava lamp; no credit needed). Sound: `public/sounds/meow.mp3`, supplied by the owner; **open item:** record its source and license in `public/sounds/CREDITS.txt` before deploying. **Open item:** the owner must confirm that the clock's license allows serving the GLB on a public site. The site is already deployed. Source files live in `models-src/` (gitignored, not present in this checkout).
