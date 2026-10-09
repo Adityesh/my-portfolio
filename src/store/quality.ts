@@ -57,21 +57,26 @@ export const DIAGNOSTICS = [...DIAG]
 
 /**
  * Phone limits, applied at every level on touch devices:
- * - no ambient occlusion, multisampled post-processing or 2x pixel ratio (too heavy: frames take seconds);
- * - no bloom: on some mobile GPUs (seen on a Galaxy S24 Ultra / Adreno 750) an occasional invalid pixel gets
- *   spread across the screen by bloom's blur as full-screen white flashes. Emissive surfaces still glow.
+ * - no ambient occlusion (too heavy: frames take seconds);
+ * (Bloom is fine on phones: its earlier white flashes came from NaN pixels in the window shaft shader, now fixed.)
+ * - pixel ratio up to 2 at High, 1.5 below.
+ * Post-processing renders off-screen, bypassing the canvas's own anti-aliasing, so it always multisamples
+ * (4x) to keep edges smooth; Low and Minimal have no post-processing and use the canvas's anti-aliasing.
  */
 export function configFor(level: QualityLevel, isMobile: boolean): QualityConfig & { multisampling: number } {
   const config = QUALITY_CONFIG[level]
-  if (!isMobile) return applyDiagnostics({ ...config, multisampling: 4 })
+  if (!isMobile) return applyDiagnostics({ ...config, multisampling: MSAA_SAMPLES })
+  const maxDpr = level === 'high' ? 2 : 1.5
   return applyDiagnostics({
     ...config,
-    bloom: false,
     ambientOcclusion: false,
-    dpr: [Math.min(config.dpr[0], 1.5), Math.min(config.dpr[1], 1.5)],
-    multisampling: 0,
+    dpr: [Math.min(config.dpr[0], maxDpr), Math.min(config.dpr[1], maxDpr)],
+    multisampling: MSAA_SAMPLES,
   })
 }
+
+// Multisample anti-aliasing for the post-processing buffers.
+const MSAA_SAMPLES = 4
 
 export const QUALITY_LABELS: Record<QualityLevel, string> = { high: 'High', medium: 'Medium', low: 'Low', minimal: 'Minimal' }
 

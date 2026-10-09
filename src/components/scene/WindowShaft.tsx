@@ -38,8 +38,10 @@ const fragmentShader = /* glsl */ `
   varying float vFacing;
   void main() {
     // Fade along the beam, in from the window, and across each face so there are no hard edges.
-    float along = pow(1.0 - vT, 1.6) * smoothstep(0.0, 0.25, vT);
-    float across = pow(sin(3.14159 * vU), 1.5);
+    // pow() of a negative number is undefined: interpolation can push these a hair below zero at the edges
+    // (sin(pi) ~ -1e-7), and some mobile GPUs then return NaN, which showed as white lines/flashes. Clamp first.
+    float along = pow(clamp(1.0 - vT, 0.0, 1.0), 1.6) * smoothstep(0.0, 0.25, vT);
+    float across = pow(clamp(sin(3.14159 * vU), 0.0, 1.0), 1.5);
     gl_FragColor = vec4(uColor, uOpacity * along * across * vFacing);
   }
 `
