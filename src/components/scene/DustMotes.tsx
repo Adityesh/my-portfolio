@@ -1,4 +1,5 @@
 import { Sparkles } from '@react-three/drei'
+import { useAppStore } from '../../store/useAppStore.ts'
 import { SCREEN_CENTER, WINDOW_CENTER } from './roomLayout.ts'
 
 type DustMotesProps = {
@@ -8,6 +9,10 @@ type DustMotesProps = {
 
 // Slow-drifting dust caught in the monitor glow and the window light.
 function DustMotes({ density }: DustMotesProps) {
+  // Hidden outside the room view: up close the particles turn into large blurry squares.
+  const inRoom = useAppStore((state) => state.view === 'room' && !state.transitioning)
+  if (!inRoom) return null
+
   return (
     <>
       <Sparkles

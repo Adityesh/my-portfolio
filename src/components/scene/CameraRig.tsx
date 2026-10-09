@@ -3,16 +3,12 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef, type RefObject } from 'react'
 import type * as THREE from 'three'
 import { CAMERA_AZIMUTH, CAMERA_POLAR, useResponsiveCamera } from '../../hooks/useResponsiveCamera.ts'
+import { useAppStore } from '../../store/useAppStore.ts'
 import { INTRO, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
 
 const { ACTION } = CameraControlsImpl
 const DEG = Math.PI / 180
-// Rotation is kept close to the default view so the open (cut-away) sides of the room always face the camera.
-const POLAR_RANGE: [number, number] = [CAMERA_POLAR - 12 * DEG, CAMERA_POLAR + 8 * DEG]
-const AZIMUTH_RANGE: [number, number] = [CAMERA_AZIMUTH - 20 * DEG, CAMERA_AZIMUTH + 20 * DEG]
 
-// Seconds a programmatic transition takes to settle (intro, idle drift returning to centre).
-const SMOOTH_TIME = 0.9
 // Idle drift: starts after this many seconds without input, sways gently around the default view.
 const IDLE_SECONDS = 4
 const DRIFT_AZIMUTH = 3 * DEG
@@ -30,8 +26,10 @@ function CameraRig({ targetRef }: CameraRigProps) {
   const getTime = useIntroTime()
   const lastInput = useRef(0)
   const dom = useThree((state) => state.gl.domElement)
+  const view = useAppStore((state) => state.view)
+  const finishTransition = useAppStore((state) => state.finishTransition)
 
-  useResponsiveCamera(controlsRef, targetRef, animate)
+  useResponsiveCamera(controlsRef, targetRef, { intro: animate, view, onTransitionEnd: finishTransition })
 
   // Rotate + zoom only; no panning, so the room can't be dragged out of frame.
   useEffect(() => {
@@ -41,7 +39,6 @@ function CameraRig({ targetRef }: CameraRigProps) {
     controls.mouseButtons.middle = ACTION.ZOOM
     controls.touches.two = ACTION.TOUCH_ZOOM
     controls.touches.three = ACTION.NONE
-    controls.smoothTime = SMOOTH_TIME
 
     const markInput = () => {
       lastInput.current = performance.now()
@@ -58,10 +55,15 @@ function CameraRig({ targetRef }: CameraRigProps) {
     }
   }, [dom])
 
-  // Idle drift around the default view.
+  // Idle drift around the default view (room view only, not mid-transition).
   useFrame((state) => {
     const controls = controlsRef.current
     if (!controls || !animate || getTime() < INTRO.total) return
+    const { view: currentView, transitioning } = useAppStore.getState()
+    if (currentView !== 'room' || transitioning) {
+      lastInput.current = performance.now()
+      return
+    }
     if (performance.now() - lastInput.current < IDLE_SECONDS * 1000) return
     const t = state.clock.elapsedTime
     void controls.rotateTo(
@@ -71,16 +73,7 @@ function CameraRig({ targetRef }: CameraRigProps) {
     )
   })
 
-  return (
-    <CameraControls
-      ref={controlsRef}
-      makeDefault
-      minPolarAngle={POLAR_RANGE[0]}
-      maxPolarAngle={POLAR_RANGE[1]}
-      minAzimuthAngle={AZIMUTH_RANGE[0]}
-      maxAzimuthAngle={AZIMUTH_RANGE[1]}
-    />
-  )
+  return <CameraControls ref={controlsRef} makeDefault />
 }
 
 export default CameraRig

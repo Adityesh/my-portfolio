@@ -2,6 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { SCREEN_CODE, SCREEN_FILENAME } from '../../data/screenCode.ts'
+import { useAppStore } from '../../store/useAppStore.ts'
 import { screenLevel, useIntroTime } from './introTimeline.ts'
 
 // Canvas matches the screen's 2.3 x 1.3 aspect.
@@ -18,6 +19,8 @@ const HOLD_SECONDS = 6
 const CURSOR_BLINK_SECONDS = 0.53
 // Above 1 so the text catches a little bloom (the material is not tone mapped).
 const BRIGHTNESS = 1.25
+// Extra brightness while the pointer is over the monitor.
+const HOVER_BRIGHTNESS = 1.6
 
 const COLORS = {
   background: '#16203a',
@@ -131,7 +134,8 @@ function MonitorScreen() {
   useFrame(() => {
     const t = getTime()
     // Power-on flicker during the intro.
-    materialRef.current?.color.setScalar(screenLevel(t) * BRIGHTNESS)
+    const brightness = useAppStore.getState().monitorHovered ? HOVER_BRIGHTNESS : BRIGHTNESS
+    materialRef.current?.color.setScalar(screenLevel(t) * brightness)
 
     let chars: number
     let cursorOn: boolean

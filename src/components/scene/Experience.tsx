@@ -10,9 +10,11 @@ import Effects from './Effects.tsx'
 import FrameDriver from './FrameDriver.tsx'
 import { IntroContext } from './introTimeline.ts'
 import Lights from './Lights.tsx'
+import MonitorHitArea from './MonitorHitArea.tsx'
 import Room from './Room.tsx'
 import { FLOOR_Y } from './roomLayout.ts'
 import WindowBackdrop from './WindowBackdrop.tsx'
+import WindowShaft from './WindowShaft.tsx'
 
 // Frame rate for ambient animation (the Canvas renders on demand).
 const ANIMATION_FPS = 30
@@ -40,7 +42,9 @@ function Experience() {
       <group ref={roomRef}>
         <Room />
       </group>
+      <MonitorHitArea />
       <WindowBackdrop />
+      <WindowShaft />
       {!reducedMotion && <DustMotes density={isMobile ? 0.5 : 1} />}
       {!isMobile && (
         <ContactShadows position={[0.1, FLOOR_Y + 0.005, 0.14]} scale={9.5} far={3} blur={2.5} opacity={0.6} frames={1} />

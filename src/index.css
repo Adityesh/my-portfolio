@@ -9,4 +9,6 @@ body,
 
 body {
   background-color: #0b0b10;
+  /* Faint glow behind the room so it stands out from the backdrop. */
+  background-image: radial-gradient(ellipse 55% 60% at 50% 48%, #1b2140 0%, #11142a 45%, #0b0b10 100%);
 }

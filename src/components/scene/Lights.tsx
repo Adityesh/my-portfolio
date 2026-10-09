@@ -5,7 +5,7 @@ import * as THREE from 'three'
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js'
 import Headlights from './Headlights.tsx'
 import { INTRO, lightLevel, screenLevel, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
-import { FLOOR_Y, SCREEN_CENTER, SCREEN_SIZE, WINDOW_CENTER } from './roomLayout.ts'
+import { DESK, FLOOR_Y, LAMP_BULB, LEFT_WALL_X, SCREEN_CENTER, SCREEN_SIZE, WINDOW_CENTER } from './roomLayout.ts'
 
 // Required once for rectAreaLight to affect MeshStandardMaterial.
 RectAreaLightUniformsLib.init()
@@ -13,13 +13,24 @@ RectAreaLightUniformsLib.init()
 // Late-night mood: the monitor is the main light source, the window adds a soft glow.
 // Final intensities; the intro fades lights up from 0 to these.
 const INTENSITY = {
-  ambient: 0.1,
-  environment: 0.15,
+  ambient: 0.18,
+  environment: 0.25,
   monitorArea: 6,
   monitorFill: 4,
   windowSpot: 40,
   windowGlow: 2,
+  lamp: 3,
+  monitorBacklight: 3,
+  deskUnderglow: 4,
 }
+
+// LED colours for the desk setup.
+const BACKLIGHT_COLOR = '#8b5cf6'
+const UNDERGLOW_COLOR = '#6366f1'
+// Brightness of the visible LED strip under the desk (unlit, not tone mapped, so >1 blooms).
+const STRIP_BRIGHTNESS = 2.2
+const DESK_DEPTH = DESK.maxZ - DESK.minZ
+const DESK_CENTER_Z = (DESK.minZ + DESK.maxZ) / 2
 
 // Where the window light lands on the floor.
 const WINDOW_LIGHT_TARGET: [number, number, number] = [WINDOW_CENTER[0] + 1, FLOOR_Y, WINDOW_CENTER[2] + 3]
@@ -44,6 +55,10 @@ function Lights({ shadows }: LightsProps) {
   const monitorFill = useRef<THREE.PointLight>(null)
   const windowSpot = useRef<THREE.SpotLight>(null)
   const windowGlow = useRef<THREE.PointLight>(null)
+  const lamp = useRef<THREE.PointLight>(null)
+  const monitorBacklight = useRef<THREE.PointLight>(null)
+  const deskUnderglow = useRef<THREE.RectAreaLight>(null)
+  const ledStrip = useRef<THREE.MeshBasicMaterial>(null)
   const introDone = useRef(false)
 
   // Intro: monitor light follows the screen flicker, room lights fade up after it.
@@ -57,6 +72,11 @@ function Lights({ shadows }: LightsProps) {
     if (monitorFill.current) monitorFill.current.intensity = INTENSITY.monitorFill * screen
     if (windowSpot.current) windowSpot.current.intensity = INTENSITY.windowSpot * room
     if (windowGlow.current) windowGlow.current.intensity = INTENSITY.windowGlow * room
+    if (lamp.current) lamp.current.intensity = INTENSITY.lamp * room
+    // The LEDs come on with the monitor.
+    if (monitorBacklight.current) monitorBacklight.current.intensity = INTENSITY.monitorBacklight * screen
+    if (deskUnderglow.current) deskUnderglow.current.intensity = INTENSITY.deskUnderglow * screen
+    if (ledStrip.current) ledStrip.current.color.set(UNDERGLOW_COLOR).multiplyScalar(STRIP_BRIGHTNESS * screen)
     state.scene.environmentIntensity = INTENSITY.environment * room
     if (t > INTRO.total) introDone.current = true
   })
@@ -107,6 +127,33 @@ function Lights({ shadows }: LightsProps) {
         distance={5}
         color="#ffc58a"
       />
+
+      {/* Bedside lamp: warm pool around the nightstand and bed. */}
+      <pointLight ref={lamp} position={LAMP_BULB} intensity={0} distance={5} color="#ffae5c" />
+
+      {/* Monitor backlight: soft LED glow on the wall behind the screen (a point light, so the halo has no hard edges). */}
+      <pointLight
+        ref={monitorBacklight}
+        position={[LEFT_WALL_X + 0.08, SCREEN_CENTER[1] + 0.1, SCREEN_CENTER[2]]}
+        intensity={0}
+        distance={2.4}
+        color={BACKLIGHT_COLOR}
+      />
+
+      {/* Desk underglow: LED strip under the desk's front edge, facing down onto the floor and chair. */}
+      <rectAreaLight
+        ref={deskUnderglow}
+        position={[DESK.frontX - 0.15, DESK.topY - 0.12, DESK_CENTER_Z]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        width={0.3}
+        height={DESK_DEPTH * 0.95}
+        intensity={0}
+        color={UNDERGLOW_COLOR}
+      />
+      <mesh position={[DESK.frontX - 0.06, DESK.topY - 0.1, DESK_CENTER_Z]}>
+        <boxGeometry args={[0.03, 0.03, DESK_DEPTH * 0.95]} />
+        <meshBasicMaterial ref={ledStrip} color="#000000" toneMapped={false} />
+      </mesh>
 
       {animate && <Headlights />}
     </>

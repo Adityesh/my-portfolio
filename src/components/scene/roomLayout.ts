@@ -34,3 +34,18 @@ export const SKY_PANEL = {
   maxY: 5.0,
   z: WINDOW.outsideZ - 0.4,
 } as const
+
+/** Bulb inside the bedside lamp's shade. */
+export const LAMP_BULB: Vec3 = [0.25, 1.45, -3.31]
+
+/** Desk top (Mesa_18): front edge faces +x, back against the x-min wall. */
+export const DESK = {
+  topY: 1.37,
+  frontX: -2.3,
+  backX: -4.15,
+  minZ: -3.71,
+  maxZ: 0.82,
+} as const
+
+/** Inner face of the x-min wall (door/desk side). */
+export const LEFT_WALL_X = -4.24

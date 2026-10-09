@@ -1,7 +1,10 @@
 import { Canvas } from '@react-three/fiber'
 import { Suspense } from 'react'
+import { NeutralToneMapping } from 'three'
 import Experience from './components/scene/Experience.tsx'
+import BackButton from './components/ui/BackButton.tsx'
 import LoadingScreen from './components/ui/LoadingScreen.tsx'
+import ViewProjectsButton from './components/ui/ViewProjectsButton.tsx'
 
 function App() {
   return (
@@ -14,11 +17,19 @@ function App() {
         dpr={[1, 2]}
         frameloop="demand"
         shadows="percentage"
+        // Same tone mapping as the desktop post-processing chain (Effects.tsx), so mobile looks alike.
+        onCreated={({ gl }) => {
+          gl.toneMapping = NeutralToneMapping
+          // Neutral tone mapping darkens the deepest shadows slightly; lift exposure to compensate.
+          gl.toneMappingExposure = 1.6
+        }}
       >
         <Suspense fallback={null}>
           <Experience />
         </Suspense>
       </Canvas>
+      <ViewProjectsButton />
+      <BackButton />
       <LoadingScreen />
     </main>
   )
