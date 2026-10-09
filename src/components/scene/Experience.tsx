@@ -22,6 +22,7 @@ import LightSwitch from './LightSwitch.tsx'
 import Lights from './Lights.tsx'
 import MonitorHitArea from './MonitorHitArea.tsx'
 import NeonNameSign from './NeonNameSign.tsx'
+import PcTower from './PcTower.tsx'
 import PerformanceGovernor from './PerformanceGovernor.tsx'
 import PovCamera from './PovCamera.tsx'
 import PovEnclosure from './PovEnclosure.tsx'
@@ -97,6 +98,7 @@ function Experience() {
       <MonitorHitArea />
       <LightSwitch />
       <BedsideLamp />
+      <PcTower />
       {socials.map((social) => (
         <SocialIcon3D key={social.id} social={social} />
       ))}

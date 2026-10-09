@@ -1,9 +1,15 @@
 import { useGLTF } from '@react-three/drei'
-import { useEffect, useMemo } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { playSwish } from '../../audio/sfx.ts'
+import { useAppStore } from '../../store/useAppStore.ts'
+import { useSettingsStore } from '../../store/useSettingsStore.ts'
 import { DRACO_PATH } from './assetPaths.ts'
-import { WINDOW } from './roomLayout.ts'
+import { useAnimationsEnabled } from './introTimeline.ts'
+import { CURTAIN_DAMPING, SHELF, WINDOW } from './roomLayout.ts'
+import { useTapTarget } from './useTapTarget.ts'
 
 const MODEL_URL = '/models/curtains.glb'
 // Each panel's size on the wall, and how far it reaches over the window opening.
@@ -34,7 +40,13 @@ function splitPanels(source: THREE.BufferGeometry): [THREE.BufferGeometry, THREE
     right[name] = []
   }
   for (let tri = 0; tri < position.count; tri += 3) {
-    const cx = (position.getX(tri) + position.getX(tri + 1) + position.getX(tri + 2)) / 3
+    const x0 = position.getX(tri)
+    const x1 = position.getX(tri + 1)
+    const x2 = position.getX(tri + 2)
+    // The model's own rod runs across the top between the panels; skip it (we draw our own). Left in, it widened
+    // the left panel's bounds to the whole model, which squashed that panel to a third of its width.
+    if (Math.min(x0, x1, x2) < 0 && Math.max(x0, x1, x2) > 0) continue
+    const cx = (x0 + x1 + x2) / 3
     const target = cx < 0 ? left : right
     for (const name of names) {
       const attr = flat.getAttribute(name)
@@ -51,30 +63,28 @@ function splitPanels(source: THREE.BufferGeometry): [THREE.BufferGeometry, THREE
   return [build(left), build(right)]
 }
 
-type PanelProps = {
-  geometry: THREE.BufferGeometry
-  material: THREE.Material
-  /** World x where the panel's left edge goes. */
-  minX: number
-}
+// Open, each panel is gathered at its side of the window. Drawn, the inner edges meet just past the middle (a little
+// overlap so no light shows through) while the outer edges stay put, so the fabric widens and unfolds as it closes.
+// The left panel's outer edge stops just short of the shelf's end (the shelf sticks out past the curtain plane).
+const LEFT_OUTER_X = Math.max(WINDOW.minX + OVERLAP - PANEL_WIDTH, SHELF.maxX + 0.03)
+const RIGHT_OUTER_X = WINDOW.maxX - OVERLAP + PANEL_WIDTH
+const LEFT_OPEN_INNER_X = WINDOW.minX + OVERLAP
+const RIGHT_OPEN_INNER_X = WINDOW.maxX - OVERLAP
+const MID_X = (WINDOW.minX + WINDOW.maxX) / 2
+const CLOSED_OVERLAP = 0.04
 
-/** Stretches a panel to PANEL_WIDTH x (TOP_Y - BOTTOM_Y) with its left edge at `minX`. */
-function Panel({ geometry, material, minX }: PanelProps) {
+/** Sets a panel mesh's scale and position so it spans [minX, minX + width] and the full drop. */
+function placePanel(mesh: THREE.Mesh, minX: number, width: number): void {
+  const geometry = mesh.geometry
   const box = geometry.boundingBox!
-  const size = box.getSize(new THREE.Vector3())
-  const scale: [number, number, number] = [PANEL_WIDTH / size.x, (TOP_Y - BOTTOM_Y) / size.y, DEPTH / size.z]
-  return (
-    <mesh
-      geometry={geometry}
-      material={material}
-      scale={scale}
-      position={[minX - box.min.x * scale[0], BOTTOM_Y - box.min.y * scale[1], Z - (box.min.z + size.z / 2) * scale[2]]}
-      receiveShadow
-    />
-  )
+  const sx = width / (box.max.x - box.min.x)
+  const sy = (TOP_Y - BOTTOM_Y) / (box.max.y - box.min.y)
+  const sz = DEPTH / (box.max.z - box.min.z)
+  mesh.scale.set(sx, sy, sz)
+  mesh.position.set(minX - box.min.x * sx, BOTTOM_Y - box.min.y * sy, Z - ((box.min.z + box.max.z) / 2) * sz)
 }
 
-/** Curtain panels framing the window, plus a rod. */
+/** Curtain panels framing the window, plus a rod. Tap a panel to draw or open them. */
 function Curtains() {
   const { nodes } = useGLTF(MODEL_URL, DRACO_PATH) as unknown as GLTFResult
   const [left, right] = useMemo(() => splitPanels(nodes.Curtains.geometry), [nodes])
@@ -88,13 +98,49 @@ function Curtains() {
     [left, right, fabric],
   )
 
-  const rodStart = WINDOW.minX + OVERLAP - PANEL_WIDTH - 0.08
-  const rodEnd = WINDOW.maxX - OVERLAP + PANEL_WIDTH + 0.08
+  const animate = useAnimationsEnabled()
+  const invalidate = useThree((state) => state.invalidate)
+  const closed = useAppStore((state) => state.curtainsClosed)
+  const setClosed = useAppStore((state) => state.setCurtainsClosed)
+  const sound = useSettingsStore((state) => state.sound)
+  const { bind } = useTapTarget(() => {
+    setClosed(!closed)
+    if (sound) playSwish(!closed)
+  })
+
+  const leftPanel = useRef<THREE.Mesh>(null)
+  const rightPanel = useRef<THREE.Mesh>(null)
+  // 0 = open, 1 = drawn; eases at the same rate as the window light in Lights.tsx.
+  const level = useRef(closed ? 1 : 0)
+
+  const place = (k: number) => {
+    const leftInner = THREE.MathUtils.lerp(LEFT_OPEN_INNER_X, MID_X + CLOSED_OVERLAP, k)
+    const rightInner = THREE.MathUtils.lerp(RIGHT_OPEN_INNER_X, MID_X - CLOSED_OVERLAP, k)
+    if (leftPanel.current) placePanel(leftPanel.current, LEFT_OUTER_X, leftInner - LEFT_OUTER_X)
+    if (rightPanel.current) placePanel(rightPanel.current, rightInner, RIGHT_OUTER_X - rightInner)
+  }
+  // Place the panels before the first frame is drawn.
+  useLayoutEffect(() => place(level.current))
+
+  useFrame((_, delta) => {
+    const target = closed ? 1 : 0
+    if (level.current === target) return
+    if (!animate) level.current = target
+    else {
+      const next = THREE.MathUtils.damp(level.current, target, CURTAIN_DAMPING, delta)
+      level.current = Math.abs(next - target) < 0.001 ? target : next
+      invalidate()
+    }
+    place(level.current)
+  })
+
+  const rodStart = LEFT_OUTER_X - 0.08
+  const rodEnd = RIGHT_OUTER_X + 0.08
 
   return (
     <group>
-      <Panel geometry={left} material={fabric} minX={WINDOW.minX + OVERLAP - PANEL_WIDTH} />
-      <Panel geometry={right} material={fabric} minX={WINDOW.maxX - OVERLAP} />
+      <mesh ref={leftPanel} geometry={left} material={fabric} receiveShadow {...bind} />
+      <mesh ref={rightPanel} geometry={right} material={fabric} receiveShadow {...bind} />
       <mesh position={[(rodStart + rodEnd) / 2, ROD_Y, Z]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.025, 0.025, rodEnd - rodStart, 8]} />
         <meshStandardMaterial color="#2a2f3d" metalness={0.7} roughness={0.35} />

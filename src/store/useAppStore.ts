@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { QualityLevel } from './quality.ts'
+import type { RgbMode } from './rgbModes.ts'
 import { CUT_FADE_MS, CUT_HOLD_MS, type Viewpoint } from './viewpoints.ts'
 
 export type View = 'room' | 'monitor'
@@ -30,6 +31,10 @@ type AppState = {
   bedLamp: boolean
   /** Lo-fi music from the headphones is wanted (it only plays while Sound is on). */
   music: boolean
+  /** RGB lighting mode for the PC and LED strips (tap the PC tower). */
+  rgbMode: RgbMode
+  /** The window curtains are drawn (tap a curtain). */
+  curtainsClosed: boolean
   /** Camera viewpoint: the isometric room view or a first-person spot inside the room (room view only). */
   viewpoint: Viewpoint
   /** The screen is (going) dark for a camera cut between the room view and a first-person view. */
@@ -53,6 +58,8 @@ type AppState = {
   setRoomLight: (on: boolean) => void
   setBedLamp: (on: boolean) => void
   setMusic: (on: boolean) => void
+  setRgbMode: (mode: RgbMode) => void
+  setCurtainsClosed: (closed: boolean) => void
   /** Moves the camera: cuts through a fade between the room view and first person, glides between first-person spots. */
   goToViewpoint: (viewpoint: Viewpoint) => void
   openMonitor: () => void
@@ -82,6 +89,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   roomLight: false,
   bedLamp: true,
   music: false,
+  rgbMode: 'classic',
+  curtainsClosed: false,
   viewpoint: 'room',
   cutting: false,
   monitorHovered: false,
@@ -95,6 +104,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   setRoomLight: (roomLight) => set({ roomLight }),
   setBedLamp: (bedLamp) => set({ bedLamp }),
   setMusic: (music) => set({ music }),
+  setRgbMode: (rgbMode) => set({ rgbMode }),
+  setCurtainsClosed: (curtainsClosed) => set({ curtainsClosed }),
   goToViewpoint: (viewpoint) => {
     const { view, transitioning, cutting, viewpoint: current } = get()
     if (view !== 'room' || transitioning || cutting || viewpoint === current) return

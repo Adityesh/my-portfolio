@@ -1,7 +1,9 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { screenLevel, useIntroTime } from './introTimeline.ts'
+import { useAppStore } from '../../store/useAppStore.ts'
+import { screenLevel, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
+import { RGB_FADE, rgbTarget } from './rgbLighting.ts'
 import { BED, FLOOR_Y } from './roomLayout.ts'
 
 // LED strip under the bed frame along the two sides that face the camera: the foot (+z) and the desk side (-x).
@@ -25,20 +27,32 @@ type BedLedStripProps = {
   glow: boolean
 }
 
-/** Violet LED strip glowing under the bed. Comes on with the monitor's LEDs during the intro. */
+/** LED strip glowing under the bed (violet in the Classic mode). Comes on with the monitor's LEDs during the intro. */
 function BedLedStrip({ glow }: BedLedStripProps) {
   const getTime = useIntroTime()
+  const animate = useAnimationsEnabled()
+  const mode = useAppStore((state) => state.rgbMode)
   const pools = useRef<(THREE.RectAreaLight | null)[]>([])
+  // Current (crossfading) colour and level, and a scratch target.
   const color = useMemo(() => new THREE.Color(COLOR), [])
+  const target = useMemo(() => new THREE.Color(), [])
+  const level = useRef(1)
   // One material for both runs (unlit, not tone mapped, so it blooms).
   const strip = useMemo(() => new THREE.MeshBasicMaterial({ color: '#000000', toneMapped: false }), [])
   useEffect(() => () => strip.dispose(), [strip])
 
-  useFrame(() => {
+  useFrame((state, delta) => {
     const on = screenLevel(getTime())
-    strip.color.copy(color).multiplyScalar(STRIP_BRIGHTNESS * on)
+    // Follows the RGB lighting mode (tap the PC tower), crossfading on a change.
+    const k = animate ? 1 - Math.exp(-RGB_FADE * delta) : 1
+    const targetLevel = rgbTarget(mode, 'bed', animate ? state.clock.elapsedTime : 0, target)
+    color.lerp(target, k)
+    level.current = THREE.MathUtils.lerp(level.current, targetLevel, k)
+    strip.color.copy(color).multiplyScalar(STRIP_BRIGHTNESS * level.current * on)
     pools.current.forEach((light) => {
-      if (light) light.intensity = POOL_INTENSITY * on
+      if (!light) return
+      light.color.copy(color)
+      light.intensity = POOL_INTENSITY * level.current * on
     })
   })
 

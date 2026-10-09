@@ -67,8 +67,12 @@ src/
       MonitorScreen.tsx     # canvas texture of code typing itself on the screen (text from data/screenCode.ts)
       SocialIcon3D.tsx      # neon wall sign: extruded SVG logo, hover/tap pulse, click opens url
       NeonNameSign.tsx      # name sign (self-hosted Pacifico font)
-      Clock.tsx, Curtains.tsx, StringLights.tsx, BedLedStrip.tsx, WhiteboardDrawing.tsx, MugSteam.tsx
+      Curtains.tsx          # window curtains: tap to draw/open (store curtainsClosed); drawn curtains block the window light, beam and headlights
+      Clock.tsx, StringLights.tsx, BedLedStrip.tsx (follows the RGB mode), WhiteboardDrawing.tsx, MugSteam.tsx
       LavaLamp.tsx          # shelf lava lamp: tap for the next colour theme and a short wax speed-up
+      PcTower.tsx           # hit box on the PC: tap to cycle the RGB lighting mode (store rgbMode)
+      DeskLeds.tsx          # monitor backlight + desk underglow (light + visible strip), following the RGB mode
+      rgbLighting.ts        # colours/levels per RGB mode (classic, rainbow, aurora, ember, off) for the PC, desk LEDs and bed strip
       WindowBackdrop.tsx    # sky shader (gradient, moon, sun) driven by the time of day
       WindowStars.tsx, WindowCloud.tsx, WindowShaft.tsx, Headlights.tsx, DustMotes.tsx
       skyTimeline.ts        # time-of-day keyframes (sky colours, sun/moon/stars, daylight) and the shared `sky` state
@@ -83,7 +87,7 @@ src/
       ProjectCard.tsx, TagChip.tsx, BackButton.tsx
       LoadingScreen.tsx     # solid -> blurred while loading, then focus-pull reveal
       FallbackView.tsx      # plain 2D page for no-WebGL / low-memory devices
-      SettingsMenu.tsx      # hamburger menu: animations, frame rate, quality, camera drift, dust, time of day, room light, sound, music, debug, credits
+      SettingsMenu.tsx      # hamburger menu: animations, frame rate, quality, camera drift, dust, time of day, room light, curtains, LEDs, sound, music, debug, credits
       SegmentedControl.tsx, ToggleSwitch.tsx
       DebugOverlay.tsx      # FPS / renderer stats panel
       SocialLinks.tsx       # visually hidden real links (keyboard / screen readers / SEO)
@@ -105,13 +109,14 @@ src/
     usePcRgb.ts             # RGB cycling on the PC's glass panel
     useSkyHour.ts           # hour the window shows: live local time, menu preset, or ?time= override
   audio/
-    sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch; synthesised click, clink, bloop); files in public/sounds/
+    sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch; synthesised click, clink, bloop, blip, swish); files in public/sounds/
     music.ts                # lo-fi loop streamed with an <audio> element; follows store music + Sound setting, fades, pauses when hidden
   store/
-    useAppStore.ts          # view ('room' | 'monitor'), viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, transitions, loading, sceneReady, debug stats, frame cap, quality
+    useAppStore.ts          # view ('room' | 'monitor'), viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, rgbMode, curtainsClosed, transitions, loading, sceneReady, debug stats, frame cap, quality
     useSettingsStore.ts     # persisted visitor preferences (localStorage with safe fallback)
     quality.ts              # quality levels and what each turns on; ?diag= flags
     timeOfDay.ts            # time-of-day setting, preset hours, labels
+    rgbModes.ts             # RGB lighting mode ids and labels
     viewpoints.ts           # viewpoint ids, labels, cut timings (poses live in scene/roomLayout.ts VIEWPOINT_POSES)
 public/
   models/                   # compressed GLBs (room ~1.5 MB, props ~220 KB total)

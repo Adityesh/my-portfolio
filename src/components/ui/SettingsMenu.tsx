@@ -3,6 +3,7 @@ import { credits } from '../../data/credits.ts'
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 import { QUALITY_LABELS } from '../../store/quality.ts'
+import { RGB_MODE_LABELS, RGB_MODES } from '../../store/rgbModes.ts'
 import { TIME_OF_DAY, TIME_OF_DAY_LABELS } from '../../store/timeOfDay.ts'
 import { useSettingsStore } from '../../store/useSettingsStore.ts'
 import SegmentedControl from './SegmentedControl.tsx'
@@ -32,6 +33,10 @@ function SettingsMenu() {
   const setTimeOfDay = useSettingsStore((s) => s.setTimeOfDay)
   const music = useAppStore((s) => s.music)
   const setMusic = useAppStore((s) => s.setMusic)
+  const curtainsClosed = useAppStore((s) => s.curtainsClosed)
+  const setCurtainsClosed = useAppStore((s) => s.setCurtainsClosed)
+  const rgbMode = useAppStore((s) => s.rgbMode)
+  const setRgbMode = useAppStore((s) => s.setRgbMode)
   const roomLight = useAppStore((s) => s.roomLight)
   const setRoomLight = useAppStore((s) => s.setRoomLight)
 
@@ -115,6 +120,15 @@ function SettingsMenu() {
             onChange={setTimeOfDay}
           />
           <ToggleSwitch label="Room light" description="Same as the switch by the door" checked={roomLight} onChange={setRoomLight} />
+          <ToggleSwitch label="Curtains" description="Draw the curtains (or tap one)" checked={curtainsClosed} onChange={setCurtainsClosed} />
+          <SegmentedControl
+            label="LEDs"
+            description="PC and LED strip lighting (or tap the PC)"
+            options={RGB_MODES.map((value) => ({ value, label: RGB_MODE_LABELS[value] }))}
+            value={rgbMode}
+            stacked
+            onChange={setRgbMode}
+          />
           <ToggleSwitch label="Sound" description="Sound effects when you poke things" checked={sound} onChange={setSound} />
           <ToggleSwitch
             label="Music"

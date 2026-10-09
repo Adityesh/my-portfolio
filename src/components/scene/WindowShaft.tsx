@@ -1,8 +1,9 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
+import { useAppStore } from '../../store/useAppStore.ts'
 import { INTRO, lightLevel, useIntroTime } from './introTimeline.ts'
-import { WINDOW } from './roomLayout.ts'
+import { CURTAIN_DAMPING, WINDOW } from './roomLayout.ts'
 import { sky } from './skyTimeline.ts'
 
 // Soft visible beam of light falling from the window into the room.
@@ -120,11 +121,20 @@ function WindowShaft() {
   const getTime = useIntroTime()
   const introDone = useRef(false)
   const seen = useRef(-1)
-  useFrame(() => {
-    if (introDone.current && seen.current === sky.version) return
+  // Drawn curtains shut the beam off, easing like the fabric (Curtains.tsx).
+  const curtainsClosed = useAppStore((state) => state.curtainsClosed)
+  const curtain = useRef(0)
+  useFrame((_, delta) => {
+    const curtainTarget = curtainsClosed ? 1 : 0
+    const curtainMoving = curtain.current !== curtainTarget
+    if (introDone.current && seen.current === sky.version && !curtainMoving) return
     seen.current = sky.version
+    if (curtainMoving) {
+      const next = THREE.MathUtils.damp(curtain.current, curtainTarget, CURTAIN_DAMPING, delta)
+      curtain.current = Math.abs(next - curtainTarget) < 0.002 ? curtainTarget : next
+    }
     const t = getTime()
-    material.uniforms.uOpacity.value = OPACITY * (1 + DAYLIGHT_BOOST * sky.daylight) * lightLevel(t)
+    material.uniforms.uOpacity.value = OPACITY * (1 + DAYLIGHT_BOOST * sky.daylight) * (1 - curtain.current) * lightLevel(t)
     material.uniforms.uColor.value.copy(sky.windowLight)
     if (t > INTRO.total) introDone.current = true
   })

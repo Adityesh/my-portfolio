@@ -1,6 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef, useState } from 'react'
 import * as THREE from 'three'
+import { useAppStore } from '../../store/useAppStore.ts'
 import { FLOOR_Y, WINDOW, WINDOW_CENTER } from './roomLayout.ts'
 import { sky } from './skyTimeline.ts'
 
@@ -10,6 +11,8 @@ const MIN_GAP_SECONDS = 12
 const MAX_GAP_SECONDS = 22
 const FIRST_SWEEP_AT = 6
 const PEAK_INTENSITY = 700
+// Drawn curtains let only a faint glow of the sweep through.
+const CURTAIN_BLOCK = 0.9
 
 // The beam enters near the window and its target slides across the bed, floor and desk wall.
 const SOURCE_Y = WINDOW_CENTER[1] + 0.2
@@ -43,9 +46,10 @@ function Headlights() {
     // Source slides along the window as the car passes; the beam fades in and out.
     spot.position.set(THREE.MathUtils.lerp(WINDOW.maxX, WINDOW.minX, k), SOURCE_Y, SOURCE_Z)
     target.position.lerpVectors(SWEEP_FROM, SWEEP_TO, k)
-    // Only noticeable after dark: fades out as daylight comes up (skyTimeline.ts).
+    // Only noticeable after dark: fades out as daylight comes up (skyTimeline.ts). Drawn curtains block it.
     const night = 1 - THREE.MathUtils.smoothstep(sky.daylight, 0.1, 0.3)
-    spot.intensity = PEAK_INTENSITY * Math.sin(Math.PI * p) * night
+    const curtains = useAppStore.getState().curtainsClosed ? CURTAIN_BLOCK : 0
+    spot.intensity = PEAK_INTENSITY * Math.sin(Math.PI * p) * night * (1 - curtains)
   })
 
   return (

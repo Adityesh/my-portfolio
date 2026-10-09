@@ -79,6 +79,9 @@ export const DOOR = { minZ: 1.92, maxZ: 4.57, topY: 4.98 } as const
 /** Light switch: on the x-min wall between the whiteboard and the door, at switch height; faces +x. */
 export const LIGHT_SWITCH: Vec3 = [LEFT_WALL_X + 0.01, 2.3, 1.62]
 
+/** How quickly the curtains draw/open (damping rate, ~1.2 s). Shared by Curtains.tsx and the window light. */
+export const CURTAIN_DAMPING = 3.2
+
 /** Ceiling light (switched on by the light switch): centre of the room, just under the wall tops. */
 export const CEILING_LIGHT: Vec3 = [0.1, 6.3, 0.2]
 

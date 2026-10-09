@@ -159,6 +159,58 @@ export function playBloop(pitch = 1): void {
   osc.stop(now + BLOOP.seconds * 1.8)
 }
 
+// PC RGB mode change: two quick soft tones, rising, like a peripheral app confirming.
+const BLIP = { first: 880, second: 1320, gap: 0.07, decay: 0.09, volume: 0.35 }
+// Curtains: a breath of filtered noise whose pitch slides, like fabric drawn along a rail.
+const SWISH = { seconds: 0.7, from: 500, to: 1600, q: 0.9, volume: 0.9 }
+
+/** Two-tone blip. */
+export function playBlip(): void {
+  const ctx = getContext()
+  if (!ctx) return
+  const now = ctx.currentTime
+  ;[BLIP.first, BLIP.second].forEach((frequency, i) => {
+    const start = now + i * BLIP.gap
+    const osc = ctx.createOscillator()
+    osc.type = 'triangle'
+    osc.frequency.value = frequency
+    const env = ctx.createGain()
+    env.gain.setValueAtTime(0, start)
+    env.gain.linearRampToValueAtTime(BLIP.volume * MASTER_VOLUME, start + 0.004)
+    env.gain.exponentialRampToValueAtTime(0.0001, start + BLIP.decay)
+    osc.connect(env).connect(ctx.destination)
+    osc.onended = () => env.disconnect()
+    osc.start(start)
+    osc.stop(start + BLIP.decay * 1.5)
+  })
+}
+
+/** Fabric swish; `closing` slides the pitch up, opening slides it down. */
+export function playSwish(closing: boolean): void {
+  const ctx = getContext()
+  if (!ctx) return
+  const now = ctx.currentTime
+  const length = Math.round(ctx.sampleRate * SWISH.seconds)
+  const noise = ctx.createBuffer(1, length, ctx.sampleRate)
+  const data = noise.getChannelData(0)
+  for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1
+  const source = ctx.createBufferSource()
+  source.buffer = noise
+  const filter = ctx.createBiquadFilter()
+  filter.type = 'bandpass'
+  filter.Q.value = SWISH.q
+  const [from, to] = closing ? [SWISH.from, SWISH.to] : [SWISH.to, SWISH.from]
+  filter.frequency.setValueAtTime(from, now)
+  filter.frequency.exponentialRampToValueAtTime(to, now + SWISH.seconds)
+  const env = ctx.createGain()
+  env.gain.setValueAtTime(0, now)
+  env.gain.linearRampToValueAtTime(SWISH.volume * MASTER_VOLUME, now + SWISH.seconds * 0.3)
+  env.gain.linearRampToValueAtTime(0, now + SWISH.seconds)
+  source.connect(filter).connect(env).connect(ctx.destination)
+  source.onended = () => env.disconnect()
+  source.start(now)
+}
+
 /** Plays a sound. `rate` shifts pitch and speed together (1 = original). Failures are silent. */
 export function playSound(id: SoundId, { rate = 1, volume = 1 }: { rate?: number; volume?: number } = {}): void {
   const ctx = getContext()
