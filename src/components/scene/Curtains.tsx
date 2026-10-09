@@ -21,6 +21,9 @@ const BOTTOM_Y = WINDOW.minY - 0.2
 const DEPTH = 0.12
 const Z = WINDOW.insideZ + 0.1
 const ROD_Y = TOP_Y + 0.04
+// Breeze from the open window: how much deeper the folds get, how far the fabric drifts into the room and sways
+// sideways (world units), the gust speed, and how quickly it eases in/out.
+const BREEZE = { depth: 0.9, drift: 0.07, sway: 0.02, speed: 1.6, ease: 1.5 }
 // The model's texture is nearly black and read as a shadow in the dim room; use a light linen instead.
 const FABRIC_COLOR = '#d6c6a8'
 
@@ -131,16 +134,42 @@ function Curtains() {
   // Place the panels before the first frame is drawn.
   useLayoutEffect(() => place(level.current))
 
-  useFrame((_, delta) => {
+  // The open window's breeze: 0 = still, 1 = full billow (eases in and out with the sash).
+  const windowOpen = useAppStore((state) => state.windowOpen)
+  const breeze = useRef(0)
+
+  useFrame((state, delta) => {
     const target = closed ? 1 : 0
-    if (level.current === target) return
-    if (!animate) level.current = target
-    else {
-      const next = THREE.MathUtils.damp(level.current, target, CURTAIN_DAMPING, delta)
-      level.current = Math.abs(next - target) < 0.001 ? target : next
+    const breezeTarget = windowOpen && animate ? 1 : 0
+    const moving = level.current !== target
+    if (!moving && breeze.current === 0 && breezeTarget === 0) return
+    if (moving) {
+      if (!animate) level.current = target
+      else {
+        const next = THREE.MathUtils.damp(level.current, target, CURTAIN_DAMPING, delta)
+        level.current = Math.abs(next - target) < 0.001 ? target : next
+        invalidate()
+      }
+    }
+    const nextBreeze = THREE.MathUtils.damp(breeze.current, breezeTarget, BREEZE.ease, delta)
+    breeze.current = Math.abs(nextBreeze - breezeTarget) < 0.001 ? breezeTarget : nextBreeze
+    place(level.current)
+    if (breeze.current > 0) {
+      // Gusts: the folds deepen and the fabric drifts into the room, each panel a little out of step.
+      const t = state.clock.elapsedTime
+      for (const [panel, phase] of [
+        [leftPanel.current, 0],
+        [rightPanel.current, 1.7],
+      ] as const) {
+        if (!panel) continue
+        const gust = 0.5 + 0.3 * Math.sin(t * BREEZE.speed + phase) + 0.2 * Math.sin(t * BREEZE.speed * 2.3 + phase * 2)
+        const b = breeze.current * gust
+        panel.scale.z *= 1 + BREEZE.depth * b
+        panel.position.z += BREEZE.drift * b
+        panel.position.x += Math.sin(t * BREEZE.speed * 1.4 + phase) * BREEZE.sway * b
+      }
       invalidate()
     }
-    place(level.current)
   })
 
   const rodStart = LEFT_OUTER_X - 0.08

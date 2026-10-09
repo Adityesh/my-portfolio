@@ -164,6 +164,31 @@ const BLIP = { first: 880, second: 1320, gap: 0.07, decay: 0.09, volume: 0.35 }
 // Curtains: a breath of filtered noise whose pitch slides, like fabric drawn along a rail.
 const SWISH = { seconds: 0.7, from: 500, to: 1600, q: 0.9, volume: 0.9 }
 
+// Watering the plant: a few water drops, each a sine that drops in pitch quickly ("plip").
+const DRIP = { drops: 3, spacing: 0.11, from: 1500, to: 520, seconds: 0.07, volume: 0.45 }
+
+/** A short patter of water drops. */
+export function playDrips(): void {
+  const ctx = getContext()
+  if (!ctx) return
+  const now = ctx.currentTime
+  for (let i = 0; i < DRIP.drops; i++) {
+    const start = now + i * DRIP.spacing * (0.8 + Math.random() * 0.4)
+    const pitch = 0.85 + Math.random() * 0.3
+    const osc = ctx.createOscillator()
+    osc.frequency.setValueAtTime(DRIP.from * pitch, start)
+    osc.frequency.exponentialRampToValueAtTime(DRIP.to * pitch, start + DRIP.seconds)
+    const env = ctx.createGain()
+    env.gain.setValueAtTime(0, start)
+    env.gain.linearRampToValueAtTime(DRIP.volume * MASTER_VOLUME, start + 0.005)
+    env.gain.exponentialRampToValueAtTime(0.0001, start + DRIP.seconds * 1.6)
+    osc.connect(env).connect(ctx.destination)
+    osc.onended = () => env.disconnect()
+    osc.start(start)
+    osc.stop(start + DRIP.seconds * 2)
+  }
+}
+
 /** Two-tone blip. */
 export function playBlip(): void {
   const ctx = getContext()
@@ -183,6 +208,36 @@ export function playBlip(): void {
     osc.start(start)
     osc.stop(start + BLIP.decay * 1.5)
   })
+}
+
+// Window sash sliding on its track: a low rumble of filtered noise, a little longer than the curtain swish.
+const SLIDE = { seconds: 0.55, from: 180, to: 420, q: 1.2, volume: 1 }
+
+/** Sash sliding along the track; opening slides the pitch up, closing down. */
+export function playSlide(opening: boolean): void {
+  const ctx = getContext()
+  if (!ctx) return
+  const now = ctx.currentTime
+  const length = Math.round(ctx.sampleRate * SLIDE.seconds)
+  const noise = ctx.createBuffer(1, length, ctx.sampleRate)
+  const data = noise.getChannelData(0)
+  for (let i = 0; i < length; i++) data[i] = Math.random() * 2 - 1
+  const source = ctx.createBufferSource()
+  source.buffer = noise
+  const filter = ctx.createBiquadFilter()
+  filter.type = 'bandpass'
+  filter.Q.value = SLIDE.q
+  const [from, to] = opening ? [SLIDE.from, SLIDE.to] : [SLIDE.to, SLIDE.from]
+  filter.frequency.setValueAtTime(from, now)
+  filter.frequency.exponentialRampToValueAtTime(to, now + SLIDE.seconds)
+  const env = ctx.createGain()
+  env.gain.setValueAtTime(0, now)
+  env.gain.linearRampToValueAtTime(SLIDE.volume * MASTER_VOLUME, now + 0.06)
+  env.gain.setValueAtTime(SLIDE.volume * MASTER_VOLUME, now + SLIDE.seconds * 0.7)
+  env.gain.linearRampToValueAtTime(0, now + SLIDE.seconds)
+  source.connect(filter).connect(env).connect(ctx.destination)
+  source.onended = () => env.disconnect()
+  source.start(now)
 }
 
 /** Fabric swish; `closing` slides the pitch up, opening slides it down. */

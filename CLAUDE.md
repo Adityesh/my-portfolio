@@ -52,6 +52,8 @@ src/
       useTapTarget.ts       # shared tap handling for room objects (drag tolerance, room view only, cursor, redraw) + registration below
       useInteractive.ts     # registers an object (name, current action, label anchor, activate) for hover labels and the keyboard list
       LabelAnchor.tsx       # projects the hovered/focused object's anchor to screen each frame for the DOM label
+      Plant.tsx             # floor plant: sways; tap to water (bounce, sparkles, drips, grows a little each time)
+      WindowSash.tsx        # right window sash (cut from the merged mesh in Room.tsx): tap the window to slide it open; breeze sound + curtain billow
       ContactBlob.tsx       # soft fake contact shadow for objects that cast no real shadow
       FittedModel.tsx       # loads a prop GLB and scales it to a real-world size
       roomLayout.ts         # world-space positions of room features (walls, desk, screen, window...)
@@ -114,10 +116,11 @@ src/
     usePcRgb.ts             # RGB cycling on the PC's glass panel
     useSkyHour.ts           # hour the window shows: live local time, menu preset, or ?time= override
   audio/
-    sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch; synthesised click, clink, bloop, blip, swish); files in public/sounds/
+    sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch; synthesised click, clink, bloop, blip, swish, slide, drips); files in public/sounds/
+    breeze.ts               # synthesised outdoor air (looped brown noise, slow gusts) while the window is open
     music.ts                # lo-fi loop streamed with an <audio> element; follows store music + Sound setting, fades, pauses when hidden
   store/
-    useAppStore.ts          # view ('room' | 'monitor'), viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, rgbMode, curtainsClosed, transitions, loading, sceneReady, debug stats, frame cap, quality
+    useAppStore.ts          # view ('room' | 'monitor'), viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, rgbMode, curtainsClosed, windowOpen, transitions, loading, sceneReady, debug stats, frame cap, quality
     useSettingsStore.ts     # persisted visitor preferences (localStorage with safe fallback)
     quality.ts              # quality levels and what each turns on; ?diag= flags
     timeOfDay.ts            # time-of-day setting, preset hours, labels

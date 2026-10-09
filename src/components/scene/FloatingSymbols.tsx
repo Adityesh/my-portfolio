@@ -3,7 +3,8 @@ import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef, type RefObject } from 'react'
 import * as THREE from 'three'
 
-// Little symbols that pop in and float up: hearts from the cat, music notes from the headphones.
+// Little symbols that pop in and float up: hearts from the cat, music notes from the headphones, sparkles from
+// the watered plant.
 const MAX_SYMBOLS = 6
 const SIZE = 0.16
 const SWAY = 0.04
@@ -12,7 +13,7 @@ const BRIGHTNESS = 1.4
 
 /** A symbol to show: when it starts (seconds, performance.now based; may be in the future) and its sideways offset. */
 export type SymbolBurst = { start: number; offsetX: number }
-export type SymbolShape = 'heart' | 'note'
+export type SymbolShape = 'heart' | 'note' | 'sparkle'
 
 function drawHeart(ctx: CanvasRenderingContext2D): void {
   ctx.beginPath()
@@ -42,6 +43,23 @@ function drawNote(ctx: CanvasRenderingContext2D): void {
   ctx.fill()
 }
 
+/** Four-pointed twinkle with a soft glow. */
+function drawSparkle(ctx: CanvasRenderingContext2D): void {
+  const glow = ctx.createRadialGradient(32, 32, 0, 32, 32, 30)
+  glow.addColorStop(0, 'rgba(255,255,255,0.5)')
+  glow.addColorStop(1, 'rgba(255,255,255,0)')
+  ctx.fillStyle = glow
+  ctx.fillRect(0, 0, 64, 64)
+  ctx.fillStyle = '#ffffff'
+  ctx.beginPath()
+  ctx.moveTo(32, 4)
+  ctx.quadraticCurveTo(35, 29, 60, 32)
+  ctx.quadraticCurveTo(35, 35, 32, 60)
+  ctx.quadraticCurveTo(29, 35, 4, 32)
+  ctx.quadraticCurveTo(29, 29, 32, 4)
+  ctx.fill()
+}
+
 function createTexture(shape: SymbolShape): THREE.CanvasTexture {
   const canvas = document.createElement('canvas')
   canvas.width = 64
@@ -49,7 +67,8 @@ function createTexture(shape: SymbolShape): THREE.CanvasTexture {
   const ctx = canvas.getContext('2d')!
   ctx.fillStyle = '#ffffff'
   if (shape === 'heart') drawHeart(ctx)
-  else drawNote(ctx)
+  else if (shape === 'note') drawNote(ctx)
+  else drawSparkle(ctx)
   return new THREE.CanvasTexture(canvas)
 }
 

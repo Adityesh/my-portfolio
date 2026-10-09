@@ -79,6 +79,13 @@ export const DOOR = { minZ: 1.92, maxZ: 4.57, topY: 4.98 } as const
 /** Light switch: on the x-min wall between the whiteboard and the door, at switch height; faces +x. */
 export const LIGHT_SWITCH: Vec3 = [LEFT_WALL_X + 0.01, 2.3, 1.62]
 
+/**
+ * Sliding window: the right sash (on the inner track, nearer the room) is cut out of the merged furniture mesh and
+ * slides left over the left sash when opened. Measured box holding only that sash's frame and handle (the left sash
+ * sits further back, z -4.53..-4.44; the frame rails run full width at other depths). No glass in the model.
+ */
+export const WINDOW_SASH = { min: [-0.06, 1.64, -4.44] as Vec3, max: [1.6, 4.95, -4.295] as Vec3, slide: -1.45 } as const
+
 /** How quickly the curtains draw/open (damping rate, ~1.2 s). Shared by Curtains.tsx and the window light. */
 export const CURTAIN_DAMPING = 3.2
 
