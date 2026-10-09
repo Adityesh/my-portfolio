@@ -1,5 +1,5 @@
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
-import { QUALITY_LABELS } from '../../store/quality.ts'
+import { DIAGNOSTICS, QUALITY_LABELS } from '../../store/quality.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 
 const number = new Intl.NumberFormat('en')
@@ -24,9 +24,10 @@ function DebugOverlay() {
         ['textures', number.format(stats.textures)],
         ['programs', number.format(stats.programs)],
         ['resolution', `${stats.width}×${stats.height} @${stats.dpr}x`],
-        ['quality', quality ? `${QUALITY_LABELS[quality.level]}${quality.auto ? ' (auto)' : ''}` : '–'],
-        ...(quality?.auto && quality.note ? ([['auto', quality.note]] as [string, string][]) : []),
+        ['quality', quality ? `${QUALITY_LABELS[quality.level]}${quality.auto ? ' (auto)' : quality.overridden ? ' (safety)' : ''}` : '–'],
+        ...(quality?.note ? ([['last change', quality.note]] as [string, string][]) : []),
         ['device', settings.isMobile ? 'mobile' : 'desktop'],
+        ...(DIAGNOSTICS.length ? ([['diag', DIAGNOSTICS.join(', ')]] as [string, string][]) : []),
         ['gpu', stats.gpu],
       ]
     : []

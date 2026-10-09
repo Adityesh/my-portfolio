@@ -1,7 +1,15 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef, useState } from 'react'
 import { useAppStore } from '../../store/useAppStore.ts'
-import { initialQuality, QUALITY_LABELS, stepDown, stepUp, type QualityLevel, type QualitySetting } from '../../store/quality.ts'
+import {
+  initialQuality,
+  QUALITY_LABELS,
+  QUALITY_LEVELS,
+  stepDown,
+  stepUp,
+  type QualityLevel,
+  type QualitySetting,
+} from '../../store/quality.ts'
 import { useSettingsStore, type FrameRateSetting } from '../../store/useSettingsStore.ts'
 import { INTRO, useIntroTime } from './introTimeline.ts'
 
@@ -19,6 +27,11 @@ const STABLE_RATIO = 0.95
 const STABLE_WINDOWS = 4
 // A step up that struggles within this many windows is reverted, and stepping up stops for the visit.
 const TRIAL_WINDOWS = 2
+// Safety net, even for a level the visitor picked: this slow for this many windows means the device is choking
+// (frames taking seconds); switch to Low until they choose a level again.
+const UNUSABLE_FPS = 6
+const UNUSABLE_WINDOWS = 2
+const SAFE_LEVEL: QualityLevel = 'low'
 // Small tolerance so a 60 Hz display doesn't skip frames that arrive a hair early.
 const PACING_SLACK_MS = 2
 
@@ -54,7 +67,11 @@ function PerformanceGovernor({ animate, frameRate, quality, isMobile }: Performa
   )
   const [autoCap, setAutoCap] = useState(HIGH_FPS)
   const [note, setNote] = useState('')
-  const level = autoQuality ? autoLevel : quality
+  // Set when the safety net overrides a level the visitor picked (the menu clears it when they pick again).
+  const override = useAppStore((state) => state.qualityOverride)
+  const setOverride = useAppStore((state) => state.setQualityOverride)
+  // Auto handles slowness itself; the override only replaces a level the visitor picked.
+  const level = autoQuality ? autoLevel : (override ?? quality)
   const cap = autoFps ? autoCap : frameRate
 
   const state = useRef({
@@ -62,6 +79,7 @@ function PerformanceGovernor({ animate, frameRate, quality, isMobile }: Performa
     frames: 0,
     bad: 0,
     stable: 0,
+    unusable: 0,
     lastChange: 0,
     trial: null as Trial | null,
     trialWindows: 0,
@@ -71,8 +89,8 @@ function PerformanceGovernor({ animate, frameRate, quality, isMobile }: Performa
 
   // Publish the current state for the scene, the canvas and the debug overlay.
   useEffect(() => {
-    setQuality({ level, auto: autoQuality, note })
-  }, [level, autoQuality, note, setQuality])
+    setQuality({ level, auto: autoQuality, note, overridden: !autoQuality && override !== null })
+  }, [level, autoQuality, note, override, setQuality])
   useEffect(() => {
     setFrameCap(animate ? { fps: cap, auto: autoFps } : null)
   }, [animate, cap, autoFps, setFrameCap])
@@ -113,15 +131,16 @@ function PerformanceGovernor({ animate, frameRate, quality, isMobile }: Performa
     return () => document.removeEventListener('visibilitychange', restart)
   }, [])
 
-  // Manual choices reset the automatic history for that dimension.
+  // Manual choices reset the automatic history.
   useEffect(() => {
     state.current.trial = null
     state.current.bad = 0
     state.current.stable = 0
-  }, [quality, frameRate])
+    state.current.unusable = 0
+  }, [quality, frameRate, override])
 
   useFrame(() => {
-    if (!animate || (!autoQuality && !autoFps) || getTime() < INTRO.total) return
+    if (!animate || getTime() < INTRO.total) return
     const s = state.current
     const now = performance.now()
     if (s.start === 0 || document.hidden) {
@@ -133,10 +152,27 @@ function PerformanceGovernor({ animate, frameRate, quality, isMobile }: Performa
     const elapsed = now - s.start
     if (elapsed < WINDOW_MS) return
 
-    const ratio = (s.frames * 1000) / elapsed / cap
+    const achieved = (s.frames * 1000) / elapsed
+    const ratio = achieved / cap
     s.start = now
     s.frames = 0
     if (now - s.lastChange < SETTLE_MS) return
+
+    // Safety net: applies whatever the settings, if the device is choking above the safe level.
+    s.unusable = achieved < UNUSABLE_FPS ? s.unusable + 1 : 0
+    if (s.unusable >= UNUSABLE_WINDOWS && QUALITY_LEVELS.indexOf(level) > QUALITY_LEVELS.indexOf(SAFE_LEVEL)) {
+      s.unusable = 0
+      s.lastChange = now
+      s.trial = null
+      if (autoQuality) {
+        setAutoLevel(SAFE_LEVEL)
+      } else {
+        setOverride(SAFE_LEVEL)
+      }
+      setNote(`${QUALITY_LABELS[level]} too heavy, using ${QUALITY_LABELS[SAFE_LEVEL]} at ${Math.round(getTime())}s`)
+      return
+    }
+    if (!autoQuality && !autoFps) return
 
     const change = (text: string) => {
       s.lastChange = now

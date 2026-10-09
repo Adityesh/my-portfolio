@@ -84,7 +84,7 @@ function Experience() {
       )}
       {effects && (
         <Suspense fallback={null}>
-          <Effects bloom={config.bloom} ambientOcclusion={config.ambientOcclusion} grain={config.grain} />
+          <Effects multisampling={config.multisampling} bloom={config.bloom} ambientOcclusion={config.ambientOcclusion} grain={config.grain} />
         </Suspense>
       )}
     </IntroContext.Provider>

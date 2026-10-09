@@ -28,6 +28,51 @@ export const QUALITY_CONFIG: Record<QualityLevel, QualityConfig> = {
   minimal: { dpr: [0.75, 0.75], bloom: false, ambientOcclusion: false, grain: false, contactShadows: false, fullLights: false, shadows: false, dust: 0 },
 }
 
+/**
+ * Diagnostics: ?diag=nobloom,nograin,noao,nocontact,nolights,noshadows turns individual features off on top
+ * of the quality level (for tracking down device-specific rendering bugs). Read once at load.
+ */
+const DIAG = new Set(
+  (typeof window === 'undefined' ? '' : (new URLSearchParams(window.location.search).get('diag') ?? ''))
+    .split(',')
+    .map((flag) => flag.trim())
+    .filter(Boolean),
+)
+
+function applyDiagnostics<T extends QualityConfig>(config: T): T {
+  if (DIAG.size === 0) return config
+  return {
+    ...config,
+    bloom: config.bloom && !DIAG.has('nobloom'),
+    grain: config.grain && !DIAG.has('nograin'),
+    ambientOcclusion: config.ambientOcclusion && !DIAG.has('noao'),
+    contactShadows: config.contactShadows && !DIAG.has('nocontact'),
+    fullLights: config.fullLights && !DIAG.has('nolights'),
+    shadows: config.shadows && !DIAG.has('noshadows'),
+  }
+}
+
+/** Active diagnostic flags (shown in the debug overlay). */
+export const DIAGNOSTICS = [...DIAG]
+
+/**
+ * Phone limits, applied at every level on touch devices:
+ * - no ambient occlusion, multisampled post-processing or 2x pixel ratio (too heavy: frames take seconds);
+ * - no bloom: on some mobile GPUs (seen on a Galaxy S24 Ultra / Adreno 750) an occasional invalid pixel gets
+ *   spread across the screen by bloom's blur as full-screen white flashes. Emissive surfaces still glow.
+ */
+export function configFor(level: QualityLevel, isMobile: boolean): QualityConfig & { multisampling: number } {
+  const config = QUALITY_CONFIG[level]
+  if (!isMobile) return applyDiagnostics({ ...config, multisampling: 4 })
+  return applyDiagnostics({
+    ...config,
+    bloom: false,
+    ambientOcclusion: false,
+    dpr: [Math.min(config.dpr[0], 1.5), Math.min(config.dpr[1], 1.5)],
+    multisampling: 0,
+  })
+}
+
 export const QUALITY_LABELS: Record<QualityLevel, string> = { high: 'High', medium: 'Medium', low: 'Low', minimal: 'Minimal' }
 
 export function stepDown(level: QualityLevel): QualityLevel {

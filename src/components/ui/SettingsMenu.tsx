@@ -20,8 +20,10 @@ function SettingsMenu() {
   const { setAnimations, setQuality, setCameraDrift, setDust, setDebug, setFrameRate, reset } = useSettingsStore()
   const frameRate = useSettingsStore((s) => s.frameRate)
   const quality = useSettingsStore((s) => s.quality)
-  // Level Auto is currently using, shown next to the Auto option.
+  // Level in use (shown for Auto), and whether the safety net had to override the chosen level.
   const currentLevel = useAppStore((s) => s.quality?.level)
+  const overridden = useAppStore((s) => s.quality?.overridden ?? false)
+  const setQualityOverride = useAppStore((s) => s.setQualityOverride)
   const rawDrift = useSettingsStore((s) => s.cameraDrift)
   const rawDust = useSettingsStore((s) => s.dust)
 
@@ -111,9 +113,11 @@ function SettingsMenu() {
           <SegmentedControl
             label="Quality"
             description={
-              quality === 'auto' && currentLevel
-                ? `Auto adapts to your device (now ${QUALITY_LABELS[currentLevel]})`
-                : 'Glow, shadows, lights and sharpness'
+              overridden && currentLevel && quality !== 'auto'
+                ? `${QUALITY_LABELS[quality]} was too heavy for this device, using ${QUALITY_LABELS[currentLevel]}`
+                : quality === 'auto' && currentLevel
+                  ? `Auto adapts to your device (now ${QUALITY_LABELS[currentLevel]})`
+                  : 'Glow, shadows, lights and sharpness'
             }
             options={[
               { value: 'auto', label: 'Auto' },
@@ -124,7 +128,11 @@ function SettingsMenu() {
             ]}
             value={quality}
             stacked
-            onChange={setQuality}
+            onChange={(value) => {
+              // Picking a level (even the same one) lifts the safety net's override, so it can be retried.
+              setQualityOverride(null)
+              setQuality(value)
+            }}
           />
           <ToggleSwitch
             label="Debug info"
@@ -138,7 +146,10 @@ function SettingsMenu() {
             </a>
             <button
               type="button"
-              onClick={reset}
+              onClick={() => {
+                setQualityOverride(null)
+                reset()
+              }}
               className="text-neutral-400 hover:text-neutral-200 focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none"
             >
               Reset to defaults

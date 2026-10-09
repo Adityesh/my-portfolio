@@ -32,8 +32,13 @@ type AppState = {
   debugStats: DebugStats | null
   /** Current animation frame cap and whether Auto picked it (published by the performance governor). */
   frameCap: { fps: number; auto: boolean } | null
-  /** Current rendering quality, whether Auto picked it, and the last automatic change (for the debug overlay). */
-  quality: { level: QualityLevel; auto: boolean; note: string } | null
+  /**
+   * Current rendering quality, whether Auto picked it, whether the safety net overrode the visitor's choice,
+   * and the last automatic change (for the menu and debug overlay).
+   */
+  quality: { level: QualityLevel; auto: boolean; overridden: boolean; note: string } | null
+  /** Safety-net level replacing a level the visitor picked (cleared when they pick a level again). */
+  qualityOverride: QualityLevel | null
   openMonitor: () => void
   closeMonitor: () => void
   finishTransition: () => void
@@ -42,7 +47,8 @@ type AppState = {
   markSceneReady: () => void
   setDebugStats: (stats: DebugStats | null) => void
   setFrameCap: (cap: { fps: number; auto: boolean } | null) => void
-  setQuality: (quality: { level: QualityLevel; auto: boolean; note: string } | null) => void
+  setQuality: (quality: { level: QualityLevel; auto: boolean; overridden: boolean; note: string } | null) => void
+  setQualityOverride: (level: QualityLevel | null) => void
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -55,6 +61,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   debugStats: null,
   frameCap: null,
   quality: null,
+  qualityOverride: null,
   openMonitor: () => {
     if (get().view === 'room' && !get().transitioning) set({ view: 'monitor', transitioning: true, monitorHovered: false })
   },
@@ -68,4 +75,5 @@ export const useAppStore = create<AppState>((set, get) => ({
   setDebugStats: (debugStats) => set({ debugStats }),
   setFrameCap: (frameCap) => set({ frameCap }),
   setQuality: (quality) => set({ quality }),
+  setQualityOverride: (qualityOverride) => set({ qualityOverride }),
 }))

@@ -10,15 +10,17 @@ import {
 import { BlendFunction, ToneMappingMode } from 'postprocessing'
 
 type EffectsProps = {
+  /** MSAA samples for the effect buffers (0 on phones). */
+  multisampling: number
   bloom: boolean
   ambientOcclusion: boolean
   grain: boolean
 }
 
 // Which effects run depends on the quality level (Experience only mounts this when at least one is on).
-function Effects({ bloom, ambientOcclusion, grain }: EffectsProps) {
+function Effects({ multisampling, bloom, ambientOcclusion, grain }: EffectsProps) {
   return (
-    <EffectComposer multisampling={4}>
+    <EffectComposer multisampling={multisampling}>
       {/* Ambient occlusion: soft contact darkening where furniture meets floor and walls. */}
       <>{ambientOcclusion && <N8AO halfRes quality="medium" aoRadius={0.8} distanceFalloff={1} intensity={1.8} />}</>
       {/* High threshold so only emissive surfaces (screen, moon, LEDs) glow. */}
