@@ -15,7 +15,7 @@ function SettingsMenu() {
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const settings = useSceneSettings()
-  const { setAnimations, setEffects, setCameraDrift, setDust, reset } = useSettingsStore()
+  const { setAnimations, setEffects, setCameraDrift, setDust, setDebug, reset } = useSettingsStore()
   const rawDrift = useSettingsStore((s) => s.cameraDrift)
   const rawDust = useSettingsStore((s) => s.dust)
 
@@ -95,6 +95,12 @@ function SettingsMenu() {
             description="Glow, soft shadows and grain (heavier on the GPU)"
             checked={settings.effects}
             onChange={setEffects}
+          />
+          <ToggleSwitch
+            label="Debug info"
+            description="FPS, draw calls and renderer stats (top left)"
+            checked={settings.debug}
+            onChange={setDebug}
           />
           <div className="mt-1 flex items-center justify-between border-t border-white/10 px-3 pt-2 pb-1 text-xs">
             <a href="?lite" className="text-sky-300 hover:underline focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none">

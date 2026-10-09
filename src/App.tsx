@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
+import DebugOverlay from './components/ui/DebugOverlay.tsx'
 import FallbackView from './components/ui/FallbackView.tsx'
 import LoadingScreen from './components/ui/LoadingScreen.tsx'
 import ProjectOverlay from './components/ui/ProjectOverlay.tsx'
@@ -44,6 +45,7 @@ function App() {
       <SocialLinks />
       <ProjectOverlay />
       <SettingsMenu />
+      <DebugOverlay />
       <LoadingScreen />
     </main>
   )

@@ -10,5 +10,6 @@ export function useSceneSettings() {
   const effects = useSettingsStore((s) => s.effects) ?? !isMobile
   const cameraDrift = useSettingsStore((s) => s.cameraDrift)
   const dust = useSettingsStore((s) => s.dust)
-  return { animations, effects, cameraDrift: animations && cameraDrift, dust: animations && dust }
+  const debug = useSettingsStore((s) => s.debug)
+  return { animations, effects, cameraDrift: animations && cameraDrift, dust: animations && dust, debug, isMobile }
 }

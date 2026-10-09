@@ -1,5 +1,13 @@
 @import 'tailwindcss';
 
+@layer base {
+  /* Tailwind v4 gives buttons the default arrow cursor; restore the pointer for clickable controls. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+}
+
 html,
 body,
 #root {

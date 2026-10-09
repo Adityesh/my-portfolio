@@ -33,14 +33,17 @@ type SettingsState = {
   effects: boolean | null
   cameraDrift: boolean
   dust: boolean
+  /** Show the FPS / renderer stats overlay. */
+  debug: boolean
   setAnimations: (on: boolean) => void
   setEffects: (on: boolean) => void
   setCameraDrift: (on: boolean) => void
   setDust: (on: boolean) => void
+  setDebug: (on: boolean) => void
   reset: () => void
 }
 
-const DEFAULTS = { animations: null, effects: null, cameraDrift: true, dust: true }
+const DEFAULTS = { animations: null, effects: null, cameraDrift: true, dust: true, debug: false }
 
 /** Visitor's display preferences from the settings menu, remembered between visits. */
 export const useSettingsStore = create<SettingsState>()(
@@ -51,6 +54,7 @@ export const useSettingsStore = create<SettingsState>()(
       setEffects: (on) => set({ effects: on }),
       setCameraDrift: (on) => set({ cameraDrift: on }),
       setDust: (on) => set({ dust: on }),
+      setDebug: (on) => set({ debug: on }),
       reset: () => set(DEFAULTS),
     }),
     { name: 'portfolio-settings', storage: createJSONStorage(() => safeStorage) },
