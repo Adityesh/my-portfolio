@@ -23,6 +23,8 @@ type AppState = {
   view: View
   /** True while the camera is animating between views. */
   transitioning: boolean
+  /** The ceiling light is on (wall switch by the door, or the settings menu). */
+  roomLight: boolean
   /** Pointer is over the monitor (room view only). */
   monitorHovered: boolean
   /** Asset loading, published by the scene (so UI doesn't import 3D libraries). */
@@ -39,6 +41,7 @@ type AppState = {
   quality: { level: QualityLevel; auto: boolean; overridden: boolean; note: string } | null
   /** Safety-net level replacing a level the visitor picked (cleared when they pick a level again). */
   qualityOverride: QualityLevel | null
+  setRoomLight: (on: boolean) => void
   openMonitor: () => void
   closeMonitor: () => void
   finishTransition: () => void
@@ -54,6 +57,7 @@ type AppState = {
 export const useAppStore = create<AppState>((set, get) => ({
   view: 'room',
   transitioning: false,
+  roomLight: false,
   monitorHovered: false,
   // Active from the start: covers downloading the 3D code itself, before the scene can report progress.
   loading: { active: true, progress: 0 },
@@ -62,6 +66,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   frameCap: null,
   quality: null,
   qualityOverride: null,
+  setRoomLight: (roomLight) => set({ roomLight }),
   openMonitor: () => {
     if (get().view === 'room' && !get().transitioning) set({ view: 'monitor', transitioning: true, monitorHovered: false })
   },

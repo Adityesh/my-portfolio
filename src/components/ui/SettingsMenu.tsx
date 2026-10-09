@@ -27,6 +27,8 @@ function SettingsMenu() {
   const rawDrift = useSettingsStore((s) => s.cameraDrift)
   const rawDust = useSettingsStore((s) => s.dust)
   const sound = useSettingsStore((s) => s.sound)
+  const roomLight = useAppStore((s) => s.roomLight)
+  const setRoomLight = useAppStore((s) => s.setRoomLight)
 
   // Close on Esc (returning focus to the button) or on a click outside the menu.
   useEffect(() => {
@@ -99,6 +101,7 @@ function SettingsMenu() {
             disabled={!settings.animations}
             onChange={setDust}
           />
+          <ToggleSwitch label="Room light" description="Same as the switch by the door" checked={roomLight} onChange={setRoomLight} />
           <ToggleSwitch label="Sound" description="Sound effects when you poke things" checked={sound} onChange={setSound} />
           <SegmentedControl
             label="Frame rate"

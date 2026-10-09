@@ -74,6 +74,12 @@ export const PROPS = {
 /** Door on the x-min wall (z range and top edge). */
 export const DOOR = { minZ: 1.92, maxZ: 4.57, topY: 4.98 } as const
 
+/** Light switch: on the x-min wall between the whiteboard and the door, at switch height; faces +x. */
+export const LIGHT_SWITCH: Vec3 = [LEFT_WALL_X + 0.01, 2.3, 1.62]
+
+/** Ceiling light (switched on by the light switch): centre of the room, just under the wall tops. */
+export const CEILING_LIGHT: Vec3 = [0.1, 6.3, 0.2]
+
 /** Neon name sign: on the x-min wall, centred above the door and scaled to fit within its width; faces +x. */
 export const NAME_SIGN_CENTER: Vec3 = [LEFT_WALL_X + 0.03, 5.65, (DOOR.minZ + DOOR.maxZ) / 2]
 export const NAME_SIGN_MAX_WIDTH = (DOOR.maxZ - DOOR.minZ) * 0.92

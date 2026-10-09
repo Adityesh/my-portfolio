@@ -15,6 +15,7 @@ import Curtains from './Curtains.tsx'
 import DustMotes from './DustMotes.tsx'
 import { IntroContext } from './introTimeline.ts'
 import LavaLamp from './LavaLamp.tsx'
+import LightSwitch from './LightSwitch.tsx'
 import Lights from './Lights.tsx'
 import MonitorHitArea from './MonitorHitArea.tsx'
 import NeonNameSign from './NeonNameSign.tsx'
@@ -73,6 +74,7 @@ function Experience() {
       <BedLedStrip glow={config.fullLights} />
       <StringLights animate={animations} glow={config.fullLights} />
       <MonitorHitArea />
+      <LightSwitch />
       {socials.map((social) => (
         <SocialIcon3D key={social.id} social={social} />
       ))}

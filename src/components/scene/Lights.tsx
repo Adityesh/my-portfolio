@@ -1,12 +1,12 @@
 import { Environment } from '@react-three/drei'
-import { useFrame } from '@react-three/fiber'
-import { useRef, useState } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
+import { useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js'
+import { useAppStore } from '../../store/useAppStore.ts'
 import Headlights from './Headlights.tsx'
 import { INTRO, lightLevel, screenLevel, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
-import { DESK, FLOOR_Y, LAMP_BULB, LEFT_WALL_X, SCREEN_CENTER, SCREEN_SIZE, WINDOW_CENTER } from './roomLayout.ts'
-
+import { CEILING_LIGHT, DESK, FLOOR_Y, LAMP_BULB, LEFT_WALL_X, SCREEN_CENTER, SCREEN_SIZE, WINDOW_CENTER } from './roomLayout.ts'
 // Required once for rectAreaLight to affect MeshStandardMaterial.
 RectAreaLightUniformsLib.init()
 
@@ -23,6 +23,13 @@ const INTENSITY = {
   monitorBacklight: 3,
   deskUnderglow: 4,
 }
+
+// Room light (the wall switch): a warm ceiling bulb, plus a lift in ambient and environment so the shadowed
+// corners open up too. Always mounted (at 0 when off) so switching doesn't change the light count and recompile shaders.
+const ROOM_LIGHT = { ceiling: 40, ambient: 0.35, environment: 0.45, color: '#ffd9a8', ambientColor: '#ffe6c7' }
+const NIGHT_AMBIENT_COLOR = '#8a9cff'
+// How quickly the room light fades on/off (damping rate; higher is snappier, ~0.3 s here).
+const ROOM_LIGHT_FADE = 12
 
 // LED colours for the desk setup.
 const BACKLIGHT_COLOR = '#8b5cf6'
@@ -65,15 +72,36 @@ function Lights({ lite, shadows }: LightsProps) {
   const monitorBacklight = useRef<THREE.PointLight>(null)
   const deskUnderglow = useRef<THREE.RectAreaLight>(null)
   const ledStrip = useRef<THREE.MeshBasicMaterial>(null)
+  const ceiling = useRef<THREE.PointLight>(null)
   const introDone = useRef(false)
+  const invalidate = useThree((state) => state.invalidate)
+  const roomLight = useAppStore((state) => state.roomLight)
+  // 0 = night (switch off), 1 = room light fully on.
+  const switchLevel = useRef(0)
+  const nightAmbient = useMemo(() => new THREE.Color(NIGHT_AMBIENT_COLOR), [])
+  const litAmbient = useMemo(() => new THREE.Color(ROOM_LIGHT.ambientColor), [])
 
-  // Intro: monitor light follows the screen flicker, room lights fade up after it.
-  useFrame((state) => {
-    if (introDone.current) return
+  // Intro: monitor light follows the screen flicker, room lights fade up after it. Afterwards this only does
+  // work while the room light is fading between off and on.
+  useFrame((state, delta) => {
+    const target = roomLight ? 1 : 0
+    const fading = switchLevel.current !== target
+    if (introDone.current && !fading) return
+    if (fading) {
+      const next = THREE.MathUtils.damp(switchLevel.current, target, ROOM_LIGHT_FADE, delta)
+      switchLevel.current = Math.abs(next - target) < 0.002 ? target : next
+      // Nothing else may be requesting frames (animations off), so keep the fade going.
+      invalidate()
+    }
+    const lit = switchLevel.current
     const t = getTime()
     const room = lightLevel(t)
     const screen = screenLevel(t)
-    if (ambient.current) ambient.current.intensity = INTENSITY.ambient * room
+    if (ambient.current) {
+      ambient.current.intensity = (INTENSITY.ambient + ROOM_LIGHT.ambient * lit) * room
+      ambient.current.color.lerpColors(nightAmbient, litAmbient, lit)
+    }
+    if (ceiling.current) ceiling.current.intensity = ROOM_LIGHT.ceiling * lit * room
     if (monitorArea.current) monitorArea.current.intensity = INTENSITY.monitorArea * screen
     if (monitorFill.current) monitorFill.current.intensity = INTENSITY.monitorFill * screen
     if (windowSpot.current) windowSpot.current.intensity = INTENSITY.windowSpot * room
@@ -83,14 +111,14 @@ function Lights({ lite, shadows }: LightsProps) {
     if (monitorBacklight.current) monitorBacklight.current.intensity = INTENSITY.monitorBacklight * screen
     if (deskUnderglow.current) deskUnderglow.current.intensity = INTENSITY.deskUnderglow * screen
     if (ledStrip.current) ledStrip.current.color.set(UNDERGLOW_COLOR).multiplyScalar(STRIP_BRIGHTNESS * screen)
-    state.scene.environmentIntensity = INTENSITY.environment * room
+    state.scene.environmentIntensity = (INTENSITY.environment + ROOM_LIGHT.environment * lit) * room
     if (t > INTRO.total) introDone.current = true
   })
 
   return (
     <>
       <primitive object={windowTarget} />
-      <ambientLight ref={ambient} intensity={0} color="#8a9cff" />
+      <ambientLight ref={ambient} intensity={0} color={NIGHT_AMBIENT_COLOR} />
       {/* Self-hosted "Dikhololo Night" HDRI (Poly Haven, CC0), downscaled to 256x128; same image as drei's "night" preset. */}
       <Environment files="/hdri/night_256.hdr" environmentIntensity={0} />
 
@@ -135,6 +163,9 @@ function Lights({ lite, shadows }: LightsProps) {
           color="#ffc58a"
         />
       )}
+
+      {/* Ceiling light, switched by the wall switch by the door (off by default). */}
+      <pointLight ref={ceiling} position={CEILING_LIGHT} intensity={0} distance={16} color={ROOM_LIGHT.color} />
 
       {/* Bedside lamp: warm pool around the nightstand and bed. */}
       <pointLight ref={lamp} position={LAMP_BULB} intensity={0} distance={5} color="#ffae5c" />

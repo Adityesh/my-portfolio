@@ -81,6 +81,33 @@ function loadClip(ctx: AudioContext, id: SoundId): Promise<Clip> {
   return clip
 }
 
+// Switch click, synthesised (no file): a very short burst of noise through a band-pass filter, decaying fast.
+const CLICK = { seconds: 0.035, decay: 0.006, frequency: 2600, q: 1.4, volume: 0.9 }
+let clickNoise: AudioBuffer | null = null
+
+/** A soft mechanical click, e.g. a light switch. `pitch` scales the filter frequency (a little lower sounds heavier). */
+export function playClick(pitch = 1): void {
+  const ctx = getContext()
+  if (!ctx) return
+  if (!clickNoise) {
+    const length = Math.round(ctx.sampleRate * CLICK.seconds)
+    clickNoise = ctx.createBuffer(1, length, ctx.sampleRate)
+    const data = clickNoise.getChannelData(0)
+    for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * CLICK.decay))
+  }
+  const source = ctx.createBufferSource()
+  source.buffer = clickNoise
+  const filter = ctx.createBiquadFilter()
+  filter.type = 'bandpass'
+  filter.frequency.value = CLICK.frequency * pitch
+  filter.Q.value = CLICK.q
+  const gain = ctx.createGain()
+  gain.gain.value = CLICK.volume * MASTER_VOLUME
+  source.connect(filter).connect(gain).connect(ctx.destination)
+  source.onended = () => gain.disconnect()
+  source.start()
+}
+
 /** Plays a sound. `rate` shifts pitch and speed together (1 = original). Failures are silent. */
 export function playSound(id: SoundId, { rate = 1, volume = 1 }: { rate?: number; volume?: number } = {}): void {
   const ctx = getContext()

@@ -55,6 +55,7 @@ src/
       Effects.tsx           # EffectComposer: N8AO, bloom, tone mapping, grain (each toggled by quality level)
       PerformanceGovernor.tsx # frame pacing (30/60) and automatic quality stepping
       MonitorHitArea.tsx    # invisible plane over the screen that opens the projects view
+      LightSwitch.tsx       # wall switch by the door: toggles the ceiling light (store roomLight), click sound, locator LED
       MonitorScreen.tsx     # canvas texture of code typing itself on the screen (text from data/screenCode.ts)
       SocialIcon3D.tsx      # neon wall sign: extruded SVG logo, hover/tap pulse, click opens url
       NeonNameSign.tsx      # name sign (self-hosted Pacifico font)
@@ -70,7 +71,7 @@ src/
       ProjectCard.tsx, TagChip.tsx, BackButton.tsx
       LoadingScreen.tsx     # solid -> blurred while loading, then focus-pull reveal
       FallbackView.tsx      # plain 2D page for no-WebGL / low-memory devices
-      SettingsMenu.tsx      # hamburger menu: animations, frame rate, quality, camera drift, dust, sound, debug, credits
+      SettingsMenu.tsx      # hamburger menu: animations, frame rate, quality, camera drift, dust, room light, sound, debug, credits
       SegmentedControl.tsx, ToggleSwitch.tsx
       DebugOverlay.tsx      # FPS / renderer stats panel
       SocialLinks.tsx       # visually hidden real links (keyboard / screen readers / SEO)
@@ -89,9 +90,9 @@ src/
     useSceneSettings.ts     # visitor settings with automatic defaults filled in
     usePcRgb.ts             # RGB cycling on the PC's glass panel
   audio/
-    sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch); files in public/sounds/
+    sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch, synthesised switch click); files in public/sounds/
   store/
-    useAppStore.ts          # view ('room' | 'monitor'), transitions, loading, sceneReady, debug stats, frame cap, quality
+    useAppStore.ts          # view ('room' | 'monitor'), roomLight, transitions, loading, sceneReady, debug stats, frame cap, quality
     useSettingsStore.ts     # persisted visitor preferences (localStorage with safe fallback)
     quality.ts              # quality levels and what each turns on; ?diag= flags
 public/
@@ -109,7 +110,7 @@ vercel.json                 # cache and security headers
 ## Core behavior
 
 1. **Camera:** orthographic, driven by drei `CameraControls` in `CameraRig.tsx`. It views the room's open corner (azimuth 45°). Zoom is computed from viewport size so the room fits in portrait and landscape (`useResponsiveCamera.ts`). Rotation and zoom are limited so the cut-away sides always face the camera. On load the camera eases in from a rotated, zoomed-out pose. After inactivity it drifts gently (this can be turned off in settings).
-2. **Lighting:** late-night mood where the monitor is the main light source. Lights include ambient, monitor area/fill/backlight, a window spotlight with shadows, a window glow, a desk lamp and a desk underglow. The environment uses a self-hosted HDRI at low intensity. Final intensities live in `INTENSITY` in `Lights.tsx`, and the intro fades them up from 0. Bloomable elements (neon, string lights, screen) use unlit, non-tone-mapped materials with values above 1.
+2. **Lighting:** late-night mood where the monitor is the main light source. Lights include ambient, monitor area/fill/backlight, a window spotlight with shadows, a window glow, a desk lamp and a desk underglow. The environment uses a self-hosted HDRI at low intensity. Final intensities live in `INTENSITY` in `Lights.tsx`, and the intro fades them up from 0. Bloomable elements (neon, string lights, screen) use unlit, non-tone-mapped materials with values above 1. The wall switch by the door (or "Room light" in the settings menu) fades in a warm ceiling light plus extra ambient/environment (`ROOM_LIGHT` in `Lights.tsx`); that light is always mounted at 0 so toggling never changes the light count or recompiles shaders. The wall clock shows the visitor's local time.
 3. **Monitor click:** `MonitorHitArea` (an invisible plane, larger on touch devices) calls `openMonitor()`. A drag doesn't count as a click. `CameraRig` animates to face the screen head-on, then `ProjectOverlay` fades in.
 4. **Back:** `BackButton` and the Esc key call `closeMonitor()`, which reverses the animation to `'room'`.
 5. **Project overlay:** regular DOM, not in-canvas HTML. It is styled like the editor on the in-room screen so the zoom flows into it. Grid: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`. The whole card links to `url`, and a separate "Code" link goes to `source`.
