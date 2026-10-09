@@ -30,6 +30,8 @@ function SettingsMenu() {
   const sound = useSettingsStore((s) => s.sound)
   const timeOfDay = useSettingsStore((s) => s.timeOfDay)
   const setTimeOfDay = useSettingsStore((s) => s.setTimeOfDay)
+  const music = useAppStore((s) => s.music)
+  const setMusic = useAppStore((s) => s.setMusic)
   const roomLight = useAppStore((s) => s.roomLight)
   const setRoomLight = useAppStore((s) => s.setRoomLight)
 
@@ -114,6 +116,13 @@ function SettingsMenu() {
           />
           <ToggleSwitch label="Room light" description="Same as the switch by the door" checked={roomLight} onChange={setRoomLight} />
           <ToggleSwitch label="Sound" description="Sound effects when you poke things" checked={sound} onChange={setSound} />
+          <ToggleSwitch
+            label="Music"
+            description="Lo-fi from the headphones on the desk"
+            checked={sound && music}
+            disabled={!sound}
+            onChange={setMusic}
+          />
           <SegmentedControl
             label="Frame rate"
             description="Auto uses 60 when the device keeps up"

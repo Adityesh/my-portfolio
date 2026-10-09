@@ -83,6 +83,9 @@ function Lights({ lite, shadows }: LightsProps) {
   const roomLight = useAppStore((state) => state.roomLight)
   // 0 = night (switch off), 1 = room light fully on.
   const switchLevel = useRef(0)
+  // Bedside lamp (tap the lamp): 1 = on (the default), 0 = off.
+  const bedLamp = useAppStore((state) => state.bedLamp)
+  const lampLevel = useRef(1)
   const nightAmbient = useMemo(() => new THREE.Color(NIGHT_AMBIENT_COLOR), [])
   const litAmbient = useMemo(() => new THREE.Color(ROOM_LIGHT.ambientColor), [])
   const dayAmbient = useMemo(() => new THREE.Color(DAYLIGHT.ambientColor), [])
@@ -92,12 +95,17 @@ function Lights({ lite, shadows }: LightsProps) {
   // work while the room light is fading or the sky changes.
   useFrame((state, delta) => {
     const target = roomLight ? 1 : 0
-    const fading = switchLevel.current !== target
+    const lampTarget = bedLamp ? 1 : 0
+    const fading = switchLevel.current !== target || lampLevel.current !== lampTarget
     if (introDone.current && !fading && seenSky.current === sky.version) return
     seenSky.current = sky.version
     if (fading) {
-      const next = THREE.MathUtils.damp(switchLevel.current, target, ROOM_LIGHT_FADE, delta)
-      switchLevel.current = Math.abs(next - target) < 0.002 ? target : next
+      const ease = (from: number, to: number) => {
+        const next = THREE.MathUtils.damp(from, to, ROOM_LIGHT_FADE, delta)
+        return Math.abs(next - to) < 0.002 ? to : next
+      }
+      switchLevel.current = ease(switchLevel.current, target)
+      lampLevel.current = ease(lampLevel.current, lampTarget)
       // Nothing else may be requesting frames (animations off), so keep the fade going.
       invalidate()
     }
@@ -122,7 +130,7 @@ function Lights({ lite, shadows }: LightsProps) {
       windowGlow.current.intensity = INTENSITY.windowGlow * (1 + DAYLIGHT.windowGlow * day) * room
       windowGlow.current.color.copy(sky.windowLight)
     }
-    if (lamp.current) lamp.current.intensity = INTENSITY.lamp * room
+    if (lamp.current) lamp.current.intensity = INTENSITY.lamp * lampLevel.current * room
     // The LEDs come on with the monitor.
     if (monitorBacklight.current) monitorBacklight.current.intensity = INTENSITY.monitorBacklight * screen
     if (deskUnderglow.current) deskUnderglow.current.intensity = INTENSITY.deskUnderglow * screen

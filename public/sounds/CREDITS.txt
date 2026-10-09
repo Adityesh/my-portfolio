@@ -1,3 +1,4 @@
-Sound effects.
+Sound effects and music. Both are CC0 1.0 (public domain dedication), supplied by the site owner; no attribution required.
 
-meow.mp3  Cat meow, supplied by the site owner. Source and license: TODO (confirm it may be served on a public site).
+meow.mp3  Cat meow (tap the cat).
+lofi.mp3  Lo-fi music loop (tap the headphones on the desk).

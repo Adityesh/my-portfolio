@@ -6,7 +6,7 @@ import { playSound, preloadSounds, type SoundId } from '../../audio/sfx.ts'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 import { useSettingsStore } from '../../store/useSettingsStore.ts'
-import CatHearts, { type HeartBurst } from './CatHearts.tsx'
+import FloatingSymbols, { type SymbolBurst } from './FloatingSymbols.tsx'
 import ContactBlob from './ContactBlob.tsx'
 import FittedModel from './FittedModel.tsx'
 import { useAnimationsEnabled } from './introTimeline.ts'
@@ -84,7 +84,7 @@ function Cat() {
   const blob = useRef<THREE.Mesh>(null)
   const reaction = useRef<Reaction | null>(null)
   const taps = useRef<number[]>([])
-  const hearts = useRef<HeartBurst[]>([])
+  const hearts = useRef<SymbolBurst[]>([])
   const lookYaw = useRef(0)
   const nextGlance = useRef(now() + GLANCE.minGap)
   const sound = useSettingsStore((state) => state.sound)
@@ -196,7 +196,7 @@ function Cat() {
         </group>
       </group>
       <ContactBlob ref={blob} position={[0, BLOB.lift, BLOB.offsetZ]} size={BLOB.size} opacity={BLOB.opacity} />
-      <CatHearts bursts={hearts} origin={HEART_ORIGIN} animate={animate} />
+      <FloatingSymbols shape="heart" color="#ff7aa8" bursts={hearts} origin={HEART_ORIGIN} duration={1.4} rise={0.45} animate={animate} />
 
       {/* Invisible hit box (larger on touch devices). */}
       <mesh

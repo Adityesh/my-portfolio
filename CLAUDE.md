@@ -43,9 +43,13 @@ src/
       SceneCanvas.tsx       # <Canvas> (frameloop="demand", dpr from quality level); lazy-loaded so the fallback never downloads three.js
       Experience.tsx        # camera rig, lights, room, props, contact shadows, lazy Effects
       Room.tsx              # gltfjsx-generated room model (water bottle cut out of the merged mesh and moved)
-      RoomProps.tsx         # rug, mug, plant, whiteboard, headphones placement + small idle animations
+      RoomProps.tsx         # rug, plant, whiteboard placement + small idle animations; renders Cat, Mug, Headphones
       Cat.tsx               # the cat: breathing, idle glances, turns toward the pointer, hops on tap, spins on 3 quick taps
-      CatHearts.tsx         # hearts floating up from the cat when tapped
+      FloatingSymbols.tsx   # hearts (cat) and music notes (headphones) that pop in and float up
+      Mug.tsx               # mug with steam: tap for a sip (lift, tilt, clink) and a puff of fresh steam
+      Headphones.tsx        # tap to play/stop the lo-fi music (audio/music.ts); bob + notes while playing
+      BedsideLamp.tsx       # hit box on the nightstand lamp: tap to switch it off/on (store bedLamp, faded in Lights.tsx)
+      useTapTarget.ts       # shared tap handling for room objects (drag tolerance, room view only, cursor, redraw)
       ContactBlob.tsx       # soft fake contact shadow for objects that cast no real shadow
       FittedModel.tsx       # loads a prop GLB and scales it to a real-world size
       roomLayout.ts         # world-space positions of room features (walls, desk, screen, window...)
@@ -60,7 +64,8 @@ src/
       MonitorScreen.tsx     # canvas texture of code typing itself on the screen (text from data/screenCode.ts)
       SocialIcon3D.tsx      # neon wall sign: extruded SVG logo, hover/tap pulse, click opens url
       NeonNameSign.tsx      # name sign (self-hosted Pacifico font)
-      Clock.tsx, Curtains.tsx, LavaLamp.tsx, StringLights.tsx, BedLedStrip.tsx, WhiteboardDrawing.tsx, MugSteam.tsx
+      Clock.tsx, Curtains.tsx, StringLights.tsx, BedLedStrip.tsx, WhiteboardDrawing.tsx, MugSteam.tsx
+      LavaLamp.tsx          # shelf lava lamp: tap for the next colour theme and a short wax speed-up
       WindowBackdrop.tsx    # sky shader (gradient, moon, sun) driven by the time of day
       WindowStars.tsx, WindowCloud.tsx, WindowShaft.tsx, Headlights.tsx, DustMotes.tsx
       skyTimeline.ts        # time-of-day keyframes (sky colours, sun/moon/stars, daylight) and the shared `sky` state
@@ -75,7 +80,7 @@ src/
       ProjectCard.tsx, TagChip.tsx, BackButton.tsx
       LoadingScreen.tsx     # solid -> blurred while loading, then focus-pull reveal
       FallbackView.tsx      # plain 2D page for no-WebGL / low-memory devices
-      SettingsMenu.tsx      # hamburger menu: animations, frame rate, quality, camera drift, dust, time of day, room light, sound, debug, credits
+      SettingsMenu.tsx      # hamburger menu: animations, frame rate, quality, camera drift, dust, time of day, room light, sound, music, debug, credits
       SegmentedControl.tsx, ToggleSwitch.tsx
       DebugOverlay.tsx      # FPS / renderer stats panel
       SocialLinks.tsx       # visually hidden real links (keyboard / screen readers / SEO)
@@ -95,9 +100,10 @@ src/
     usePcRgb.ts             # RGB cycling on the PC's glass panel
     useSkyHour.ts           # hour the window shows: live local time, menu preset, or ?time= override
   audio/
-    sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch, synthesised switch click); files in public/sounds/
+    sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch; synthesised click, clink, bloop); files in public/sounds/
+    music.ts                # lo-fi loop streamed with an <audio> element; follows store music + Sound setting, fades, pauses when hidden
   store/
-    useAppStore.ts          # view ('room' | 'monitor'), roomLight, transitions, loading, sceneReady, debug stats, frame cap, quality
+    useAppStore.ts          # view ('room' | 'monitor'), roomLight, bedLamp, music, transitions, loading, sceneReady, debug stats, frame cap, quality
     useSettingsStore.ts     # persisted visitor preferences (localStorage with safe fallback)
     quality.ts              # quality levels and what each turns on; ?diag= flags
     timeOfDay.ts            # time-of-day setting, preset hours, labels
@@ -107,7 +113,7 @@ public/
   draco/                    # self-hosted Draco decoder
   hdri/night_256.hdr        # self-hosted environment map
   fonts/                    # Pacifico (SIL OFL)
-  sounds/                   # sound effects (meow.mp3; sources in sounds/CREDITS.txt)
+  sounds/                   # CC0 meow.mp3 and lofi.mp3 (see sounds/CREDITS.txt)
   og-image.jpg, favicon.svg, robots.txt
 .env.development / .env.production  # VITE_SITE_URL, used in index.html for canonical, Open Graph and JSON-LD
 vercel.json                 # cache and security headers
@@ -210,4 +216,4 @@ The original build order (all done, 22 commits on `feat/3d-portfolio`):
 - When changing camera positions or light intensities, state the old and new values so they are easy to tune.
 - Run `npm run build` (and `npm run lint`) after structural changes to catch type errors.
 - If the production URL changes, update `.env.production`.
-- Third-party models: room (CC BY 4.0, amurin; credited in `data/credits.ts`, shown in the settings menu), wall clock (Sketchfab Standard, hitheredearjohn), and CC0 props (rug, mug, plant, whiteboard, cat, headphones, curtains, lava lamp; no credit needed). Sound: `public/sounds/meow.mp3`, supplied by the owner; **open item:** record its source and license in `public/sounds/CREDITS.txt` before deploying. **Open item:** the owner must confirm that the clock's license allows serving the GLB on a public site. The site is already deployed. Source files live in `models-src/` (gitignored, not present in this checkout).
+- Third-party models: room (CC BY 4.0, amurin; credited in `data/credits.ts`, shown in the settings menu), wall clock (Sketchfab Standard, hitheredearjohn), and CC0 props (rug, mug, plant, whiteboard, cat, headphones, curtains, lava lamp; no credit needed). Sound: `public/sounds/meow.mp3` and `public/sounds/lofi.mp3`, supplied by the owner, both CC0 (`public/sounds/CREDITS.txt`). `lofi.mp3` is 4.4 MB at 256 kbps (streamed only once the music is switched on); re-encoding to ~128 kbps would halve it. **Open item:** the owner must confirm that the clock's license allows serving the GLB on a public site. The site is already deployed. Source files live in `models-src/` (gitignored, not present in this checkout).

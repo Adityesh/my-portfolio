@@ -41,8 +41,8 @@ export function preloadSounds(ids: SoundId[]): void {
   ids.forEach((id) => void fetchFile(id).catch(() => undefined))
 }
 
-/** Created on first use, inside a tap, so browsers allow it to start. */
-function getContext(): AudioContext | null {
+/** Shared audio context, created on first use inside a tap so browsers allow it to start (also used by music.ts). */
+export function getContext(): AudioContext | null {
   if (!context) {
     const Ctor = window.AudioContext ?? (window as WindowWithWebkitAudio).webkitAudioContext
     if (!Ctor) return null
@@ -106,6 +106,57 @@ export function playClick(pitch = 1): void {
   source.connect(filter).connect(gain).connect(ctx.destination)
   source.onended = () => gain.disconnect()
   source.start()
+}
+
+// Ceramic clink (the mug set down): a few inharmonic sine partials with a fast decay, like a struck cup.
+const CLINK = { partials: [2350, 3870, 5620], gains: [1, 0.5, 0.25], decay: 0.12, volume: 0.6 }
+// Lava lamp "bloop": a soft sine that slides up, like a bubble rising.
+const BLOOP = { from: 260, to: 620, seconds: 0.18, volume: 0.5 }
+
+/** Plays decaying sine partials (frequencies in Hz, relative gains). */
+function playPartials(frequencies: number[], gains: number[], decay: number, volume: number): void {
+  const ctx = getContext()
+  if (!ctx) return
+  const now = ctx.currentTime
+  const out = ctx.createGain()
+  out.gain.value = volume * MASTER_VOLUME
+  out.connect(ctx.destination)
+  frequencies.forEach((frequency, i) => {
+    const osc = ctx.createOscillator()
+    osc.frequency.value = frequency
+    const env = ctx.createGain()
+    env.gain.setValueAtTime(0, now)
+    env.gain.linearRampToValueAtTime(gains[i], now + 0.003)
+    env.gain.exponentialRampToValueAtTime(0.0001, now + decay * (1 + i * 0.4))
+    osc.connect(env).connect(out)
+    osc.start(now)
+    osc.stop(now + decay * 3)
+  })
+  window.setTimeout(() => out.disconnect(), decay * 3000 + 100)
+}
+
+/** Ceramic clink. `pitch` scales every partial (a touch of variation keeps repeats natural). */
+export function playClink(pitch = 1): void {
+  playPartials(CLINK.partials.map((f) => f * pitch), CLINK.gains, CLINK.decay, CLINK.volume)
+}
+
+/** Soft rising bubble sound. */
+export function playBloop(pitch = 1): void {
+  const ctx = getContext()
+  if (!ctx) return
+  const now = ctx.currentTime
+  const osc = ctx.createOscillator()
+  osc.type = 'sine'
+  osc.frequency.setValueAtTime(BLOOP.from * pitch, now)
+  osc.frequency.exponentialRampToValueAtTime(BLOOP.to * pitch, now + BLOOP.seconds)
+  const env = ctx.createGain()
+  env.gain.setValueAtTime(0, now)
+  env.gain.linearRampToValueAtTime(BLOOP.volume * MASTER_VOLUME, now + 0.02)
+  env.gain.exponentialRampToValueAtTime(0.0001, now + BLOOP.seconds * 1.6)
+  osc.connect(env).connect(ctx.destination)
+  osc.onended = () => env.disconnect()
+  osc.start(now)
+  osc.stop(now + BLOOP.seconds * 1.8)
 }
 
 /** Plays a sound. `rate` shifts pitch and speed together (1 = original). Failures are silent. */

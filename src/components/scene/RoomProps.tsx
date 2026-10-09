@@ -3,8 +3,9 @@ import { useRef } from 'react'
 import * as THREE from 'three'
 import Cat from './Cat.tsx'
 import FittedModel from './FittedModel.tsx'
+import Headphones from './Headphones.tsx'
 import { useAnimationsEnabled } from './introTimeline.ts'
-import MugSteam from './MugSteam.tsx'
+import Mug from './Mug.tsx'
 import { PROPS } from './roomLayout.ts'
 import WhiteboardDrawing from './WhiteboardDrawing.tsx'
 
@@ -28,22 +29,8 @@ const rugMaterial = (material: THREE.MeshStandardMaterial) => {
   material.roughness = 1
   material.metalness = 0
 }
-/** Faint self-glow from the texture, for dark props that would otherwise vanish in the dim room. */
-const faintGlow = (intensity: number) => (material: THREE.MeshStandardMaterial) => {
-  if (!material.map) return
-  material.emissiveMap = material.map
-  material.emissive.set('#ffffff')
-  material.emissiveIntensity = intensity
-}
-// Dark headphones on a dark desk.
-const visibleHeadphones = faintGlow(0.3)
-const ceramicMug = (material: THREE.MeshStandardMaterial) => {
-  material.color.set('#ece6dc')
-  material.roughness = 0.35
-  material.metalness = 0
-}
 
-/** Extra furniture and decor: rug, mug with steam, floor plant, cat, headphones and whiteboard. */
+/** Extra furniture and decor: rug, mug, floor plant, cat, headphones and whiteboard. */
 function RoomProps() {
   const animate = useAnimationsEnabled()
   const plant = useRef<THREE.Group>(null)
@@ -69,16 +56,7 @@ function RoomProps() {
         prepareMaterial={rugMaterial}
       />
 
-      <FittedModel
-        url="/models/mug.glb"
-        position={PROPS.mug.position}
-        rotation={[0, Math.PI * 0.25, 0]}
-        fit={{ axis: 'y', size: PROPS.mug.height }}
-        castShadow
-        prepareMaterial={ceramicMug}
-      >
-        {animate && <MugSteam rimHeight={PROPS.mug.height} />}
-      </FittedModel>
+      <Mug />
 
       <group ref={plant} position={PROPS.plant.position}>
         <FittedModel url="/models/plant.glb" fit={{ axis: 'y', size: PROPS.plant.height }} castShadow />
@@ -86,16 +64,7 @@ function RoomProps() {
 
       <Cat />
 
-      {/* Lying flat on the desk behind the mug (the model stands upright, so tip it onto its back). */}
-      <FittedModel
-        url="/models/headphones.glb"
-        position={PROPS.headphones.position}
-        rotation={[0, PROPS.headphones.turn, 0]}
-        modelRotation={[-Math.PI / 2, 0, 0]}
-        fit={{ axis: 'x', size: PROPS.headphones.width }}
-        castShadow
-        prepareMaterial={visibleHeadphones}
-      />
+      <Headphones />
 
       {/* Lies flat in the file: stand it up facing +x (into the room) against the x-min wall. */}
       <FittedModel

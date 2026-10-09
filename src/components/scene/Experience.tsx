@@ -8,6 +8,7 @@ import { useQuality } from '../../hooks/useQuality.ts'
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
 import { useSettingsStore } from '../../store/useSettingsStore.ts'
 import BedLedStrip from './BedLedStrip.tsx'
+import BedsideLamp from './BedsideLamp.tsx'
 import CameraRig from './CameraRig.tsx'
 import DebugStats from './DebugStats.tsx'
 import Clock from './Clock.tsx'
@@ -78,6 +79,7 @@ function Experience() {
       <StringLights animate={animations} glow={config.fullLights} />
       <MonitorHitArea />
       <LightSwitch />
+      <BedsideLamp />
       {socials.map((social) => (
         <SocialIcon3D key={social.id} social={social} />
       ))}

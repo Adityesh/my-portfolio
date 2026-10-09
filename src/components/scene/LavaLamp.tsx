@@ -1,9 +1,13 @@
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
+import { playBloop } from '../../audio/sfx.ts'
+import { useIsMobile } from '../../hooks/useIsMobile.ts'
+import { useSettingsStore } from '../../store/useSettingsStore.ts'
 import FittedModel from './FittedModel.tsx'
 import { lightLevel, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
 import { LAVA_LAMP } from './roomLayout.ts'
+import { useTapTarget } from './useTapTarget.ts'
 
 const MODEL_URL = '/models/lavalamp.glb'
 // Model bounds (in its own units): total height -1.389..5.334, glass column 1.39..4.61 with radius 1.
@@ -20,10 +24,21 @@ const GLASS_BOTTOM = (GLASS.minY - MODEL_MIN_Y) * SCALE
 const GLASS_TOP = (GLASS.maxY - MODEL_MIN_Y) * SCALE
 const GLASS_RADIUS = GLASS.radius * SCALE
 
-const GLASS_COLOR = '#ff2418'
-const WAX_COLOR = '#ff7a3d'
-const LIGHT_COLOR = '#ff3b2f'
+// Colour themes, cycled by tapping the lamp (the first is the default).
+const THEMES = [
+  { glass: '#ff2418', wax: '#ff7a3d', light: '#ff3b2f' },
+  { glass: '#1e6bff', wax: '#4fe3ff', light: '#2f7dff' },
+  { glass: '#22c93a', wax: '#d8ff4a', light: '#3cff5a' },
+  { glass: '#9b2cff', wax: '#ff5ad1', light: '#a64dff' },
+].map((theme) => ({ glass: new THREE.Color(theme.glass), wax: new THREE.Color(theme.wax), light: new THREE.Color(theme.light) }))
 const GLOW_INTENSITY = 2.4
+// How quickly the colours blend to a new theme (damping rate; ~0.5 s).
+const THEME_FADE = 6
+// A tap warms the wax up: blobs move this many times faster, easing back to normal over `seconds`.
+const BOIL = { speed: 3, seconds: 3 }
+// Hit box around the lamp (it's ~0.5 wide at the base); bigger on touch devices.
+const HIT_SIZE: [number, number, number] = [0.42, LAVA_LAMP.height * 1.05, 0.42]
+const HIT_PADDING_TOUCH = 1.4
 
 // Wax blobs: [radius as a fraction of the glass radius, speed, phase].
 const BLOBS: [number, number, number][] = [
@@ -39,8 +54,8 @@ const prepareLampMaterial = (material: THREE.MeshStandardMaterial, mesh: THREE.M
     mesh.visible = false
   } else if (material.name === GLASS_MATERIAL) {
     // Translucent liquid that glows, so the lamp reads as lit (and blooms) even in the dark room.
-    material.color.set(GLASS_COLOR)
-    material.emissive.set(GLASS_COLOR)
+    material.color.copy(THEMES[0].glass)
+    material.emissive.copy(THEMES[0].glass)
     material.emissiveIntensity = 0.9
     material.transparent = true
     material.opacity = 0.72
@@ -58,20 +73,62 @@ type LavaLampProps = {
   glow: boolean
 }
 
-/** Lava lamp on the shelf: glowing red glass with slowly rising and sinking wax blobs. */
+/** Lava lamp on the shelf: glowing glass with slowly rising and sinking wax blobs. Tap to change its colour. */
 function LavaLamp({ glow }: LavaLampProps) {
   const animate = useAnimationsEnabled()
   const getTime = useIntroTime()
+  const isMobile = useIsMobile()
+  const sound = useSettingsStore((state) => state.sound)
+  const lamp = useRef<THREE.Group>(null)
   const blobs = useRef<(THREE.Mesh | null)[]>([])
   const light = useRef<THREE.PointLight>(null)
+  const glassMaterial = useRef<THREE.MeshStandardMaterial | null>(null)
   const waxMaterial = useMemo(
-    () => new THREE.MeshStandardMaterial({ color: WAX_COLOR, emissive: WAX_COLOR, emissiveIntensity: 1.4, roughness: 0.4 }),
+    () => new THREE.MeshStandardMaterial({ color: THEMES[0].wax, emissive: THEMES[0].wax, emissiveIntensity: 1.4, roughness: 0.4 }),
     [],
   )
   useEffect(() => () => waxMaterial.dispose(), [waxMaterial])
 
-  useFrame((state) => {
-    const t = animate ? state.clock.elapsedTime : 0
+  const theme = useRef(0)
+  // Blob clock: runs faster for a while after a tap.
+  const blobTime = useRef(0)
+  const boilStart = useRef(-Infinity)
+
+  const { bind } = useTapTarget(() => {
+    theme.current = (theme.current + 1) % THEMES.length
+    boilStart.current = performance.now() / 1000
+    if (sound) playBloop(THREE.MathUtils.randFloat(0.9, 1.15))
+  })
+
+  useFrame((_, delta) => {
+    // The glass material lives in the (cloned) model; find it once it has loaded.
+    if (!glassMaterial.current && lamp.current) {
+      lamp.current.traverse((child) => {
+        const mesh = child as THREE.Mesh
+        if (mesh.isMesh && (mesh.material as THREE.Material).name === GLASS_MATERIAL) {
+          glassMaterial.current = mesh.material as THREE.MeshStandardMaterial
+        }
+      })
+    }
+
+    // Blend toward the current theme (instantly with animations off).
+    const target = THEMES[theme.current]
+    const k = animate ? 1 - Math.exp(-THEME_FADE * delta) : 1
+    waxMaterial.color.lerp(target.wax, k)
+    waxMaterial.emissive.lerp(target.wax, k)
+    if (glassMaterial.current) {
+      glassMaterial.current.color.lerp(target.glass, k)
+      glassMaterial.current.emissive.lerp(target.glass, k)
+    }
+    if (light.current) {
+      light.current.color.lerp(target.light, k)
+      light.current.intensity = GLOW_INTENSITY * lightLevel(getTime())
+    }
+
+    const since = performance.now() / 1000 - boilStart.current
+    const boil = since < BOIL.seconds ? 1 - since / BOIL.seconds : 0
+    if (animate) blobTime.current += delta * (1 + (BOIL.speed - 1) * boil)
+    const t = blobTime.current
     const travel = GLASS_TOP - GLASS_BOTTOM
     BLOBS.forEach(([size, speed, phase], i) => {
       const blob = blobs.current[i]
@@ -88,11 +145,12 @@ function LavaLamp({ glow }: LavaLampProps) {
       const stretch = 1 + Math.sin(p * Math.PI) * 0.35
       blob.scale.set(r / stretch ** 0.5, r * stretch, r / stretch ** 0.5)
     })
-    if (light.current) light.current.intensity = GLOW_INTENSITY * lightLevel(getTime())
   })
 
+  const hitScale = isMobile ? HIT_PADDING_TOUCH : 1
+
   return (
-    <group position={LAVA_LAMP.position}>
+    <group ref={lamp} position={LAVA_LAMP.position}>
       <FittedModel url={MODEL_URL} fit={{ axis: 'y', size: LAVA_LAMP.height }} prepareMaterial={prepareLampMaterial} />
       {BLOBS.map((_, i) => (
         <mesh
@@ -111,9 +169,15 @@ function LavaLamp({ glow }: LavaLampProps) {
           position={[0.15, (GLASS_BOTTOM + GLASS_TOP) / 2, 0.15]}
           intensity={0}
           distance={3}
-          color={LIGHT_COLOR}
+          color={THEMES[0].light}
         />
       )}
+
+      {/* Invisible hit box. */}
+      <mesh position={[0, HIT_SIZE[1] / 2, 0]} {...bind}>
+        <boxGeometry args={[HIT_SIZE[0] * hitScale, HIT_SIZE[1], HIT_SIZE[2] * hitScale]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
     </group>
   )
 }

@@ -25,6 +25,10 @@ type AppState = {
   transitioning: boolean
   /** The ceiling light is on (wall switch by the door, or the settings menu). */
   roomLight: boolean
+  /** The bedside lamp is on (tap the lamp). */
+  bedLamp: boolean
+  /** Lo-fi music from the headphones is wanted (it only plays while Sound is on). */
+  music: boolean
   /** Pointer is over the monitor (room view only). */
   monitorHovered: boolean
   /** Asset loading, published by the scene (so UI doesn't import 3D libraries). */
@@ -42,6 +46,8 @@ type AppState = {
   /** Safety-net level replacing a level the visitor picked (cleared when they pick a level again). */
   qualityOverride: QualityLevel | null
   setRoomLight: (on: boolean) => void
+  setBedLamp: (on: boolean) => void
+  setMusic: (on: boolean) => void
   openMonitor: () => void
   closeMonitor: () => void
   finishTransition: () => void
@@ -58,6 +64,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   view: 'room',
   transitioning: false,
   roomLight: false,
+  bedLamp: true,
+  music: false,
   monitorHovered: false,
   // Active from the start: covers downloading the 3D code itself, before the scene can report progress.
   loading: { active: true, progress: 0 },
@@ -67,6 +75,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   quality: null,
   qualityOverride: null,
   setRoomLight: (roomLight) => set({ roomLight }),
+  setBedLamp: (bedLamp) => set({ bedLamp }),
+  setMusic: (music) => set({ music }),
   openMonitor: () => {
     if (get().view === 'room' && !get().transitioning) set({ view: 'monitor', transitioning: true, monitorHovered: false })
   },
