@@ -75,3 +75,12 @@ export const DOOR = { minZ: 1.92, maxZ: 4.57, topY: 4.98 } as const
 /** Neon name sign: on the x-min wall, centred above the door and scaled to fit within its width; faces +x. */
 export const NAME_SIGN_CENTER: Vec3 = [LEFT_WALL_X + 0.03, 5.65, (DOOR.minZ + DOOR.maxZ) / 2]
 export const NAME_SIGN_MAX_WIDTH = (DOOR.maxZ - DOOR.minZ) * 0.92
+
+/** Wall shelf above the desk (Estanteria_27): books stand at x -4.16..-2.56, leaving the right end free. */
+export const SHELF = { topY: 3.78, maxX: -1.72, minZ: -4.23, maxZ: -3.31 } as const
+
+/** Lava lamp: on the free right end of the shelf (clear of the books and the left curtain panel). */
+export const LAVA_LAMP = { position: [-2.12, SHELF.topY, -3.78] as Vec3, height: 1.1 }
+
+/** Bed frame (Cama_4). Its -x side faces the desk and its +z end (the foot) faces the camera. */
+export const BED = { minX: 1.39, maxX: 4.81, minZ: -4.14, maxZ: 3.04 } as const

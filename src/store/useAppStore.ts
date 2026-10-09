@@ -26,6 +26,8 @@ type AppState = {
   monitorHovered: boolean
   /** Asset loading, published by the scene (so UI doesn't import 3D libraries). */
   loading: { active: boolean; progress: number }
+  /** The scene has drawn its first frame. */
+  sceneReady: boolean
   debugStats: DebugStats | null
   /** Current animation frame cap and whether Auto picked it (published by the frame driver). */
   frameCap: { fps: number; auto: boolean } | null
@@ -34,6 +36,7 @@ type AppState = {
   finishTransition: () => void
   setMonitorHovered: (hovered: boolean) => void
   setLoading: (loading: { active: boolean; progress: number }) => void
+  markSceneReady: () => void
   setDebugStats: (stats: DebugStats | null) => void
   setFrameCap: (cap: { fps: number; auto: boolean } | null) => void
 }
@@ -44,6 +47,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   monitorHovered: false,
   // Active from the start: covers downloading the 3D code itself, before the scene can report progress.
   loading: { active: true, progress: 0 },
+  sceneReady: false,
   debugStats: null,
   frameCap: null,
   openMonitor: () => {
@@ -55,6 +59,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   finishTransition: () => set({ transitioning: false }),
   setMonitorHovered: (hovered) => set({ monitorHovered: hovered }),
   setLoading: (loading) => set({ loading }),
+  markSceneReady: () => set({ sceneReady: true }),
   setDebugStats: (debugStats) => set({ debugStats }),
   setFrameCap: (frameCap) => set({ frameCap }),
 }))

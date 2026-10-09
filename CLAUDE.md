@@ -134,4 +134,4 @@ Adding a project means editing `projects.ts` and dropping the screenshot in `pub
 - Ask before adding new dependencies beyond the stack above.
 - When changing camera positions or light intensities, state the old and new values so they are easy to tune.
 - Run `npm run build` after structural changes to catch type errors.
-- Third-party models: room (CC-BY 4.0, amurin; credit required on the site), wall clock (Sketchfab Standard, hitheredearjohn), and CC0 props (rug, mug, plant, whiteboard, cat, headphones, curtains; no credit needed). The owner must confirm the clock's license allows serving the GLB on a public site before deploying. Source files live in `models-src/` (gitignored).
+- Third-party models: room (CC-BY 4.0, amurin; credit required on the site), wall clock (Sketchfab Standard, hitheredearjohn), and CC0 props (rug, mug, plant, whiteboard, cat, headphones, curtains, lava lamp; no credit needed). The owner must confirm the clock's license allows serving the GLB on a public site before deploying. Source files live in `models-src/` (gitignored).

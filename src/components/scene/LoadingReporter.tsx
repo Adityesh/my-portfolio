@@ -8,10 +8,13 @@ function LoadingReporter() {
   const progress = useProgress((state) => state.progress)
   const setLoading = useAppStore((state) => state.setLoading)
 
+  const sceneReady = useAppStore((state) => state.sceneReady)
+
   useEffect(() => {
-    // drei reports "inactive" before any download starts; only finish once everything has actually loaded.
-    setLoading({ active: active || progress < 100, progress })
-  }, [active, progress, setLoading])
+    // drei reports "inactive" before any download starts; only finish once everything has loaded
+    // and the first frame has been drawn (compiling shaders can take a few seconds on slow GPUs).
+    setLoading({ active: active || progress < 100 || !sceneReady, progress })
+  }, [active, progress, sceneReady, setLoading])
 
   return null
 }

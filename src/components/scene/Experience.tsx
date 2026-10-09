@@ -6,6 +6,7 @@ import { socials } from '../../data/socials.ts'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
 import { useSettingsStore } from '../../store/useSettingsStore.ts'
+import BedLedStrip from './BedLedStrip.tsx'
 import CameraRig from './CameraRig.tsx'
 import DebugStats from './DebugStats.tsx'
 import Clock from './Clock.tsx'
@@ -13,11 +14,13 @@ import Curtains from './Curtains.tsx'
 import DustMotes from './DustMotes.tsx'
 import FrameDriver from './FrameDriver.tsx'
 import { IntroContext } from './introTimeline.ts'
+import LavaLamp from './LavaLamp.tsx'
 import Lights from './Lights.tsx'
 import MonitorHitArea from './MonitorHitArea.tsx'
 import NeonNameSign from './NeonNameSign.tsx'
 import Room from './Room.tsx'
 import RoomProps from './RoomProps.tsx'
+import SceneReady from './SceneReady.tsx'
 import { FLOOR_Y } from './roomLayout.ts'
 import SocialIcon3D from './SocialIcon3D.tsx'
 import StringLights from './StringLights.tsx'
@@ -50,6 +53,7 @@ function Experience() {
     <IntroContext.Provider value={intro}>
       {animations && <FrameDriver setting={frameRate} />}
       {debug && <DebugStats />}
+      <SceneReady />
       <CameraRig targetRef={roomRef} />
       <Lights lite={isMobile} />
       <group ref={roomRef}>
@@ -59,6 +63,8 @@ function Experience() {
       <RoomProps />
       <Curtains />
       <NeonNameSign />
+      <LavaLamp glow={!isMobile} />
+      <BedLedStrip glow={!isMobile} />
       <StringLights animate={animations} glow={!isMobile} />
       <MonitorHitArea />
       {socials.map((social) => (
