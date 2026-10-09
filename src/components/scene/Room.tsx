@@ -1,0 +1,69 @@
+/*
+Generated with gltfjsx 6.5.3 from models-src/room.glb:
+  npx gltfjsx models-src/room.glb --transform --types --keepnames --shadows --exportdefault
+Author: amurin (https://sketchfab.com/amurin)
+License: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+Source: https://sketchfab.com/3d-models/low-poly-isometric-room-56cf7d5811304608b5e6d724195c6ccd
+Title: Low Poly Isometric Room
+*/
+
+import { useGLTF } from '@react-three/drei'
+import type { ThreeElements } from '@react-three/fiber'
+import type * as THREE from 'three'
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
+
+const MODEL_URL = '/models/room.glb'
+
+type GLTFResult = GLTF & {
+  nodes: {
+    Object_4: THREE.Mesh
+    Object_5: THREE.Mesh
+    Object_6: THREE.Mesh
+    Object_16: THREE.Mesh
+    Object_31: THREE.Mesh
+    Object_34: THREE.Mesh
+    Object_37: THREE.Mesh
+    Object_42: THREE.Mesh
+    Object_55: THREE.Mesh
+  }
+  materials: {
+    pared: THREE.MeshStandardMaterial
+    suelo: THREE.MeshStandardMaterial
+    PaletteMaterial001: THREE.MeshStandardMaterial
+    base_cama: THREE.MeshStandardMaterial
+    pcinsidenormal: THREE.MeshStandardMaterial
+    screen: THREE.MeshStandardMaterial
+    PaletteMaterial002: THREE.MeshStandardMaterial
+    PaletteMaterial003: THREE.MeshStandardMaterial
+    libro: THREE.MeshStandardMaterial
+  }
+}
+
+function Room(props: ThreeElements['group']) {
+  const { nodes, materials } = useGLTF(MODEL_URL) as unknown as GLTFResult
+  return (
+    <group {...props} dispose={null}>
+      {/* Walls */}
+      <mesh name="Object_4" castShadow receiveShadow geometry={nodes.Object_4.geometry} material={materials.pared} position={[0.095, -0.373, 0.14]} scale={4.819} />
+      {/* Floor */}
+      <mesh name="Object_5" castShadow receiveShadow geometry={nodes.Object_5.geometry} material={materials.suelo} position={[0.095, -0.373, 0.14]} scale={4.819} />
+      {/* Most furniture, merged by --transform */}
+      <mesh name="Object_6" castShadow receiveShadow geometry={nodes.Object_6.geometry} material={materials.PaletteMaterial001} position={[0.095, -0.373, 0.14]} scale={4.819} />
+      <mesh name="Object_16" castShadow receiveShadow geometry={nodes.Object_16.geometry} material={materials.base_cama} position={[-1.049, -0.692, 1.149]} scale={1.419} />
+      {/* PC tower interior */}
+      <mesh name="Object_31" castShadow receiveShadow geometry={nodes.Object_31.geometry} material={materials.pcinsidenormal} position={[-3.958, 1.431, -3.489]} scale={0.077} />
+      {/* Monitor screen: separate mesh, target for the zoom-in click */}
+      <mesh name="Object_34" castShadow receiveShadow geometry={nodes.Object_34.geometry} material={materials.screen} position={[-3.781, 2.47, -1.132]} scale={1.456} />
+      {/* Mouse light */}
+      <mesh name="Object_37" castShadow receiveShadow geometry={nodes.Object_37.geometry} material={materials.PaletteMaterial002} position={[-2.793, 1.422, -2.237]} scale={[0.137, 0.04, 0.083]} />
+      {/* Keyboard keys */}
+      <mesh name="Object_42" castShadow receiveShadow geometry={nodes.Object_42.geometry} material={materials.PaletteMaterial003} position={[-2.859, 1.4, -1.158]} scale={[0.266, 0.019, 0.797]} />
+      {/* Books */}
+      <mesh name="Object_55" castShadow receiveShadow geometry={nodes.Object_55.geometry} material={materials.libro} position={[-2.771, 4.559, -3.744]} rotation={[Math.PI, 0, 2.849]} scale={[0.085, 0.433, 0.303]} />
+    </group>
+  )
+}
+
+useGLTF.preload(MODEL_URL)
+
+export default Room
