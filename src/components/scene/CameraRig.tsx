@@ -1,6 +1,6 @@
 import { CameraControls, CameraControlsImpl } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
-import { useEffect, useRef, type RefObject } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 import type * as THREE from 'three'
 import { CAMERA_AZIMUTH, CAMERA_POLAR, useResponsiveCamera } from '../../hooks/useResponsiveCamera.ts'
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
@@ -28,8 +28,19 @@ function CameraRig({ targetRef }: CameraRigProps) {
   const getTime = useIntroTime()
   const lastInput = useRef(0)
   const dom = useThree((state) => state.gl.domElement)
+  // The Canvas's orthographic camera (the default when this mounts). First-person views swap the default camera.
+  const getState = useThree((state) => state.get)
+  const [roomCamera] = useState(() => getState().camera)
   const view = useAppStore((state) => state.view)
+  const viewpoint = useAppStore((state) => state.viewpoint)
   const finishTransition = useAppStore((state) => state.finishTransition)
+
+  // First-person views use their own camera (PovCamera); park the room camera's controls meanwhile so drags
+  // there don't also rotate it.
+  useEffect(() => {
+    if (controlsRef.current) controlsRef.current.enabled = viewpoint === 'room'
+    lastInput.current = performance.now()
+  }, [viewpoint])
 
   useResponsiveCamera(controlsRef, targetRef, { intro: animate, view, onTransitionEnd: finishTransition })
 
@@ -61,8 +72,8 @@ function CameraRig({ targetRef }: CameraRigProps) {
   useFrame((state) => {
     const controls = controlsRef.current
     if (!controls || !animate || !cameraDrift || getTime() < INTRO.total) return
-    const { view: currentView, transitioning } = useAppStore.getState()
-    if (currentView !== 'room' || transitioning) {
+    const { view: currentView, transitioning, viewpoint: currentViewpoint } = useAppStore.getState()
+    if (currentView !== 'room' || transitioning || currentViewpoint !== 'room') {
       lastInput.current = performance.now()
       return
     }
@@ -75,7 +86,9 @@ function CameraRig({ targetRef }: CameraRigProps) {
     )
   })
 
-  return <CameraControls ref={controlsRef} makeDefault />
+  // Bound to the room camera explicitly: by default CameraControls follows whatever the default camera is, so
+  // while PovCamera is the default it would rebind to (and fight over) the first-person camera.
+  return <CameraControls ref={controlsRef} camera={roomCamera} makeDefault />
 }
 
 export default CameraRig

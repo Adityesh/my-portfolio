@@ -178,10 +178,12 @@ export function useResponsiveCamera(
     invalidate()
   }, [controlsRef, targetRef, width, height, invalidate, intro, view, onTransitionEnd])
 
-  // Finish a pending view change once the camera is visually there.
-  useFrame(({ camera }) => {
+  // Finish a pending view change once the camera is visually there. Checks the camera the controls drive (the
+  // room camera), not the default camera, which is the first-person camera while one of those views is showing.
+  useFrame(() => {
     const arrival = pending.current
-    if (!arrival) return
+    const camera = controlsRef.current?.camera as THREE.OrthographicCamera | undefined
+    if (!arrival || !camera) return
     const zoomClose = Math.abs(camera.zoom - arrival.zoom) / arrival.zoom < ARRIVE_ZOOM_TOLERANCE
     if (zoomClose && camera.position.distanceTo(arrival.position) < ARRIVE_DISTANCE) {
       pending.current = null

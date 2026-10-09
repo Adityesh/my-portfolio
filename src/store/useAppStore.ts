@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { QualityLevel } from './quality.ts'
+import { CUT_FADE_MS, CUT_HOLD_MS, type Viewpoint } from './viewpoints.ts'
 
 export type View = 'room' | 'monitor'
 
@@ -29,6 +30,10 @@ type AppState = {
   bedLamp: boolean
   /** Lo-fi music from the headphones is wanted (it only plays while Sound is on). */
   music: boolean
+  /** Camera viewpoint: the isometric room view or a first-person spot inside the room (room view only). */
+  viewpoint: Viewpoint
+  /** The screen is (going) dark for a camera cut between the room view and a first-person view. */
+  cutting: boolean
   /** Pointer is over the monitor (room view only). */
   monitorHovered: boolean
   /** Asset loading, published by the scene (so UI doesn't import 3D libraries). */
@@ -48,6 +53,8 @@ type AppState = {
   setRoomLight: (on: boolean) => void
   setBedLamp: (on: boolean) => void
   setMusic: (on: boolean) => void
+  /** Moves the camera: cuts through a fade between the room view and first person, glides between first-person spots. */
+  goToViewpoint: (viewpoint: Viewpoint) => void
   openMonitor: () => void
   closeMonitor: () => void
   finishTransition: () => void
@@ -60,12 +67,23 @@ type AppState = {
   setQualityOverride: (level: QualityLevel | null) => void
 }
 
+/** Fades the screen to dark, runs `change` while it's dark, then fades back in. */
+function cutThrough(change: () => void) {
+  useAppStore.setState({ cutting: true })
+  window.setTimeout(() => {
+    change()
+    window.setTimeout(() => useAppStore.setState({ cutting: false }), CUT_HOLD_MS)
+  }, CUT_FADE_MS)
+}
+
 export const useAppStore = create<AppState>((set, get) => ({
   view: 'room',
   transitioning: false,
   roomLight: false,
   bedLamp: true,
   music: false,
+  viewpoint: 'room',
+  cutting: false,
   monitorHovered: false,
   // Active from the start: covers downloading the 3D code itself, before the scene can report progress.
   loading: { active: true, progress: 0 },
@@ -77,8 +95,29 @@ export const useAppStore = create<AppState>((set, get) => ({
   setRoomLight: (roomLight) => set({ roomLight }),
   setBedLamp: (bedLamp) => set({ bedLamp }),
   setMusic: (music) => set({ music }),
+  goToViewpoint: (viewpoint) => {
+    const { view, transitioning, cutting, viewpoint: current } = get()
+    if (view !== 'room' || transitioning || cutting || viewpoint === current) return
+    // First person to first person: the perspective camera glides there.
+    if (current !== 'room' && viewpoint !== 'room') {
+      set({ viewpoint })
+      return
+    }
+    cutThrough(() => set({ viewpoint }))
+  },
   openMonitor: () => {
-    if (get().view === 'room' && !get().transitioning) set({ view: 'monitor', transitioning: true, monitorHovered: false })
+    const { view, transitioning, cutting, viewpoint } = get()
+    if (view !== 'room' || transitioning || cutting) return
+    const open = () => set({ view: 'monitor', transitioning: true, monitorHovered: false })
+    // From first person, cut back to the room camera (which then zooms into the screen) behind the fade.
+    if (viewpoint !== 'room') {
+      cutThrough(() => {
+        set({ viewpoint: 'room' })
+        open()
+      })
+      return
+    }
+    open()
   },
   closeMonitor: () => {
     if (get().view === 'monitor') set({ view: 'room', transitioning: true })

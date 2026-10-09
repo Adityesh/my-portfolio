@@ -54,6 +54,9 @@ src/
       FittedModel.tsx       # loads a prop GLB and scales it to a real-world size
       roomLayout.ts         # world-space positions of room features (walls, desk, screen, window...)
       CameraRig.tsx         # CameraControls: fitted room view, intro ease-in, idle drift, monitor zoom, rotation limits
+      PovCamera.tsx         # first-person viewpoints: perspective camera (default while mounted), glides between spots, drag-to-look with spring-back
+      PovEnclosure.tsx      # ceiling + the two missing walls, shown only in first-person views so the cut-away never shows the void
+      ViewpointHotspot.tsx  # glowing marker per viewpoint in the room view; tap to step in
       Lights.tsx            # dim late-night lighting, intensities faded in by the intro
       introTimeline.ts      # intro timings (lights fade up, monitor power-on flicker)
       Effects.tsx           # EffectComposer: N8AO, bloom, tone mapping, grain (each toggled by quality level)
@@ -85,6 +88,8 @@ src/
       DebugOverlay.tsx      # FPS / renderer stats panel
       SocialLinks.tsx       # visually hidden real links (keyboard / screen readers / SEO)
       ViewProjectsButton.tsx # visually hidden keyboard route into the monitor view
+      ViewpointBar.tsx      # bottom bar Room/Door/Desk/Bed/Window/Cat; arrow keys cycle, Esc returns to the room view
+      ViewFade.tsx          # dip to dark that hides the camera cut between the room view and first person
   data/
     projects.ts             # all project data
     socials.ts              # social links, positions, colours, SVG paths (Simple Icons)
@@ -103,10 +108,11 @@ src/
     sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch; synthesised click, clink, bloop); files in public/sounds/
     music.ts                # lo-fi loop streamed with an <audio> element; follows store music + Sound setting, fades, pauses when hidden
   store/
-    useAppStore.ts          # view ('room' | 'monitor'), roomLight, bedLamp, music, transitions, loading, sceneReady, debug stats, frame cap, quality
+    useAppStore.ts          # view ('room' | 'monitor'), viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, transitions, loading, sceneReady, debug stats, frame cap, quality
     useSettingsStore.ts     # persisted visitor preferences (localStorage with safe fallback)
     quality.ts              # quality levels and what each turns on; ?diag= flags
     timeOfDay.ts            # time-of-day setting, preset hours, labels
+    viewpoints.ts           # viewpoint ids, labels, cut timings (poses live in scene/roomLayout.ts VIEWPOINT_POSES)
 public/
   models/                   # compressed GLBs (room ~1.5 MB, props ~220 KB total)
   images/projects/          # project screenshots (.webp, 16:10 works best)
@@ -126,6 +132,7 @@ vercel.json                 # cache and security headers
    **Time of day:** the window follows the visitor's local hour (or a Dawn/Day/Dusk/Night preset from the menu, or `?time=14.5` to preview any hour). `skyTimeline.ts` blends keyframes into a shared `sky` object (written by `SkyClock`, read in frame callbacks by the window, stars, cloud, beam, headlights and `Lights.tsx`); readers compare `sky.version` so they only update when it changes. `sky.daylight` drives the daylight lift in `DAYLIGHT` in `Lights.tsx` and the window light colour; the night keyframe is the original late-night look.
 3. **Monitor click:** `MonitorHitArea` (an invisible plane, larger on touch devices) calls `openMonitor()`. A drag doesn't count as a click. `CameraRig` animates to face the screen head-on, then `ProjectOverlay` fades in.
 4. **Back:** `BackButton` and the Esc key call `closeMonitor()`, which reverses the animation to `'room'`.
+   **First-person viewpoints:** `goToViewpoint()` (hotspots in the room, the bottom bar, arrow keys) switches between the isometric room view and door/desk/bed/window/cat viewpoints. Entering or leaving first person cuts through a short fade (`ViewFade`, the camera type changes); between first-person spots `PovCamera` glides. `CameraControls` is bound explicitly to the room's orthographic camera (by default it follows the default camera and would rebind to the first-person one), and `useResponsiveCamera` checks arrival against that camera. Clicking the monitor from first person cuts back to the room camera and zooms in as usual. Poses (eye, target, fov, look limits, hotspot) are `VIEWPOINT_POSES` in `roomLayout.ts`.
 5. **Project overlay:** regular DOM, not in-canvas HTML. It is styled like the editor on the in-room screen so the zoom flows into it. Grid: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`. The whole card links to `url`, and a separate "Code" link goes to `source`.
 6. **Social signs:** `SocialIcon3D` is a neon sign on the window wall. It has hover glow, an idle pulse as a tap hint, `useCursor`, and click calls `window.open(url, '_blank', 'noopener,noreferrer')`. `SocialLinks` provides hidden real links for accessibility.
 7. **Render mode:** `?lite` forces the fallback page and `?3d` forces the room. Without WebGL or with `deviceMemory <= 1`, the fallback page is shown. Losing the WebGL context at runtime also drops to the fallback.

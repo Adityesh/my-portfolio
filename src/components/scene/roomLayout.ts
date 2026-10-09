@@ -2,6 +2,8 @@
 // Room bounds: x -4.72..4.91, y -0.86..6.86, z -4.68..4.96.
 // Walls stand at x≈-4.7 (door, desk) and z≈-4.7 (window); the +x and +z sides are open toward the camera.
 
+import type { PovViewpoint } from '../../store/viewpoints.ts'
+
 type Vec3 = [number, number, number]
 
 /** Top surface of the floor (suelo mesh). */
@@ -79,6 +81,42 @@ export const LIGHT_SWITCH: Vec3 = [LEFT_WALL_X + 0.01, 2.3, 1.62]
 
 /** Ceiling light (switched on by the light switch): centre of the room, just under the wall tops. */
 export const CEILING_LIGHT: Vec3 = [0.1, 6.3, 0.2]
+
+/**
+ * Inner edges of the room's open sides and the wall tops. In first-person views PovEnclosure closes these with
+ * plain walls and a ceiling, so turning your head never shows the void outside the cut-away model.
+ */
+export const ROOM_BOUNDS = { minX: LEFT_WALL_X, maxX: 4.91, minZ: -4.2, maxZ: 4.96, ceilingY: 6.86 } as const
+
+/** A first-person viewpoint: where the eye is, what it looks at, the lens, and how far you can turn your head. */
+export type ViewpointPose = {
+  eye: Vec3
+  target: Vec3
+  /** Vertical field of view, degrees. */
+  fov: number
+  /** Look-around limits either side of the target direction, degrees. */
+  yaw: number
+  pitch: number
+  /** Where its hotspot floats in the room view. */
+  hotspot: Vec3
+}
+
+// Scale: the door is ~2.1 m tall over 5.35 units, so ~2.55 units per metre. Standing eyes ~1.65 m above the floor
+// (y ~3.85), seated ~1.2 m (y ~2.65; the chair seat is at y 0.58).
+export const VIEWPOINT_POSES: Record<PovViewpoint, ViewpointPose> = {
+  // Just inside the door, looking along the desk wall toward the window.
+  door: { eye: [-3.3, 3.85, 3.4], target: [-1.2, 2.7, -3.6], fov: 62, yaw: 45, pitch: 20, hotspot: [-3.3, 2.9, 3.4] },
+  // In the desk chair, facing the monitor (still clickable for the projects), clock and whiteboard.
+  // Leaning back a little so the clock above the monitor and the whiteboard are in frame too.
+  desk: { eye: [-0.85, 2.85, -1.0], target: [-3.79, 2.95, -1.13], fov: 62, yaw: 50, pitch: 22, hotspot: [-1.6, 2.3, -1.1] },
+  // Sitting at the foot of the bed, looking across at the window, string lights and social signs.
+  bed: { eye: [3.4, 2.75, 1.9], target: [-0.4, 3.35, -4.2], fov: 66, yaw: 45, pitch: 20, hotspot: [3.4, 1.7, 1.7] },
+  // Standing at the window, looking out at the sky.
+  // A few steps back from the glass so the whole window, curtains and string lights are framed.
+  window: { eye: [0.0, 3.5, -0.5], target: [0.0, 3.3, -4.6], fov: 55, yaw: 40, pitch: 22, hotspot: [0.0, 3.1, -2.7] },
+  // Down on the blanket next to the cat, looking across the room at the desk. A wide lens makes it all feel huge.
+  cat: { eye: [2.2, 1.2, 0.35], target: [-3.5, 1.9, -1.6], fov: 72, yaw: 40, pitch: 18, hotspot: [2.2, 1.55, 0.35] },
+}
 
 /** Neon name sign: on the x-min wall, centred above the door and scaled to fit within its width; faces +x. */
 export const NAME_SIGN_CENTER: Vec3 = [LEFT_WALL_X + 0.03, 5.65, (DOOR.minZ + DOOR.maxZ) / 2]

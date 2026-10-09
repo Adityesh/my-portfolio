@@ -6,7 +6,9 @@ import { socials } from '../../data/socials.ts'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useQuality } from '../../hooks/useQuality.ts'
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
+import { useAppStore } from '../../store/useAppStore.ts'
 import { useSettingsStore } from '../../store/useSettingsStore.ts'
+import { VIEWPOINTS, type PovViewpoint } from '../../store/viewpoints.ts'
 import BedLedStrip from './BedLedStrip.tsx'
 import BedsideLamp from './BedsideLamp.tsx'
 import CameraRig from './CameraRig.tsx'
@@ -21,6 +23,8 @@ import Lights from './Lights.tsx'
 import MonitorHitArea from './MonitorHitArea.tsx'
 import NeonNameSign from './NeonNameSign.tsx'
 import PerformanceGovernor from './PerformanceGovernor.tsx'
+import PovCamera from './PovCamera.tsx'
+import PovEnclosure from './PovEnclosure.tsx'
 import Room from './Room.tsx'
 import RoomProps from './RoomProps.tsx'
 import SceneReady from './SceneReady.tsx'
@@ -28,11 +32,14 @@ import SkyClock from './SkyClock.tsx'
 import { FLOOR_Y } from './roomLayout.ts'
 import SocialIcon3D from './SocialIcon3D.tsx'
 import StringLights from './StringLights.tsx'
+import ViewpointHotspot from './ViewpointHotspot.tsx'
 import WindowBackdrop from './WindowBackdrop.tsx'
 import WindowShaft from './WindowShaft.tsx'
 
 // Post-processing is only downloaded when the quality level uses it.
 const Effects = lazy(() => import('./Effects.tsx'))
+
+const POV_VIEWPOINTS = VIEWPOINTS.filter((id): id is PovViewpoint => id !== 'room')
 
 function Experience() {
   const roomRef = useRef<THREE.Group>(null)
@@ -45,6 +52,8 @@ function Experience() {
   const { config } = useQuality()
   const effects = config.bloom || config.ambientOcclusion || config.grain
   const gl = useThree((state) => state.gl)
+  const viewpoint = useAppStore((s) => s.viewpoint)
+  const view = useAppStore((s) => s.view)
 
   // Intro clock starts on the first frame after the scene (and the loaded model) mounts. It's kept stable
   // so switching animations off and on again doesn't replay the intro.
@@ -64,6 +73,14 @@ function Experience() {
       {debug && <DebugStats />}
       <SceneReady />
       <CameraRig targetRef={roomRef} />
+      {/* First-person views: a perspective camera (replaces the room camera while mounted) and walls/ceiling. */}
+      {viewpoint !== 'room' && (
+        <>
+          <PovCamera viewpoint={viewpoint} />
+          <PovEnclosure />
+        </>
+      )}
+      {viewpoint === 'room' && view === 'room' && POV_VIEWPOINTS.map((id) => <ViewpointHotspot key={id} viewpoint={id} />)}
       {/* Before everything that reads the shared sky state, so it's up to date when they run each frame. */}
       <SkyClock />
       <Lights lite={!config.fullLights} shadows={config.shadows} />

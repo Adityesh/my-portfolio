@@ -5,6 +5,8 @@ import LoadingScreen from './components/ui/LoadingScreen.tsx'
 import ProjectOverlay from './components/ui/ProjectOverlay.tsx'
 import SettingsMenu from './components/ui/SettingsMenu.tsx'
 import SocialLinks from './components/ui/SocialLinks.tsx'
+import ViewFade from './components/ui/ViewFade.tsx'
+import ViewpointBar from './components/ui/ViewpointBar.tsx'
 import ViewProjectsButton from './components/ui/ViewProjectsButton.tsx'
 import { hasWebGL, useRenderMode } from './hooks/useRenderMode.ts'
 
@@ -42,8 +44,10 @@ function App() {
       <ViewProjectsButton />
       <SocialLinks />
       <ProjectOverlay />
+      <ViewpointBar />
       <SettingsMenu />
       <DebugOverlay />
+      <ViewFade />
       <LoadingScreen />
     </main>
   )
