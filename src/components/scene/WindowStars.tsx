@@ -38,7 +38,9 @@ const fragmentShader = /* glsl */ `
   void main() {
     float d = length(gl_PointCoord - 0.5);
     if (d > 0.5) discard;
-    gl_FragColor = vec4(vec3(1.0), vAlpha * uVisibility * smoothstep(0.5, 0.05, d));
+    // Soft edge. smoothstep() is undefined when edge0 >= edge1 (some GPUs return garbage/NaN, and bloom then
+    // spreads a NaN pixel over the whole screen), so keep the edges in order and invert.
+    gl_FragColor = vec4(vec3(1.0), vAlpha * uVisibility * (1.0 - smoothstep(0.05, 0.5, d)));
   }
 `
 

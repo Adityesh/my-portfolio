@@ -64,7 +64,8 @@ const fragmentShader = /* glsl */ `
     float sunDisc = 1.0 - smoothstep(uSunRadius - 0.01, uSunRadius + 0.01, ds);
     color = mix(color, uSunColor * 1.4, sunDisc * uSun);
 
-    gl_FragColor = vec4(color, 1.0);
+    // Never hand the bloom pass a negative value (it would spread like a NaN).
+    gl_FragColor = vec4(max(color, 0.0), 1.0);
     #include <colorspace_fragment>
   }
 `

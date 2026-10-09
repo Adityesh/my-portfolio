@@ -27,8 +27,10 @@ const vertexShader = /* glsl */ `
     vT = aT;
     vU = aU;
     // Faces seen edge-on fade out, which softens the beam's silhouette.
-    vec3 viewNormal = normalize(normalMatrix * normal);
-    vFacing = abs(viewNormal.z);
+    // normalize() of a zero vector is NaN, so guard the length (a NaN here would reach the additive output).
+    vec3 viewNormal = normalMatrix * normal;
+    float len = length(viewNormal);
+    vFacing = len > 1e-6 ? abs(viewNormal.z) / len : 0.0;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `
@@ -45,7 +47,7 @@ const fragmentShader = /* glsl */ `
     // (sin(pi) ~ -1e-7), and some mobile GPUs then return NaN, which showed as white lines/flashes. Clamp first.
     float along = pow(clamp(1.0 - vT, 0.0, 1.0), 1.6) * smoothstep(0.0, 0.25, vT);
     float across = pow(clamp(sin(3.14159 * vU), 0.0, 1.0), 1.5);
-    gl_FragColor = vec4(uColor, uOpacity * along * across * vFacing);
+    gl_FragColor = vec4(uColor, clamp(uOpacity * along * across * vFacing, 0.0, 1.0));
   }
 `
 
