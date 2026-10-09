@@ -84,3 +84,13 @@ export const LAVA_LAMP = { position: [-2.12, SHELF.topY, -3.78] as Vec3, height:
 
 /** Bed frame (Cama_4). Its -x side faces the desk and its +z end (the foot) faces the camera. */
 export const BED = { minX: 1.39, maxX: 4.81, minZ: -4.14, maxZ: 3.04 } as const
+
+/**
+ * Water bottle (Botella_17): part of the merged furniture mesh, between the monitor and the PC.
+ * Room.tsx cuts it out of that mesh and redraws it to the left of the monitor (as seen from the camera, i.e. +z).
+ */
+export const BOTTLE = {
+  original: { min: [-3.99, 1.39, -2.71] as Vec3, max: [-3.77, 2.24, -2.48] as Vec3 },
+  /** New centre z: just past the monitor's +z edge (0.11), at the back of the desk. */
+  targetZ: 0.4,
+} as const
