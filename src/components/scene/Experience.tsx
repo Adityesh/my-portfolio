@@ -6,6 +6,8 @@ import { socials } from '../../data/socials.ts'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useReducedMotion } from '../../hooks/useReducedMotion.ts'
 import CameraRig from './CameraRig.tsx'
+import Clock from './Clock.tsx'
+import Curtains from './Curtains.tsx'
 import DustMotes from './DustMotes.tsx'
 import Effects from './Effects.tsx'
 import FrameDriver from './FrameDriver.tsx'
@@ -13,8 +15,10 @@ import { IntroContext } from './introTimeline.ts'
 import Lights from './Lights.tsx'
 import MonitorHitArea from './MonitorHitArea.tsx'
 import Room from './Room.tsx'
+import RoomProps from './RoomProps.tsx'
 import { FLOOR_Y } from './roomLayout.ts'
 import SocialIcon3D from './SocialIcon3D.tsx'
+import StringLights from './StringLights.tsx'
 import WindowBackdrop from './WindowBackdrop.tsx'
 import WindowShaft from './WindowShaft.tsx'
 
@@ -44,6 +48,10 @@ function Experience() {
       <group ref={roomRef}>
         <Room />
       </group>
+      <Clock />
+      <RoomProps />
+      <Curtains />
+      <StringLights animate={!reducedMotion} glow={!isMobile} />
       <MonitorHitArea />
       {socials.map((social) => (
         <SocialIcon3D key={social.id} social={social} />

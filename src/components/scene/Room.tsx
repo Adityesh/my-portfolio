@@ -12,12 +12,11 @@ import type { ThreeElements } from '@react-three/fiber'
 import type * as THREE from 'three'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { usePcRgb } from '../../hooks/usePcRgb.ts'
+import { DRACO_PATH } from './assetPaths.ts'
 import { useAnimationsEnabled } from './introTimeline.ts'
 import MonitorScreen from './MonitorScreen.tsx'
 
 const MODEL_URL = '/models/room.glb'
-// Self-hosted Draco decoder, copied from three/examples/jsm/libs/draco/gltf.
-const DRACO_PATH = '/draco/'
 
 type GLTFResult = GLTF & {
   nodes: {
