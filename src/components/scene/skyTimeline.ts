@@ -59,7 +59,7 @@ const KEYS: SkyKey[] = [
   { hour: 0, ...NIGHT },
   { hour: 5, ...NIGHT },
   // Pre-dawn: the sky lightens and the stars fade before the sun shows.
-  { hour: 5.6, ...NIGHT, top: '#141b4a', middle: '#2c2f6a', low: '#7a4f78', horizon: '#c0707a', stars: 0.5, moon: 0.6, daylight: 0.1 },
+  { hour: 5.6, ...NIGHT, top: '#141b4a', middle: '#2c2f6a', low: '#7a4f78', horizon: '#c0707a', stars: 0.5, moon: 0, daylight: 0.1 },
   {
     hour: 6.3,
     top: '#2a3a78',
@@ -67,7 +67,7 @@ const KEYS: SkyKey[] = [
     low: '#e89a8a',
     horizon: '#ffc58a',
     stars: 0.1,
-    moon: 0.15,
+    moon: 0,
     sun: 0.9,
     sunHeight: 0.05,
     sunColor: '#ffb070',
@@ -86,7 +86,7 @@ const KEYS: SkyKey[] = [
     low: '#f07a5a',
     horizon: '#ffb36b',
     stars: 0.05,
-    moon: 0.1,
+    moon: 0,
     sun: 0.9,
     sunHeight: 0.05,
     sunColor: '#ff8a50',
@@ -95,8 +95,8 @@ const KEYS: SkyKey[] = [
     daylight: 0.4,
     windowLight: '#ffb07a',
   },
-  // Twilight: the sun is down, stars and moon come out.
-  { hour: 19.6, ...NIGHT, top: '#0e1236', middle: '#2a2a66', low: '#6a3f6a', horizon: '#b0603e', stars: 0.6, moon: 0.7, daylight: 0.12 },
+  // Twilight: the sun is down and the stars come out; the moon only rises once it is fully night.
+  { hour: 19.6, ...NIGHT, top: '#0e1236', middle: '#2a2a66', low: '#6a3f6a', horizon: '#b0603e', stars: 0.6, moon: 0, daylight: 0.12 },
   { hour: 20.8, ...NIGHT },
   { hour: 24, ...NIGHT },
 ]
