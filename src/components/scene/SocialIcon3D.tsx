@@ -8,6 +8,7 @@ import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useQuality } from '../../hooks/useQuality.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 import { INTRO, lightLevel, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
+import { useInteractive } from './useInteractive.ts'
 
 // Neon sign on the wall: a dark backing panel with the extruded logo glowing in front of it.
 const LOGO_SIZE = 0.72
@@ -82,8 +83,23 @@ function SocialIcon3D({ social }: SocialIcon3DProps) {
     window.open(social.url, '_blank', 'noopener,noreferrer')
   }
 
+  // Hover label only: SocialLinks has the real links for keyboard and screen readers.
+  const [sx, sy, sz] = social.position
+  const markHover = useInteractive(
+    {
+      id: `social-${social.id}`,
+      name: social.label,
+      action: 'Open profile',
+      anchor: [sx, sy + PANEL_SIZE / 2 + 0.25, sz],
+      keyboard: false,
+      order: 0,
+    },
+    () => window.open(social.url, '_blank', 'noopener,noreferrer'),
+  )
+
   const setHover = (value: boolean) => {
     setHovered(value)
+    markHover(value)
     invalidate()
   }
 

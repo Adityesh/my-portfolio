@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
-import type { PovViewpoint } from '../../store/viewpoints.ts'
+import { VIEWPOINT_DESCRIPTIONS, type PovViewpoint } from '../../store/viewpoints.ts'
 import { INTRO, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
 import { VIEWPOINT_POSES } from './roomLayout.ts'
 import { useTapTarget } from './useTapTarget.ts'
@@ -59,7 +59,16 @@ function ViewpointHotspot({ viewpoint }: ViewpointHotspotProps) {
   const animate = useAnimationsEnabled()
   const getTime = useIntroTime()
   const goToViewpoint = useAppStore((state) => state.goToViewpoint)
-  const { hovered, bind } = useTapTarget(() => goToViewpoint(viewpoint))
+  const [hx, hy, hz] = VIEWPOINT_POSES[viewpoint].hotspot
+  // Not in the keyboard list: the viewpoint bar is the keyboard route.
+  const { hovered, bind } = useTapTarget(() => goToViewpoint(viewpoint), {
+    id: `viewpoint-${viewpoint}`,
+    name: VIEWPOINT_DESCRIPTIONS[viewpoint],
+    action: 'Step in',
+    anchor: [hx, hy + 0.3, hz],
+    keyboard: false,
+    order: 100,
+  })
 
   const texture = useMemo(() => createMarkerTexture(), [])
   useEffect(() => () => texture.dispose(), [texture])

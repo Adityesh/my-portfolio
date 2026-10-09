@@ -30,7 +30,7 @@ function ViewProjectsButton() {
         returnFocus.current = true
         openMonitor()
       }}
-      className="sr-only absolute top-4 left-4 z-20 rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus-visible:ring-2 focus-visible:ring-sky-200 focus-visible:outline-none"
+      className="sr-only absolute top-4 left-18 z-20 rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus-visible:ring-2 focus-visible:ring-sky-200 focus-visible:outline-none"
     >
       View projects
     </button>

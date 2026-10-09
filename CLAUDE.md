@@ -49,7 +49,9 @@ src/
       Mug.tsx               # mug with steam: tap for a sip (lift, tilt, clink) and a puff of fresh steam
       Headphones.tsx        # tap to play/stop the lo-fi music (audio/music.ts); bob + notes while playing
       BedsideLamp.tsx       # hit box on the nightstand lamp: tap to switch it off/on (store bedLamp, faded in Lights.tsx)
-      useTapTarget.ts       # shared tap handling for room objects (drag tolerance, room view only, cursor, redraw)
+      useTapTarget.ts       # shared tap handling for room objects (drag tolerance, room view only, cursor, redraw) + registration below
+      useInteractive.ts     # registers an object (name, current action, label anchor, activate) for hover labels and the keyboard list
+      LabelAnchor.tsx       # projects the hovered/focused object's anchor to screen each frame for the DOM label
       ContactBlob.tsx       # soft fake contact shadow for objects that cast no real shadow
       FittedModel.tsx       # loads a prop GLB and scales it to a real-world size
       roomLayout.ts         # world-space positions of room features (walls, desk, screen, window...)
@@ -94,6 +96,9 @@ src/
       ViewProjectsButton.tsx # visually hidden keyboard route into the monitor view
       ViewpointBar.tsx      # bottom bar Room/Door/Desk/Bed/Window/Cat; arrow keys cycle, Esc returns to the room view
       ViewFade.tsx          # dip to dark that hides the camera cut between the room view and first person
+      ObjectLabel.tsx       # "Name · action" pill above the hovered (or keyboard-focused) object
+      InteractionsMenu.tsx  # top-left menu (like the settings menu) listing every 3D interaction; also the keyboard/screen-reader route
+      InteractionHint.tsx   # first-visit "most things here do something" nudge (remembered in settings)
   data/
     projects.ts             # all project data
     socials.ts              # social links, positions, colours, SVG paths (Simple Icons)
@@ -117,6 +122,7 @@ src/
     quality.ts              # quality levels and what each turns on; ?diag= flags
     timeOfDay.ts            # time-of-day setting, preset hours, labels
     rgbModes.ts             # RGB lighting mode ids and labels
+    interactives.ts         # registry of interactive objects (scene registers, UI reads): hovered, focused, label position
     viewpoints.ts           # viewpoint ids, labels, cut timings (poses live in scene/roomLayout.ts VIEWPOINT_POSES)
 public/
   models/                   # compressed GLBs (room ~1.5 MB, props ~220 KB total)
@@ -207,6 +213,7 @@ Adding a project means editing `projects.ts` and dropping the screenshot in `pub
 - Tunable constants sit at the top of the file with a short comment explaining them.
 - Respect `prefers-reduced-motion` (`useReducedMotion`) and the animations setting.
 - Accessibility: all interactive DOM elements keyboard reachable, visible focus states, alt text on project images, project list rendered as real DOM for SEO.
+- New 3D interactions: use `useTapTarget(onTap, { id, name, action, anchor, order })` (or `useInteractive` for custom handlers). That gives the object a hover label and a row in the top-left interactions menu (keyboard/screen-reader accessible) for free; keep `action` describing what a tap does right now.
 
 ## History
 

@@ -1,7 +1,10 @@
 import { lazy, Suspense, useEffect } from 'react'
 import DebugOverlay from './components/ui/DebugOverlay.tsx'
 import FallbackView from './components/ui/FallbackView.tsx'
+import InteractionHint from './components/ui/InteractionHint.tsx'
+import InteractionsMenu from './components/ui/InteractionsMenu.tsx'
 import LoadingScreen from './components/ui/LoadingScreen.tsx'
+import ObjectLabel from './components/ui/ObjectLabel.tsx'
 import ProjectOverlay from './components/ui/ProjectOverlay.tsx'
 import SettingsMenu from './components/ui/SettingsMenu.tsx'
 import SocialLinks from './components/ui/SocialLinks.tsx'
@@ -43,7 +46,10 @@ function App() {
       </Suspense>
       <ViewProjectsButton />
       <SocialLinks />
+      <InteractionsMenu />
       <ProjectOverlay />
+      <ObjectLabel />
+      <InteractionHint />
       <ViewpointBar />
       <SettingsMenu />
       <DebugOverlay />

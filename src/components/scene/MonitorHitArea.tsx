@@ -3,6 +3,7 @@ import { useThree, type ThreeEvent } from '@react-three/fiber'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 import { SCREEN_CENTER, SCREEN_SIZE } from './roomLayout.ts'
+import { useInteractive } from './useInteractive.ts'
 
 // Pixels the pointer may move between down and up and still count as a click (vs. a camera drag).
 const CLICK_TOLERANCE = 6
@@ -18,9 +19,21 @@ function MonitorHitArea() {
   const openMonitor = useAppStore((state) => state.openMonitor)
   const setHovered = useAppStore((state) => state.setMonitorHovered)
   const invalidate = useThree((state) => state.invalidate)
+  // Also listed first in the interactions menu.
+  const markHover = useInteractive(
+    {
+      id: 'monitor',
+      name: 'Monitor',
+      action: 'Open my projects',
+      anchor: [SCREEN_CENTER[0], SCREEN_CENTER[1] + SCREEN_SIZE[1] / 2 + 0.3, SCREEN_CENTER[2]],
+      order: 0,
+    },
+    openMonitor,
+  )
   // Redraw so the hover brightness shows even when no animation frames are running.
   const setMonitorHovered = (value: boolean) => {
     setHovered(value)
+    markHover(value)
     invalidate()
   }
   useCursor(active && hovered)

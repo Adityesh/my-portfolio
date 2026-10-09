@@ -1,7 +1,7 @@
 import { playBlip } from '../../audio/sfx.ts'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
-import { RGB_MODES } from '../../store/rgbModes.ts'
+import { RGB_MODE_LABELS, RGB_MODES } from '../../store/rgbModes.ts'
 import { useSettingsStore } from '../../store/useSettingsStore.ts'
 import { useTapTarget } from './useTapTarget.ts'
 
@@ -19,10 +19,20 @@ function PcTower() {
   const setRgbMode = useAppStore((state) => state.setRgbMode)
   const sound = useSettingsStore((state) => state.sound)
 
-  const { bind } = useTapTarget(() => {
-    setRgbMode(RGB_MODES[(RGB_MODES.indexOf(mode) + 1) % RGB_MODES.length])
-    if (sound) playBlip()
-  })
+  const next = RGB_MODES[(RGB_MODES.indexOf(mode) + 1) % RGB_MODES.length]
+  const { bind } = useTapTarget(
+    () => {
+      setRgbMode(next)
+      if (sound) playBlip()
+    },
+    {
+      id: 'pc',
+      name: 'PC lighting',
+      action: `${RGB_MODE_LABELS[mode]} → ${RGB_MODE_LABELS[next]}`,
+      anchor: [HIT_CENTER[0], HIT_CENTER[1] + HIT_SIZE[1] / 2 + 0.25, HIT_CENTER[2]],
+      order: 8,
+    },
+  )
 
   const s = isMobile ? HIT_PADDING_TOUCH : 1
 

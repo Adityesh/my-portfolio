@@ -10,6 +10,7 @@ import FloatingSymbols, { type SymbolBurst } from './FloatingSymbols.tsx'
 import ContactBlob from './ContactBlob.tsx'
 import FittedModel from './FittedModel.tsx'
 import { useAnimationsEnabled } from './introTimeline.ts'
+import { useInteractive } from './useInteractive.ts'
 import { PROPS } from './roomLayout.ts'
 
 // The cat faces +z in its own frame; this turns it toward the camera side of the bed.
@@ -159,6 +160,11 @@ function Cat() {
   const onClick = (e: ThreeEvent<MouseEvent>) => {
     if (!active || e.delta > TAP_TOLERANCE) return
     e.stopPropagation()
+    pet()
+  }
+
+  // A tap (or Enter in the keyboard list): hop, or spin after a few quick ones, with a meow and hearts.
+  const pet = () => {
     const t = now()
     taps.current = [...taps.current.filter((tap) => t - tap < SPIN.window), t]
     const spin = taps.current.length >= SPIN.taps
@@ -180,8 +186,20 @@ function Cat() {
     lookYaw.current = THREE.MathUtils.clamp(Math.atan2(localPoint.x, localPoint.z), -LOOK_MAX, LOOK_MAX)
   }
 
+  const markHover = useInteractive(
+    {
+      id: 'cat',
+      name: 'Cat',
+      action: 'Pet (three quick taps for a spin)',
+      anchor: [PROPS.cat.position[0], PROPS.cat.position[1] + 0.95, PROPS.cat.position[2]],
+      order: 1,
+    },
+    pet,
+  )
+
   const setHover = (value: boolean) => {
     setHovered(value)
+    markHover(value)
     invalidate()
   }
 

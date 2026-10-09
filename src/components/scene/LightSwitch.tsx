@@ -8,6 +8,7 @@ import { useAppStore } from '../../store/useAppStore.ts'
 import { useSettingsStore } from '../../store/useSettingsStore.ts'
 import { INTRO, lightLevel, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
 import { LIGHT_SWITCH } from './roomLayout.ts'
+import { useInteractive } from './useInteractive.ts'
 
 // Wall plate and rocker, in the switch's own frame (+z out of the wall). A little larger than life so it's
 // a reasonable target at the default zoom.
@@ -65,17 +66,33 @@ function LightSwitch() {
     }
   })
 
-  const onClick = (e: ThreeEvent<MouseEvent>) => {
-    if (!active || e.delta > CLICK_TOLERANCE) return
-    e.stopPropagation()
+  const flip = () => {
     const on = !roomLight
     setRoomLight(on)
     if (sound) playClick(on ? CLICK_PITCH.on : CLICK_PITCH.off)
     invalidate()
   }
 
+  const onClick = (e: ThreeEvent<MouseEvent>) => {
+    if (!active || e.delta > CLICK_TOLERANCE) return
+    e.stopPropagation()
+    flip()
+  }
+
+  const markHover = useInteractive(
+    {
+      id: 'light-switch',
+      name: 'Light switch',
+      action: roomLight ? 'Turn the room light off' : 'Turn the room light on',
+      anchor: [LIGHT_SWITCH[0], LIGHT_SWITCH[1] + 0.4, LIGHT_SWITCH[2]],
+      order: 2,
+    },
+    flip,
+  )
+
   const setHover = (value: boolean) => {
     setHovered(value)
+    markHover(value)
     invalidate()
   }
 

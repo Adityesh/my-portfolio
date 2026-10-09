@@ -48,18 +48,27 @@ function Mug() {
   const sip = useRef({ start: -Infinity, clinked: true })
   const steamBoost = useRef(-Infinity)
 
-  const { bind } = useTapTarget(() => {
-    const t = now()
-    steamBoost.current = t
-    if (!animate) {
-      // No motion: just the sound of putting it down.
-      if (sound) playClink(THREE.MathUtils.randFloat(0.96, 1.04))
-      return
-    }
-    // A tap mid-sip doesn't restart it.
-    if (t - sip.current.start < SIP.seconds) return
-    sip.current = { start: t, clinked: false }
-  })
+  const { bind } = useTapTarget(
+    () => {
+      const t = now()
+      steamBoost.current = t
+      if (!animate) {
+        // No motion: just the sound of putting it down.
+        if (sound) playClink(THREE.MathUtils.randFloat(0.96, 1.04))
+        return
+      }
+      // A tap mid-sip doesn't restart it.
+      if (t - sip.current.start < SIP.seconds) return
+      sip.current = { start: t, clinked: false }
+    },
+    {
+      id: 'mug',
+      name: 'Coffee',
+      action: 'Take a sip',
+      anchor: [PROPS.mug.position[0], PROPS.mug.position[1] + 0.45, PROPS.mug.position[2]],
+      order: 9,
+    },
+  )
 
   useFrame(() => {
     if (!hand.current) return

@@ -21,10 +21,19 @@ function BedsideLamp() {
   const setBedLamp = useAppStore((state) => state.setBedLamp)
   const sound = useSettingsStore((state) => state.sound)
 
-  const { bind } = useTapTarget(() => {
-    setBedLamp(!bedLamp)
-    if (sound) playClick(CLICK_PITCH)
-  })
+  const { bind } = useTapTarget(
+    () => {
+      setBedLamp(!bedLamp)
+      if (sound) playClick(CLICK_PITCH)
+    },
+    {
+      id: 'bed-lamp',
+      name: 'Bedside lamp',
+      action: bedLamp ? 'Switch off' : 'Switch on',
+      anchor: [LAMP_BULB[0], LAMP_BULB[1] + 0.45, LAMP_BULB[2]],
+      order: 3,
+    },
+  )
 
   const s = isMobile ? HIT_PADDING_TOUCH : 1
 

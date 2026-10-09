@@ -103,10 +103,19 @@ function Curtains() {
   const closed = useAppStore((state) => state.curtainsClosed)
   const setClosed = useAppStore((state) => state.setCurtainsClosed)
   const sound = useSettingsStore((state) => state.sound)
-  const { bind } = useTapTarget(() => {
-    setClosed(!closed)
-    if (sound) playSwish(!closed)
-  })
+  const { bind } = useTapTarget(
+    () => {
+      setClosed(!closed)
+      if (sound) playSwish(!closed)
+    },
+    {
+      id: 'curtains',
+      name: 'Curtains',
+      action: closed ? 'Open' : 'Draw',
+      anchor: [(WINDOW.minX + WINDOW.maxX) / 2, TOP_Y + 0.35, Z],
+      order: 4,
+    },
+  )
 
   const leftPanel = useRef<THREE.Mesh>(null)
   const rightPanel = useRef<THREE.Mesh>(null)

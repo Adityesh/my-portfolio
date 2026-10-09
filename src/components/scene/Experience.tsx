@@ -17,6 +17,7 @@ import Clock from './Clock.tsx'
 import Curtains from './Curtains.tsx'
 import DustMotes from './DustMotes.tsx'
 import { IntroContext } from './introTimeline.ts'
+import LabelAnchor from './LabelAnchor.tsx'
 import LavaLamp from './LavaLamp.tsx'
 import LightSwitch from './LightSwitch.tsx'
 import Lights from './Lights.tsx'
@@ -73,6 +74,7 @@ function Experience() {
       <PerformanceGovernor animate={animations} frameRate={frameRate} quality={qualitySetting} isMobile={isMobile} />
       {debug && <DebugStats />}
       <SceneReady />
+      <LabelAnchor />
       <CameraRig targetRef={roomRef} />
       {/* First-person views: a perspective camera (replaces the room camera while mounted) and walls/ceiling. */}
       {viewpoint !== 'room' && (

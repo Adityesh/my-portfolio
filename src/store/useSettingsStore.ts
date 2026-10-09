@@ -35,6 +35,8 @@ type SettingsState = {
   animations: boolean | null
   /** Rendering quality: 'auto' adapts to the device; a level locks it. */
   quality: QualitySetting
+  /** The first-visit "things are clickable" hint has been shown and dismissed. */
+  seenHint: boolean
   /** The level Auto settled on for this device last time (start there next visit). */
   learnedQuality: QualityLevel | null
   cameraDrift: boolean
@@ -50,6 +52,7 @@ type SettingsState = {
   setAnimations: (on: boolean) => void
   setQuality: (quality: QualitySetting) => void
   setLearnedQuality: (level: QualityLevel) => void
+  setSeenHint: () => void
   setCameraDrift: (on: boolean) => void
   setDust: (on: boolean) => void
   setSound: (on: boolean) => void
@@ -77,9 +80,11 @@ export const useSettingsStore = create<SettingsState>()(
     (set) => ({
       ...DEFAULTS,
       learnedQuality: null,
+      seenHint: false,
       setAnimations: (on) => set({ animations: on }),
       setQuality: (quality) => set({ quality }),
       setLearnedQuality: (learnedQuality) => set({ learnedQuality }),
+      setSeenHint: () => set({ seenHint: true }),
       setCameraDrift: (on) => set({ cameraDrift: on }),
       setDust: (on) => set({ dust: on }),
       setSound: (on) => set({ sound: on }),

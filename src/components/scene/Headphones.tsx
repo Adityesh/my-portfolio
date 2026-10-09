@@ -40,7 +40,13 @@ function Headphones() {
   const notes = useRef<SymbolBurst[]>([])
   const nextNote = useRef(0)
 
-  const { bind } = useTapTarget(() => setMusic(!music))
+  const { bind } = useTapTarget(() => setMusic(!music), {
+    id: 'headphones',
+    name: 'Headphones',
+    action: !sound ? 'Lo-fi music (sound is off)' : music ? 'Stop the music' : 'Play lo-fi',
+    anchor: [PROPS.headphones.position[0], PROPS.headphones.position[1] + 0.3, PROPS.headphones.position[2]],
+    order: 10,
+  })
 
   useFrame((state) => {
     const t = performance.now() / 1000

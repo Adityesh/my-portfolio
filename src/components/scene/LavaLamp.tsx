@@ -94,11 +94,20 @@ function LavaLamp({ glow }: LavaLampProps) {
   const blobTime = useRef(0)
   const boilStart = useRef(-Infinity)
 
-  const { bind } = useTapTarget(() => {
-    theme.current = (theme.current + 1) % THEMES.length
-    boilStart.current = performance.now() / 1000
-    if (sound) playBloop(THREE.MathUtils.randFloat(0.9, 1.15))
-  })
+  const { bind } = useTapTarget(
+    () => {
+      theme.current = (theme.current + 1) % THEMES.length
+      boilStart.current = performance.now() / 1000
+      if (sound) playBloop(THREE.MathUtils.randFloat(0.9, 1.15))
+    },
+    {
+      id: 'lava-lamp',
+      name: 'Lava lamp',
+      action: 'Change colour',
+      anchor: [LAVA_LAMP.position[0], LAVA_LAMP.position[1] + LAVA_LAMP.height + 0.2, LAVA_LAMP.position[2]],
+      order: 7,
+    },
+  )
 
   useFrame((_, delta) => {
     // The glass material lives in the (cloned) model; find it once it has loaded.
