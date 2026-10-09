@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { useState, useRef } from 'react'
 import * as THREE from 'three'
 import { profile } from '../../data/profile.ts'
+import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { INTRO, lightLevel, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
 import { NAME_SIGN_CENTER, NAME_SIGN_MAX_WIDTH } from './roomLayout.ts'
 
@@ -38,6 +39,7 @@ function powerLevel(t: number): number {
 function NeonNameSign() {
   const getTime = useIntroTime()
   const animate = useAnimationsEnabled()
+  const isMobile = useIsMobile()
   const nameMaterial = useRef<THREE.MeshBasicMaterial>(null)
   const roleMaterial = useRef<THREE.MeshBasicMaterial>(null)
   const glow = useRef<THREE.PointLight>(null)
@@ -99,8 +101,8 @@ function NeonNameSign() {
         {profile.role}
         <meshBasicMaterial ref={roleMaterial} color="#000000" toneMapped={false} />
       </Text>
-      {/* Pink wash on the wall around the sign. */}
-      <pointLight ref={glow} position={[0, 0, 0.5]} intensity={0} distance={3.5} color={NAME_COLOR} />
+      {/* Pink wash on the wall around the sign (desktop only; the text halo still glows on mobile). */}
+      {!isMobile && <pointLight ref={glow} position={[0, 0, 0.5]} intensity={0} distance={3.5} color={NAME_COLOR} />}
     </group>
   )
 }

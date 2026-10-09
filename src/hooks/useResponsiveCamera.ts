@@ -12,8 +12,9 @@ export const CAMERA_POLAR = 62 * DEG
 export const CAMERA_AZIMUTH = 45 * DEG
 export const VIEW_DIRECTION = new THREE.Vector3().setFromSphericalCoords(1, CAMERA_POLAR, CAMERA_AZIMUTH)
 const CAMERA_DISTANCE = 20
-// Fraction of the viewport the room should fill.
+// Fraction of the viewport the room should fill. Portrait screens are width-limited, so use a tighter margin there.
 const FILL = 0.9
+const FILL_PORTRAIT = 0.97
 // Zoom limits relative to the fitted zoom.
 const MIN_ZOOM_FACTOR = 0.9
 const MAX_ZOOM_FACTOR = 2.5
@@ -72,7 +73,7 @@ function computeFitZoom(box: THREE.Box3, width: number, height: number): number 
     maxY = Math.max(maxY, y)
   }
 
-  return Math.min(width / (maxX - minX), height / (maxY - minY)) * FILL
+  return Math.min(width / (maxX - minX), height / (maxY - minY)) * (height > width ? FILL_PORTRAIT : FILL)
 }
 
 function setRoomLimits(controls: CameraControls, zoom: number) {

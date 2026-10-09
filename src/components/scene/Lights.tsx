@@ -36,10 +36,15 @@ const DESK_CENTER_Z = (DESK.minZ + DESK.maxZ) / 2
 const WINDOW_LIGHT_TARGET: [number, number, number] = [WINDOW_CENTER[0] + 1, FLOOR_Y, WINDOW_CENTER[2] + 3]
 
 type LightsProps = {
-  shadows: boolean
+  /**
+   * Mobile: no shadows and only the lights that shape the room (ambient, environment, monitor, window spot, lamp).
+   * Decorative washes (window glow, LED backlight/underglow, headlights) are skipped; their glowing surfaces remain.
+   */
+  lite: boolean
 }
 
-function Lights({ shadows }: LightsProps) {
+function Lights({ lite }: LightsProps) {
+  const shadows = !lite
   const getTime = useIntroTime()
   const animate = useAnimationsEnabled()
 
@@ -120,42 +125,48 @@ function Lights({ shadows }: LightsProps) {
         shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.0005}
       />
-      <pointLight
-        ref={windowGlow}
-        position={[WINDOW_CENTER[0], WINDOW_CENTER[1], WINDOW_CENTER[2] + 0.6]}
-        intensity={0}
-        distance={5}
-        color="#ffc58a"
-      />
+      {!lite && (
+        <pointLight
+          ref={windowGlow}
+          position={[WINDOW_CENTER[0], WINDOW_CENTER[1], WINDOW_CENTER[2] + 0.6]}
+          intensity={0}
+          distance={5}
+          color="#ffc58a"
+        />
+      )}
 
       {/* Bedside lamp: warm pool around the nightstand and bed. */}
       <pointLight ref={lamp} position={LAMP_BULB} intensity={0} distance={5} color="#ffae5c" />
 
       {/* Monitor backlight: soft LED glow on the wall behind the screen (a point light, so the halo has no hard edges). */}
-      <pointLight
-        ref={monitorBacklight}
-        position={[LEFT_WALL_X + 0.08, SCREEN_CENTER[1] + 0.1, SCREEN_CENTER[2]]}
-        intensity={0}
-        distance={2.4}
-        color={BACKLIGHT_COLOR}
-      />
+      {!lite && (
+        <pointLight
+          ref={monitorBacklight}
+          position={[LEFT_WALL_X + 0.08, SCREEN_CENTER[1] + 0.1, SCREEN_CENTER[2]]}
+          intensity={0}
+          distance={2.4}
+          color={BACKLIGHT_COLOR}
+        />
+      )}
 
       {/* Desk underglow: LED strip under the desk's front edge, facing down onto the floor and chair. */}
-      <rectAreaLight
-        ref={deskUnderglow}
-        position={[DESK.frontX - 0.15, DESK.topY - 0.12, DESK_CENTER_Z]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        width={0.3}
-        height={DESK_DEPTH * 0.95}
-        intensity={0}
-        color={UNDERGLOW_COLOR}
-      />
+      {!lite && (
+        <rectAreaLight
+          ref={deskUnderglow}
+          position={[DESK.frontX - 0.15, DESK.topY - 0.12, DESK_CENTER_Z]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          width={0.3}
+          height={DESK_DEPTH * 0.95}
+          intensity={0}
+          color={UNDERGLOW_COLOR}
+        />
+      )}
       <mesh position={[DESK.frontX - 0.06, DESK.topY - 0.1, DESK_CENTER_Z]}>
         <boxGeometry args={[0.03, 0.03, DESK_DEPTH * 0.95]} />
         <meshBasicMaterial ref={ledStrip} color="#000000" toneMapped={false} />
       </mesh>
 
-      {animate && <Headlights />}
+      {animate && !lite && <Headlights />}
     </>
   )
 }

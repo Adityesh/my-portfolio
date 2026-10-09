@@ -2,8 +2,9 @@ import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { SCREEN_CODE, SCREEN_FILENAME } from '../../data/screenCode.ts'
+import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
-import { screenLevel, useIntroTime } from './introTimeline.ts'
+import { INTRO, screenLevel, useIntroTime } from './introTimeline.ts'
 
 // Canvas matches the screen's 2.3 x 1.3 aspect.
 const WIDTH = 1024
@@ -21,6 +22,9 @@ const CURSOR_BLINK_SECONDS = 0.53
 const BRIGHTNESS = 1.25
 // Extra brightness while the pointer is over the monitor.
 const HOVER_BRIGHTNESS = 1.6
+// Touch devices have no hover: pulse gently in the room view as a "tap me" hint.
+const TAP_HINT_PULSE = 0.25
+const TAP_HINT_SPEED = 2.4
 
 const COLORS = {
   background: '#16203a',
@@ -115,6 +119,7 @@ function drawScreen(ctx: CanvasRenderingContext2D, typedChars: number, cursorOn:
 /** Animated code editor shown on the monitor. Attach as the screen mesh's material. */
 function MonitorScreen() {
   const getTime = useIntroTime()
+  const isMobile = useIsMobile()
   const materialRef = useRef<THREE.MeshBasicMaterial>(null)
   const { ctx, texture } = useMemo(() => {
     const canvas = document.createElement('canvas')
@@ -131,10 +136,14 @@ function MonitorScreen() {
 
   useEffect(() => () => texture.dispose(), [texture])
 
-  useFrame(() => {
+  useFrame((state) => {
     const t = getTime()
+    const { monitorHovered, view } = useAppStore.getState()
+    let brightness = monitorHovered ? HOVER_BRIGHTNESS : BRIGHTNESS
+    if (isMobile && view === 'room' && t !== Infinity && t > INTRO.total) {
+      brightness *= 1 + Math.sin(state.clock.elapsedTime * TAP_HINT_SPEED) * TAP_HINT_PULSE
+    }
     // Power-on flicker during the intro.
-    const brightness = useAppStore.getState().monitorHovered ? HOVER_BRIGHTNESS : BRIGHTNESS
     materialRef.current?.color.setScalar(screenLevel(t) * brightness)
 
     let chars: number

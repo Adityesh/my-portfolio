@@ -45,7 +45,7 @@ function Experience() {
     <IntroContext.Provider value={intro}>
       {!reducedMotion && <FrameDriver fps={ANIMATION_FPS} />}
       <CameraRig targetRef={roomRef} />
-      <Lights shadows={!isMobile} />
+      <Lights lite={isMobile} />
       <group ref={roomRef}>
         <Room />
       </group>

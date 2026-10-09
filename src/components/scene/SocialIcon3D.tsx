@@ -99,8 +99,8 @@ function SocialIcon3D({ social }: SocialIcon3DProps) {
         </mesh>
       </group>
 
-      {/* Coloured glow on the wall and bed. */}
-      <pointLight ref={glow} position={[0, 0, 0.45]} intensity={0} distance={3} color={social.color} />
+      {/* Coloured glow on the wall and bed (desktop only; the logo itself still glows on mobile). */}
+      {!isMobile && <pointLight ref={glow} position={[0, 0, 0.45]} intensity={0} distance={3} color={social.color} />}
 
       {/* Invisible hit area (larger on touch devices). */}
       <mesh
