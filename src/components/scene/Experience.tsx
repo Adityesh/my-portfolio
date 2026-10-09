@@ -5,6 +5,7 @@ import type * as THREE from 'three'
 import { socials } from '../../data/socials.ts'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
+import { useSettingsStore } from '../../store/useSettingsStore.ts'
 import CameraRig from './CameraRig.tsx'
 import DebugStats from './DebugStats.tsx'
 import Clock from './Clock.tsx'
@@ -26,14 +27,12 @@ import WindowShaft from './WindowShaft.tsx'
 // Post-processing is only downloaded when visual effects are on (desktop by default).
 const Effects = lazy(() => import('./Effects.tsx'))
 
-// Frame rate for ambient animation (the Canvas renders on demand).
-const ANIMATION_FPS = 30
-
 function Experience() {
   const roomRef = useRef<THREE.Group>(null)
   const isMobile = useIsMobile()
   // Visitor settings (menu) with automatic defaults: OS reduced-motion preference, desktop vs mobile.
   const { animations, effects, dust, debug } = useSceneSettings()
+  const frameRate = useSettingsStore((s) => s.frameRate)
   const gl = useThree((state) => state.gl)
 
   // Intro clock starts on the first frame after the scene (and the loaded model) mounts. It's kept stable
@@ -49,7 +48,7 @@ function Experience() {
 
   return (
     <IntroContext.Provider value={intro}>
-      {animations && <FrameDriver fps={ANIMATION_FPS} />}
+      {animations && <FrameDriver setting={frameRate} />}
       {debug && <DebugStats />}
       <CameraRig targetRef={roomRef} />
       <Lights lite={isMobile} />

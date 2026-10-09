@@ -26,6 +26,8 @@ const safeStorage: StateStorage = {
   },
 }
 
+export type FrameRateSetting = 'auto' | 30 | 60
+
 type SettingsState = {
   /** null = follow the OS reduced-motion preference. */
   animations: boolean | null
@@ -35,15 +37,18 @@ type SettingsState = {
   dust: boolean
   /** Show the FPS / renderer stats overlay. */
   debug: boolean
+  /** Animation frame cap: 'auto' tries 60 and falls back to 30 if the device can't keep up. */
+  frameRate: FrameRateSetting
   setAnimations: (on: boolean) => void
   setEffects: (on: boolean) => void
   setCameraDrift: (on: boolean) => void
   setDust: (on: boolean) => void
   setDebug: (on: boolean) => void
+  setFrameRate: (rate: FrameRateSetting) => void
   reset: () => void
 }
 
-const DEFAULTS = { animations: null, effects: null, cameraDrift: true, dust: true, debug: false }
+const DEFAULTS = { animations: null, effects: null, cameraDrift: true, dust: true, debug: false, frameRate: 'auto' as FrameRateSetting }
 
 /** Visitor's display preferences from the settings menu, remembered between visits. */
 export const useSettingsStore = create<SettingsState>()(
@@ -55,6 +60,7 @@ export const useSettingsStore = create<SettingsState>()(
       setCameraDrift: (on) => set({ cameraDrift: on }),
       setDust: (on) => set({ dust: on }),
       setDebug: (on) => set({ debug: on }),
+      setFrameRate: (frameRate) => set({ frameRate }),
       reset: () => set(DEFAULTS),
     }),
     { name: 'portfolio-settings', storage: createJSONStorage(() => safeStorage) },

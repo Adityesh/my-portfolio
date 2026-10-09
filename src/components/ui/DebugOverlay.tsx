@@ -1,18 +1,17 @@
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 
-// Frame cap of the ambient animation loop (see Experience.tsx); shown so a steady 30 doesn't look like a problem.
-const FRAME_CAP = 30
-
 const number = new Intl.NumberFormat('en')
 
 /** Top-left FPS / renderer stats panel, toggled from the settings menu. */
 function DebugOverlay() {
   const settings = useSceneSettings()
   const stats = useAppStore((state) => state.debugStats)
+  // Current frame cap (from the frame driver); shown so a steady 30 doesn't look like a problem.
+  const frameCap = useAppStore((state) => state.frameCap)
   if (!settings.debug) return null
 
-  const cap = FRAME_CAP
+  const cap = frameCap?.fps ?? 0
   const fpsColor = !stats ? 'text-neutral-400' : stats.fps === 0 || (cap && stats.fps >= cap - 3) ? 'text-emerald-300' : stats.fps >= 20 ? 'text-amber-300' : 'text-rose-300'
   const rows: [string, string][] = stats
     ? [
@@ -35,7 +34,7 @@ function DebugOverlay() {
     >
       <div className="flex items-baseline justify-between">
         <span className={`text-lg font-semibold ${fpsColor}`}>{stats ? stats.fps : '–'} fps</span>
-        <span className="text-neutral-500">{settings.animations ? `cap ${FRAME_CAP}` : 'on demand'}</span>
+        <span className="text-neutral-500">{frameCap ? `cap ${frameCap.fps}${frameCap.auto ? ' (auto)' : ''}` : 'on demand'}</span>
       </div>
       {rows.map(([label, value]) => (
         <div key={label} className="flex justify-between gap-3">

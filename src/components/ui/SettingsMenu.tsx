@@ -3,6 +3,7 @@ import { credits } from '../../data/credits.ts'
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 import { useSettingsStore } from '../../store/useSettingsStore.ts'
+import SegmentedControl from './SegmentedControl.tsx'
 import ToggleSwitch from './ToggleSwitch.tsx'
 
 /** Hamburger menu (room view only) for toggling animations and visual effects. */
@@ -15,7 +16,8 @@ function SettingsMenu() {
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const settings = useSceneSettings()
-  const { setAnimations, setEffects, setCameraDrift, setDust, setDebug, reset } = useSettingsStore()
+  const { setAnimations, setEffects, setCameraDrift, setDust, setDebug, setFrameRate, reset } = useSettingsStore()
+  const frameRate = useSettingsStore((s) => s.frameRate)
   const rawDrift = useSettingsStore((s) => s.cameraDrift)
   const rawDust = useSettingsStore((s) => s.dust)
 
@@ -89,6 +91,18 @@ function SettingsMenu() {
             checked={settings.animations && rawDust}
             disabled={!settings.animations}
             onChange={setDust}
+          />
+          <SegmentedControl
+            label="Frame rate"
+            description="Auto uses 60 when the device keeps up"
+            options={[
+              { value: 'auto', label: 'Auto' },
+              { value: 30, label: '30' },
+              { value: 60, label: '60' },
+            ]}
+            value={frameRate}
+            disabled={!settings.animations}
+            onChange={setFrameRate}
           />
           <ToggleSwitch
             label="Visual effects"
