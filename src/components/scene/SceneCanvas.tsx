@@ -1,17 +1,19 @@
 import { Canvas } from '@react-three/fiber'
 import { Suspense } from 'react'
 import { NeutralToneMapping } from 'three'
+import { useQuality } from '../../hooks/useQuality.ts'
 import Experience from './Experience.tsx'
 import LoadingReporter from './LoadingReporter.tsx'
 
 type SceneCanvasProps = {
-  isMobile: boolean
   /** Called if the GPU drops the WebGL context (common on low-end phones). */
   onContextLost: () => void
 }
 
 /** The 3D room. Loaded lazily by App so the fallback page never downloads three.js. */
-function SceneCanvas({ isMobile, onContextLost }: SceneCanvasProps) {
+function SceneCanvas({ onContextLost }: SceneCanvasProps) {
+  // Pixel ratio and shadow maps follow the quality level (see PerformanceGovernor).
+  const { config } = useQuality()
   return (
     <>
       <LoadingReporter />
@@ -20,10 +22,9 @@ function SceneCanvas({ isMobile, onContextLost }: SceneCanvasProps) {
       <Canvas
         orthographic
         camera={{ position: [10, 10, 10], zoom: 60, near: 0.1, far: 100 }}
-        // Phones: cap pixel ratio and skip shadow maps (the lights don't cast shadows there anyway).
-        dpr={isMobile ? [1, 1.5] : [1, 2]}
+        dpr={config.dpr}
         frameloop="demand"
-        shadows={isMobile ? false : 'percentage'}
+        shadows={config.shadows ? 'percentage' : false}
         // Same tone mapping as the desktop post-processing chain (Effects.tsx), so mobile looks alike.
         onCreated={({ gl }) => {
           gl.toneMapping = NeutralToneMapping

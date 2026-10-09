@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js'
 import type { Social } from '../../data/socials.ts'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
+import { useQuality } from '../../hooks/useQuality.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 import { INTRO, lightLevel, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
 
@@ -42,6 +43,7 @@ type SocialIcon3DProps = {
 
 function SocialIcon3D({ social }: SocialIcon3DProps) {
   const isMobile = useIsMobile()
+  const { config } = useQuality()
   const animate = useAnimationsEnabled()
   const getTime = useIntroTime()
   const invalidate = useThree((state) => state.invalidate)
@@ -99,8 +101,8 @@ function SocialIcon3D({ social }: SocialIcon3DProps) {
         </mesh>
       </group>
 
-      {/* Coloured glow on the wall and bed (desktop only; the logo itself still glows on mobile). */}
-      {!isMobile && <pointLight ref={glow} position={[0, 0, 0.45]} intensity={0} distance={3} color={social.color} />}
+      {/* Coloured glow on the wall and bed (higher quality levels; the logo itself always glows). */}
+      {config.fullLights && <pointLight ref={glow} position={[0, 0, 0.45]} intensity={0} distance={3} color={social.color} />}
 
       {/* Invisible hit area (larger on touch devices). */}
       <mesh

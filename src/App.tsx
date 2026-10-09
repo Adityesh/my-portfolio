@@ -6,7 +6,6 @@ import ProjectOverlay from './components/ui/ProjectOverlay.tsx'
 import SettingsMenu from './components/ui/SettingsMenu.tsx'
 import SocialLinks from './components/ui/SocialLinks.tsx'
 import ViewProjectsButton from './components/ui/ViewProjectsButton.tsx'
-import { useIsMobile } from './hooks/useIsMobile.ts'
 import { hasWebGL, useRenderMode } from './hooks/useRenderMode.ts'
 
 // Split out so visitors who get the fallback page never download three.js.
@@ -28,7 +27,6 @@ function preloadRoomModel() {
 
 function App() {
   const [mode, fallBack] = useRenderMode()
-  const isMobile = useIsMobile()
 
   useEffect(() => {
     if (mode === 'full') preloadRoomModel()
@@ -39,7 +37,7 @@ function App() {
   return (
     <main className="relative h-full w-full">
       <Suspense fallback={null}>
-        <SceneCanvas isMobile={isMobile} onContextLost={fallBack} />
+        <SceneCanvas onContextLost={fallBack} />
       </Suspense>
       <ViewProjectsButton />
       <SocialLinks />

@@ -1,4 +1,5 @@
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
+import { QUALITY_LABELS } from '../../store/quality.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 
 const number = new Intl.NumberFormat('en')
@@ -9,6 +10,7 @@ function DebugOverlay() {
   const stats = useAppStore((state) => state.debugStats)
   // Current frame cap (from the frame driver); shown so a steady 30 doesn't look like a problem.
   const frameCap = useAppStore((state) => state.frameCap)
+  const quality = useAppStore((state) => state.quality)
   if (!settings.debug) return null
 
   const cap = frameCap?.fps ?? 0
@@ -22,7 +24,9 @@ function DebugOverlay() {
         ['textures', number.format(stats.textures)],
         ['programs', number.format(stats.programs)],
         ['resolution', `${stats.width}×${stats.height} @${stats.dpr}x`],
-        ['mode', `${settings.isMobile ? 'mobile' : 'desktop'} · effects ${settings.effects ? 'on' : 'off'}`],
+        ['quality', quality ? `${QUALITY_LABELS[quality.level]}${quality.auto ? ' (auto)' : ''}` : '–'],
+        ...(quality?.auto && quality.note ? ([['auto', quality.note]] as [string, string][]) : []),
+        ['device', settings.isMobile ? 'mobile' : 'desktop'],
         ['gpu', stats.gpu],
       ]
     : []

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware'
+import type { QualityLevel, QualitySetting } from './quality.ts'
 
 // localStorage can throw (private mode, blocked storage); fall back to in-memory defaults.
 const safeStorage: StateStorage = {
@@ -31,8 +32,10 @@ export type FrameRateSetting = 'auto' | 30 | 60
 type SettingsState = {
   /** null = follow the OS reduced-motion preference. */
   animations: boolean | null
-  /** null = automatic (on for desktop, off for mobile). */
-  effects: boolean | null
+  /** Rendering quality: 'auto' adapts to the device; a level locks it. */
+  quality: QualitySetting
+  /** The level Auto settled on for this device last time (start there next visit). */
+  learnedQuality: QualityLevel | null
   cameraDrift: boolean
   dust: boolean
   /** Show the FPS / renderer stats overlay. */
@@ -40,7 +43,8 @@ type SettingsState = {
   /** Animation frame cap: 'auto' tries 60 and falls back to 30 if the device can't keep up. */
   frameRate: FrameRateSetting
   setAnimations: (on: boolean) => void
-  setEffects: (on: boolean) => void
+  setQuality: (quality: QualitySetting) => void
+  setLearnedQuality: (level: QualityLevel) => void
   setCameraDrift: (on: boolean) => void
   setDust: (on: boolean) => void
   setDebug: (on: boolean) => void
@@ -48,21 +52,40 @@ type SettingsState = {
   reset: () => void
 }
 
-const DEFAULTS = { animations: null, effects: null, cameraDrift: true, dust: true, debug: false, frameRate: 'auto' as FrameRateSetting }
+// Choices the visitor makes in the menu. (learnedQuality is device knowledge, so Reset keeps it.)
+const DEFAULTS = {
+  animations: null,
+  quality: 'auto' as QualitySetting,
+  cameraDrift: true,
+  dust: true,
+  debug: false,
+  frameRate: 'auto' as FrameRateSetting,
+}
 
 /** Visitor's display preferences from the settings menu, remembered between visits. */
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
       ...DEFAULTS,
+      learnedQuality: null,
       setAnimations: (on) => set({ animations: on }),
-      setEffects: (on) => set({ effects: on }),
+      setQuality: (quality) => set({ quality }),
+      setLearnedQuality: (learnedQuality) => set({ learnedQuality }),
       setCameraDrift: (on) => set({ cameraDrift: on }),
       setDust: (on) => set({ dust: on }),
       setDebug: (on) => set({ debug: on }),
       setFrameRate: (frameRate) => set({ frameRate }),
       reset: () => set(DEFAULTS),
     }),
-    { name: 'portfolio-settings', storage: createJSONStorage(() => safeStorage) },
+    {
+      name: 'portfolio-settings',
+      storage: createJSONStorage(() => safeStorage),
+      // v1 replaced the "Visual effects" switch with the Quality setting.
+      version: 1,
+      migrate: (persisted) => {
+        const { effects: _effects, ...rest } = (persisted ?? {}) as Record<string, unknown>
+        return { ...rest, quality: 'auto', learnedQuality: null } as unknown as SettingsState
+      },
+    },
   ),
 )

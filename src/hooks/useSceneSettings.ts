@@ -7,9 +7,8 @@ export function useSceneSettings() {
   const reducedMotion = useReducedMotion()
   const isMobile = useIsMobile()
   const animations = useSettingsStore((s) => s.animations) ?? !reducedMotion
-  const effects = useSettingsStore((s) => s.effects) ?? !isMobile
   const cameraDrift = useSettingsStore((s) => s.cameraDrift)
   const dust = useSettingsStore((s) => s.dust)
   const debug = useSettingsStore((s) => s.debug)
-  return { animations, effects, cameraDrift: animations && cameraDrift, dust: animations && dust, debug, isMobile }
+  return { animations, cameraDrift: animations && cameraDrift, dust: animations && dust, debug, isMobile }
 }

@@ -2,11 +2,12 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { credits } from '../../data/credits.ts'
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
+import { QUALITY_LABELS } from '../../store/quality.ts'
 import { useSettingsStore } from '../../store/useSettingsStore.ts'
 import SegmentedControl from './SegmentedControl.tsx'
 import ToggleSwitch from './ToggleSwitch.tsx'
 
-/** Hamburger menu (room view only) for toggling animations and visual effects. */
+/** Hamburger menu (room view only) for animations, frame rate, rendering quality and debug info. */
 function SettingsMenu() {
   const inRoom = useAppStore((state) => state.view === 'room')
   const loading = useAppStore((state) => state.loading.active)
@@ -16,8 +17,11 @@ function SettingsMenu() {
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const settings = useSceneSettings()
-  const { setAnimations, setEffects, setCameraDrift, setDust, setDebug, setFrameRate, reset } = useSettingsStore()
+  const { setAnimations, setQuality, setCameraDrift, setDust, setDebug, setFrameRate, reset } = useSettingsStore()
   const frameRate = useSettingsStore((s) => s.frameRate)
+  const quality = useSettingsStore((s) => s.quality)
+  // Level Auto is currently using, shown next to the Auto option.
+  const currentLevel = useAppStore((s) => s.quality?.level)
   const rawDrift = useSettingsStore((s) => s.cameraDrift)
   const rawDust = useSettingsStore((s) => s.dust)
 
@@ -104,11 +108,23 @@ function SettingsMenu() {
             disabled={!settings.animations}
             onChange={setFrameRate}
           />
-          <ToggleSwitch
-            label="Visual effects"
-            description="Glow, soft shadows and grain (heavier on the GPU)"
-            checked={settings.effects}
-            onChange={setEffects}
+          <SegmentedControl
+            label="Quality"
+            description={
+              quality === 'auto' && currentLevel
+                ? `Auto adapts to your device (now ${QUALITY_LABELS[currentLevel]})`
+                : 'Glow, shadows, lights and sharpness'
+            }
+            options={[
+              { value: 'auto', label: 'Auto' },
+              { value: 'high', label: 'High' },
+              { value: 'medium', label: 'Med' },
+              { value: 'low', label: 'Low' },
+              { value: 'minimal', label: 'Min' },
+            ]}
+            value={quality}
+            stacked
+            onChange={setQuality}
           />
           <ToggleSwitch
             label="Debug info"

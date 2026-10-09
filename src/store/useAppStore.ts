@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { QualityLevel } from './quality.ts'
 
 export type View = 'room' | 'monitor'
 
@@ -29,8 +30,10 @@ type AppState = {
   /** The scene has drawn its first frame. */
   sceneReady: boolean
   debugStats: DebugStats | null
-  /** Current animation frame cap and whether Auto picked it (published by the frame driver). */
+  /** Current animation frame cap and whether Auto picked it (published by the performance governor). */
   frameCap: { fps: number; auto: boolean } | null
+  /** Current rendering quality, whether Auto picked it, and the last automatic change (for the debug overlay). */
+  quality: { level: QualityLevel; auto: boolean; note: string } | null
   openMonitor: () => void
   closeMonitor: () => void
   finishTransition: () => void
@@ -39,6 +42,7 @@ type AppState = {
   markSceneReady: () => void
   setDebugStats: (stats: DebugStats | null) => void
   setFrameCap: (cap: { fps: number; auto: boolean } | null) => void
+  setQuality: (quality: { level: QualityLevel; auto: boolean; note: string } | null) => void
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -50,6 +54,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   sceneReady: false,
   debugStats: null,
   frameCap: null,
+  quality: null,
   openMonitor: () => {
     if (get().view === 'room' && !get().transitioning) set({ view: 'monitor', transitioning: true, monitorHovered: false })
   },
@@ -62,4 +67,5 @@ export const useAppStore = create<AppState>((set, get) => ({
   markSceneReady: () => set({ sceneReady: true }),
   setDebugStats: (debugStats) => set({ debugStats }),
   setFrameCap: (frameCap) => set({ frameCap }),
+  setQuality: (quality) => set({ quality }),
 }))

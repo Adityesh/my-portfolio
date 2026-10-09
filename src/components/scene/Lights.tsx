@@ -37,14 +37,15 @@ const WINDOW_LIGHT_TARGET: [number, number, number] = [WINDOW_CENTER[0] + 1, FLO
 
 type LightsProps = {
   /**
-   * Mobile: no shadows and only the lights that shape the room (ambient, environment, monitor, window spot, lamp).
+   * Lower quality levels: only the lights that shape the room (ambient, environment, monitor, window spot, lamp).
    * Decorative washes (window glow, LED backlight/underglow, headlights) are skipped; their glowing surfaces remain.
    */
   lite: boolean
+  /** The window spotlight casts shadows. */
+  shadows: boolean
 }
 
-function Lights({ lite }: LightsProps) {
-  const shadows = !lite
+function Lights({ lite, shadows }: LightsProps) {
   const getTime = useIntroTime()
   const animate = useAnimationsEnabled()
 
