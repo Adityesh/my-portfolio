@@ -1,6 +1,6 @@
 import { ContactShadows } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import type * as THREE from 'three'
 import { socials } from '../../data/socials.ts'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
@@ -9,7 +9,6 @@ import CameraRig from './CameraRig.tsx'
 import Clock from './Clock.tsx'
 import Curtains from './Curtains.tsx'
 import DustMotes from './DustMotes.tsx'
-import Effects from './Effects.tsx'
 import FrameDriver from './FrameDriver.tsx'
 import { IntroContext } from './introTimeline.ts'
 import Lights from './Lights.tsx'
@@ -22,6 +21,9 @@ import SocialIcon3D from './SocialIcon3D.tsx'
 import StringLights from './StringLights.tsx'
 import WindowBackdrop from './WindowBackdrop.tsx'
 import WindowShaft from './WindowShaft.tsx'
+
+// Post-processing is only downloaded when visual effects are on (desktop by default).
+const Effects = lazy(() => import('./Effects.tsx'))
 
 // Frame rate for ambient animation (the Canvas renders on demand).
 const ANIMATION_FPS = 30
@@ -67,7 +69,11 @@ function Experience() {
       {effects && (
         <ContactShadows position={[0.1, FLOOR_Y + 0.005, 0.14]} scale={9.5} far={3} blur={2.5} opacity={0.6} frames={1} />
       )}
-      {effects && <Effects />}
+      {effects && (
+        <Suspense fallback={null}>
+          <Effects />
+        </Suspense>
+      )}
     </IntroContext.Provider>
   )
 }

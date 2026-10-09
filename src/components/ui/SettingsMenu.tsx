@@ -1,5 +1,5 @@
-import { useProgress } from '@react-three/drei'
 import { useEffect, useId, useRef, useState } from 'react'
+import { credits } from '../../data/credits.ts'
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 import { useSettingsStore } from '../../store/useSettingsStore.ts'
@@ -8,7 +8,7 @@ import ToggleSwitch from './ToggleSwitch.tsx'
 /** Hamburger menu (room view only) for toggling animations and visual effects. */
 function SettingsMenu() {
   const inRoom = useAppStore((state) => state.view === 'room')
-  const loading = useProgress((state) => state.active)
+  const loading = useAppStore((state) => state.loading.active)
   const [open, setOpen] = useState(false)
   const panelId = useId()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -108,6 +108,20 @@ function SettingsMenu() {
               Reset to defaults
             </button>
           </div>
+          <p className="px-3 pt-2 pb-1 text-[11px] leading-snug text-neutral-500">
+            {credits.map((credit) => (
+              <span key={credit.url} className="block">
+                3D room:{' '}
+                <a href={credit.url} target="_blank" rel="noopener noreferrer" className="underline-offset-2 hover:text-neutral-300 hover:underline">
+                  {credit.work}
+                </a>{' '}
+                by {credit.author},{' '}
+                <a href={credit.licenseUrl} target="_blank" rel="noopener noreferrer" className="underline-offset-2 hover:text-neutral-300 hover:underline">
+                  {credit.license}
+                </a>
+              </span>
+            ))}
+          </p>
         </div>
       )}
     </div>

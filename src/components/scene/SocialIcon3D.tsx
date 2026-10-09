@@ -28,7 +28,7 @@ const HIT_PADDING_TOUCH = 1.5
 
 function createLogoGeometry(iconPath: string): THREE.ExtrudeGeometry {
   const svg = new SVGLoader().parse(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${iconPath}"/></svg>`)
-  const shapes = svg.paths.flatMap((path) => SVGLoader.createShapes(path))
+  const shapes = svg.paths.flatMap((path) => path.toShapes())
   const geometry = new THREE.ExtrudeGeometry(shapes, { depth: LOGO_DEPTH * (24 / LOGO_SIZE), bevelEnabled: false })
   // SVG y points down; flip it, centre the logo and scale the 24-unit viewBox to LOGO_SIZE.
   geometry.center()

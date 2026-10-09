@@ -1,7 +1,8 @@
-import { useProgress } from '@react-three/drei'
+import { useAppStore } from '../../store/useAppStore.ts'
 
+/** Full-screen loading message while the 3D code and assets download (progress comes from the scene). */
 function LoadingScreen() {
-  const { active, progress } = useProgress()
+  const { active, progress } = useAppStore((state) => state.loading)
 
   if (!active) return null
 

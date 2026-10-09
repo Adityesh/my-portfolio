@@ -2,13 +2,51 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Adityesh Mishra — Full Stack Developer portfolio" />
     <title>Adityesh Mishra | Full Stack Developer</title>
+    <meta
+      name="description"
+      content="Portfolio of Adityesh Mishra, full stack developer. Explore an interactive 3D room and click the monitor to see projects."
+    />
+    <meta name="author" content="Adityesh Mishra" />
+    <meta name="theme-color" content="#0b0b10" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href="%VITE_SITE_URL%/" />
+
+    <!-- Link previews (LinkedIn, Slack, WhatsApp, X) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Adityesh Mishra" />
+    <meta property="og:title" content="Adityesh Mishra | Full Stack Developer" />
+    <meta property="og:description" content="An interactive 3D room: click the monitor to see my projects." />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:image" content="%VITE_SITE_URL%/og-image.jpg" />
+    <meta property="og:image:alt" content="An isometric, dimly lit bedroom with a glowing monitor, neon name sign and string lights." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Adityesh Mishra | Full Stack Developer" />
+    <meta name="twitter:description" content="An interactive 3D room: click the monitor to see my projects." />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.jpg" />
+
+    <!-- Structured data for search engines -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Adityesh Mishra",
+        "jobTitle": "Full Stack Developer",
+        "url": "%VITE_SITE_URL%/",
+        "sameAs": ["https://github.com/Adityesh", "https://www.linkedin.com/in/adityesh-mishra-b3446716b/"]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <p style="color:#ddd;font-family:sans-serif;padding:24px">
+        Adityesh Mishra, full stack developer. This site needs JavaScript for its 3D room. Find me on
+        <a href="https://github.com/Adityesh" style="color:#7dd3fc">GitHub</a> and
+        <a href="https://www.linkedin.com/in/adityesh-mishra-b3446716b/" style="color:#7dd3fc">LinkedIn</a>.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
