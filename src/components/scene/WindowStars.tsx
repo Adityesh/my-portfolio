@@ -1,7 +1,8 @@
 import { useFrame, useThree } from '@react-three/fiber'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { SKY_PANEL } from './roomLayout.ts'
+import { sky } from './skyTimeline.ts'
 
 const STAR_COUNT = 80
 const SEED = 7
@@ -32,11 +33,12 @@ const vertexShader = /* glsl */ `
 `
 
 const fragmentShader = /* glsl */ `
+  uniform float uVisibility;
   varying float vAlpha;
   void main() {
     float d = length(gl_PointCoord - 0.5);
     if (d > 0.5) discard;
-    gl_FragColor = vec4(vec3(1.0), vAlpha * smoothstep(0.5, 0.05, d));
+    gl_FragColor = vec4(vec3(1.0), vAlpha * uVisibility * smoothstep(0.5, 0.05, d));
   }
 `
 
@@ -75,7 +77,7 @@ function WindowStars({ animate }: WindowStarsProps) {
       new THREE.ShaderMaterial({
         vertexShader,
         fragmentShader,
-        uniforms: { uTime: { value: 0 }, uPixelRatio: { value: 1 } },
+        uniforms: { uTime: { value: 0 }, uPixelRatio: { value: 1 }, uVisibility: { value: 1 } },
         transparent: true,
         depthWrite: false,
       }),
@@ -94,11 +96,15 @@ function WindowStars({ animate }: WindowStarsProps) {
     [geometry, material],
   )
 
+  const points = useRef<THREE.Points>(null)
   useFrame((state) => {
     if (animate) material.uniforms.uTime.value = state.clock.elapsedTime
+    // Fade out toward daytime (skyTimeline.ts); skip drawing them entirely once gone.
+    material.uniforms.uVisibility.value = sky.stars
+    if (points.current) points.current.visible = sky.stars > 0.001
   })
 
-  return <points geometry={geometry} material={material} />
+  return <points ref={points} geometry={geometry} material={material} />
 }
 
 export default WindowStars

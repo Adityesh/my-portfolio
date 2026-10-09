@@ -2,6 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { useRef, useState } from 'react'
 import * as THREE from 'three'
 import { FLOOR_Y, WINDOW, WINDOW_CENTER } from './roomLayout.ts'
+import { sky } from './skyTimeline.ts'
 
 // A passing car's headlights sweeping through the window every so often.
 const SWEEP_SECONDS = 3.2
@@ -42,7 +43,9 @@ function Headlights() {
     // Source slides along the window as the car passes; the beam fades in and out.
     spot.position.set(THREE.MathUtils.lerp(WINDOW.maxX, WINDOW.minX, k), SOURCE_Y, SOURCE_Z)
     target.position.lerpVectors(SWEEP_FROM, SWEEP_TO, k)
-    spot.intensity = PEAK_INTENSITY * Math.sin(Math.PI * p)
+    // Only noticeable after dark: fades out as daylight comes up (skyTimeline.ts).
+    const night = 1 - THREE.MathUtils.smoothstep(sky.daylight, 0.1, 0.3)
+    spot.intensity = PEAK_INTENSITY * Math.sin(Math.PI * p) * night
   })
 
   return (

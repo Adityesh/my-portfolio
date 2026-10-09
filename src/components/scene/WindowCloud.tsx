@@ -2,6 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { SKY_PANEL } from './roomLayout.ts'
+import { sky } from './skyTimeline.ts'
 
 // A thin cloud drifting across the sky, passing in front of the moon.
 const WIDTH = 1.8
@@ -47,7 +48,15 @@ function WindowCloud({ animate }: WindowCloudProps) {
   const texture = useMemo(() => createCloudTexture(), [])
   useEffect(() => () => texture.dispose(), [texture])
 
+  // Tint and opacity follow the time of day (skyTimeline.ts).
+  const material = useRef<THREE.MeshBasicMaterial>(null)
+  const seen = useRef(-1)
   useFrame((state) => {
+    if (material.current && seen.current !== sky.version) {
+      seen.current = sky.version
+      material.current.color.copy(sky.cloud)
+      material.current.opacity = sky.cloudOpacity
+    }
     if (!mesh.current || !animate) return
     const span = START_X - END_X
     // Start partway across so the cloud is visible soon after load.
@@ -58,7 +67,7 @@ function WindowCloud({ animate }: WindowCloudProps) {
   return (
     <mesh ref={mesh} position={[STATIC_X, Y, SKY_PANEL.z + 0.02]}>
       <planeGeometry args={[WIDTH, HEIGHT]} />
-      <meshBasicMaterial map={texture} color="#8f9ccc" transparent depthWrite={false} toneMapped={false} />
+      <meshBasicMaterial ref={material} map={texture} transparent depthWrite={false} toneMapped={false} />
     </mesh>
   )
 }

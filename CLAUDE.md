@@ -60,7 +60,10 @@ src/
       SocialIcon3D.tsx      # neon wall sign: extruded SVG logo, hover/tap pulse, click opens url
       NeonNameSign.tsx      # name sign (self-hosted Pacifico font)
       Clock.tsx, Curtains.tsx, LavaLamp.tsx, StringLights.tsx, BedLedStrip.tsx, WhiteboardDrawing.tsx, MugSteam.tsx
-      WindowBackdrop.tsx, WindowStars.tsx, WindowCloud.tsx, WindowShaft.tsx, Headlights.tsx, DustMotes.tsx
+      WindowBackdrop.tsx    # sky shader (gradient, moon, sun) driven by the time of day
+      WindowStars.tsx, WindowCloud.tsx, WindowShaft.tsx, Headlights.tsx, DustMotes.tsx
+      skyTimeline.ts        # time-of-day keyframes (sky colours, sun/moon/stars, daylight) and the shared `sky` state
+      SkyClock.tsx          # writes `sky` each frame; eases (time-lapse) when the target hour jumps
       LoadingReporter.tsx   # publishes drei useProgress to the store
       SceneReady.tsx        # marks the store ready after the first frame is drawn
       DebugStats.tsx        # publishes FPS/renderer stats to the store
@@ -71,7 +74,7 @@ src/
       ProjectCard.tsx, TagChip.tsx, BackButton.tsx
       LoadingScreen.tsx     # solid -> blurred while loading, then focus-pull reveal
       FallbackView.tsx      # plain 2D page for no-WebGL / low-memory devices
-      SettingsMenu.tsx      # hamburger menu: animations, frame rate, quality, camera drift, dust, room light, sound, debug, credits
+      SettingsMenu.tsx      # hamburger menu: animations, frame rate, quality, camera drift, dust, time of day, room light, sound, debug, credits
       SegmentedControl.tsx, ToggleSwitch.tsx
       DebugOverlay.tsx      # FPS / renderer stats panel
       SocialLinks.tsx       # visually hidden real links (keyboard / screen readers / SEO)
@@ -89,12 +92,14 @@ src/
     useQuality.ts           # current quality level + config with phone limits
     useSceneSettings.ts     # visitor settings with automatic defaults filled in
     usePcRgb.ts             # RGB cycling on the PC's glass panel
+    useSkyHour.ts           # hour the window shows: live local time, menu preset, or ?time= override
   audio/
     sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch, synthesised switch click); files in public/sounds/
   store/
     useAppStore.ts          # view ('room' | 'monitor'), roomLight, transitions, loading, sceneReady, debug stats, frame cap, quality
     useSettingsStore.ts     # persisted visitor preferences (localStorage with safe fallback)
     quality.ts              # quality levels and what each turns on; ?diag= flags
+    timeOfDay.ts            # time-of-day setting, preset hours, labels
 public/
   models/                   # compressed GLBs (room ~1.5 MB, props ~220 KB total)
   images/projects/          # project screenshots (.webp, 16:10 works best)
@@ -111,6 +116,7 @@ vercel.json                 # cache and security headers
 
 1. **Camera:** orthographic, driven by drei `CameraControls` in `CameraRig.tsx`. It views the room's open corner (azimuth 45°). Zoom is computed from viewport size so the room fits in portrait and landscape (`useResponsiveCamera.ts`). Rotation and zoom are limited so the cut-away sides always face the camera. On load the camera eases in from a rotated, zoomed-out pose. After inactivity it drifts gently (this can be turned off in settings).
 2. **Lighting:** late-night mood where the monitor is the main light source. Lights include ambient, monitor area/fill/backlight, a window spotlight with shadows, a window glow, a desk lamp and a desk underglow. The environment uses a self-hosted HDRI at low intensity. Final intensities live in `INTENSITY` in `Lights.tsx`, and the intro fades them up from 0. Bloomable elements (neon, string lights, screen) use unlit, non-tone-mapped materials with values above 1. The wall switch by the door (or "Room light" in the settings menu) fades in a warm ceiling light plus extra ambient/environment (`ROOM_LIGHT` in `Lights.tsx`); that light is always mounted at 0 so toggling never changes the light count or recompiles shaders. The wall clock shows the visitor's local time.
+   **Time of day:** the window follows the visitor's local hour (or a Dawn/Day/Dusk/Night preset from the menu, or `?time=14.5` to preview any hour). `skyTimeline.ts` blends keyframes into a shared `sky` object (written by `SkyClock`, read in frame callbacks by the window, stars, cloud, beam, headlights and `Lights.tsx`); readers compare `sky.version` so they only update when it changes. `sky.daylight` drives the daylight lift in `DAYLIGHT` in `Lights.tsx` and the window light colour; the night keyframe is the original late-night look.
 3. **Monitor click:** `MonitorHitArea` (an invisible plane, larger on touch devices) calls `openMonitor()`. A drag doesn't count as a click. `CameraRig` animates to face the screen head-on, then `ProjectOverlay` fades in.
 4. **Back:** `BackButton` and the Esc key call `closeMonitor()`, which reverses the animation to `'room'`.
 5. **Project overlay:** regular DOM, not in-canvas HTML. It is styled like the editor on the in-room screen so the zoom flows into it. Grid: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`. The whole card links to `url`, and a separate "Code" link goes to `source`.

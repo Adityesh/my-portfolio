@@ -23,6 +23,7 @@ import PerformanceGovernor from './PerformanceGovernor.tsx'
 import Room from './Room.tsx'
 import RoomProps from './RoomProps.tsx'
 import SceneReady from './SceneReady.tsx'
+import SkyClock from './SkyClock.tsx'
 import { FLOOR_Y } from './roomLayout.ts'
 import SocialIcon3D from './SocialIcon3D.tsx'
 import StringLights from './StringLights.tsx'
@@ -62,6 +63,8 @@ function Experience() {
       {debug && <DebugStats />}
       <SceneReady />
       <CameraRig targetRef={roomRef} />
+      {/* Before everything that reads the shared sky state, so it's up to date when they run each frame. */}
+      <SkyClock />
       <Lights lite={!config.fullLights} shadows={config.shadows} />
       <group ref={roomRef}>
         <Room />

@@ -3,6 +3,7 @@ import { credits } from '../../data/credits.ts'
 import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 import { QUALITY_LABELS } from '../../store/quality.ts'
+import { TIME_OF_DAY, TIME_OF_DAY_LABELS } from '../../store/timeOfDay.ts'
 import { useSettingsStore } from '../../store/useSettingsStore.ts'
 import SegmentedControl from './SegmentedControl.tsx'
 import ToggleSwitch from './ToggleSwitch.tsx'
@@ -27,6 +28,8 @@ function SettingsMenu() {
   const rawDrift = useSettingsStore((s) => s.cameraDrift)
   const rawDust = useSettingsStore((s) => s.dust)
   const sound = useSettingsStore((s) => s.sound)
+  const timeOfDay = useSettingsStore((s) => s.timeOfDay)
+  const setTimeOfDay = useSettingsStore((s) => s.setTimeOfDay)
   const roomLight = useAppStore((s) => s.roomLight)
   const setRoomLight = useAppStore((s) => s.setRoomLight)
 
@@ -100,6 +103,14 @@ function SettingsMenu() {
             checked={settings.animations && rawDust}
             disabled={!settings.animations}
             onChange={setDust}
+          />
+          <SegmentedControl
+            label="Time of day"
+            description={timeOfDay === 'live' ? 'The sky follows your local time' : 'Sky through the window'}
+            options={TIME_OF_DAY.map((value) => ({ value, label: TIME_OF_DAY_LABELS[value] }))}
+            value={timeOfDay}
+            stacked
+            onChange={setTimeOfDay}
           />
           <ToggleSwitch label="Room light" description="Same as the switch by the door" checked={roomLight} onChange={setRoomLight} />
           <ToggleSwitch label="Sound" description="Sound effects when you poke things" checked={sound} onChange={setSound} />

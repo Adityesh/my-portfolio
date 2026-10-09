@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware'
 import type { QualityLevel, QualitySetting } from './quality.ts'
+import type { TimeOfDaySetting } from './timeOfDay.ts'
 
 // localStorage can throw (private mode, blocked storage); fall back to in-memory defaults.
 const safeStorage: StateStorage = {
@@ -40,6 +41,8 @@ type SettingsState = {
   dust: boolean
   /** Sound effects (the cat). They only ever play right after the visitor touches something. */
   sound: boolean
+  /** What the window shows: the real local time, or a fixed time of day. */
+  timeOfDay: TimeOfDaySetting
   /** Show the FPS / renderer stats overlay. */
   debug: boolean
   /** Animation frame cap: 'auto' tries 60 and falls back to 30 if the device can't keep up. */
@@ -50,6 +53,7 @@ type SettingsState = {
   setCameraDrift: (on: boolean) => void
   setDust: (on: boolean) => void
   setSound: (on: boolean) => void
+  setTimeOfDay: (timeOfDay: TimeOfDaySetting) => void
   setDebug: (on: boolean) => void
   setFrameRate: (rate: FrameRateSetting) => void
   reset: () => void
@@ -62,6 +66,7 @@ const DEFAULTS = {
   cameraDrift: true,
   dust: true,
   sound: true,
+  timeOfDay: 'live' as TimeOfDaySetting,
   debug: false,
   frameRate: 'auto' as FrameRateSetting,
 }
@@ -78,6 +83,7 @@ export const useSettingsStore = create<SettingsState>()(
       setCameraDrift: (on) => set({ cameraDrift: on }),
       setDust: (on) => set({ dust: on }),
       setSound: (on) => set({ sound: on }),
+      setTimeOfDay: (timeOfDay) => set({ timeOfDay }),
       setDebug: (on) => set({ debug: on }),
       setFrameRate: (frameRate) => set({ frameRate }),
       reset: () => set(DEFAULTS),

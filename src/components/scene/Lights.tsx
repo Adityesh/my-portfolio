@@ -7,6 +7,8 @@ import { useAppStore } from '../../store/useAppStore.ts'
 import Headlights from './Headlights.tsx'
 import { INTRO, lightLevel, screenLevel, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
 import { CEILING_LIGHT, DESK, FLOOR_Y, LAMP_BULB, LEFT_WALL_X, SCREEN_CENTER, SCREEN_SIZE, WINDOW_CENTER } from './roomLayout.ts'
+import { sky } from './skyTimeline.ts'
+
 // Required once for rectAreaLight to affect MeshStandardMaterial.
 RectAreaLightUniformsLib.init()
 
@@ -30,6 +32,9 @@ const ROOM_LIGHT = { ceiling: 40, ambient: 0.35, environment: 0.45, color: '#ffd
 const NIGHT_AMBIENT_COLOR = '#8a9cff'
 // How quickly the room light fades on/off (damping rate; higher is snappier, ~0.3 s here).
 const ROOM_LIGHT_FADE = 12
+// Daylight through the window (time of day, skyTimeline.ts), added in full daylight. The window lights take
+// their colour from the sky: warm streetlight at night, sun by day.
+const DAYLIGHT = { ambient: 0.3, environment: 0.5, windowSpot: 2.5, windowGlow: 3, ambientColor: '#d6e4ff' }
 
 // LED colours for the desk setup.
 const BACKLIGHT_COLOR = '#8b5cf6'
@@ -80,13 +85,16 @@ function Lights({ lite, shadows }: LightsProps) {
   const switchLevel = useRef(0)
   const nightAmbient = useMemo(() => new THREE.Color(NIGHT_AMBIENT_COLOR), [])
   const litAmbient = useMemo(() => new THREE.Color(ROOM_LIGHT.ambientColor), [])
+  const dayAmbient = useMemo(() => new THREE.Color(DAYLIGHT.ambientColor), [])
+  const seenSky = useRef(-1)
 
   // Intro: monitor light follows the screen flicker, room lights fade up after it. Afterwards this only does
-  // work while the room light is fading between off and on.
+  // work while the room light is fading or the sky changes.
   useFrame((state, delta) => {
     const target = roomLight ? 1 : 0
     const fading = switchLevel.current !== target
-    if (introDone.current && !fading) return
+    if (introDone.current && !fading && seenSky.current === sky.version) return
+    seenSky.current = sky.version
     if (fading) {
       const next = THREE.MathUtils.damp(switchLevel.current, target, ROOM_LIGHT_FADE, delta)
       switchLevel.current = Math.abs(next - target) < 0.002 ? target : next
@@ -94,24 +102,32 @@ function Lights({ lite, shadows }: LightsProps) {
       invalidate()
     }
     const lit = switchLevel.current
+    const day = sky.daylight
     const t = getTime()
     const room = lightLevel(t)
     const screen = screenLevel(t)
     if (ambient.current) {
-      ambient.current.intensity = (INTENSITY.ambient + ROOM_LIGHT.ambient * lit) * room
-      ambient.current.color.lerpColors(nightAmbient, litAmbient, lit)
+      ambient.current.intensity = (INTENSITY.ambient + DAYLIGHT.ambient * day + ROOM_LIGHT.ambient * lit) * room
+      // Night blue toward daylight, then toward the warm room light when it's switched on.
+      ambient.current.color.lerpColors(nightAmbient, dayAmbient, day).lerp(litAmbient, lit)
     }
     if (ceiling.current) ceiling.current.intensity = ROOM_LIGHT.ceiling * lit * room
     if (monitorArea.current) monitorArea.current.intensity = INTENSITY.monitorArea * screen
     if (monitorFill.current) monitorFill.current.intensity = INTENSITY.monitorFill * screen
-    if (windowSpot.current) windowSpot.current.intensity = INTENSITY.windowSpot * room
-    if (windowGlow.current) windowGlow.current.intensity = INTENSITY.windowGlow * room
+    if (windowSpot.current) {
+      windowSpot.current.intensity = INTENSITY.windowSpot * (1 + DAYLIGHT.windowSpot * day) * room
+      windowSpot.current.color.copy(sky.windowLight)
+    }
+    if (windowGlow.current) {
+      windowGlow.current.intensity = INTENSITY.windowGlow * (1 + DAYLIGHT.windowGlow * day) * room
+      windowGlow.current.color.copy(sky.windowLight)
+    }
     if (lamp.current) lamp.current.intensity = INTENSITY.lamp * room
     // The LEDs come on with the monitor.
     if (monitorBacklight.current) monitorBacklight.current.intensity = INTENSITY.monitorBacklight * screen
     if (deskUnderglow.current) deskUnderglow.current.intensity = INTENSITY.deskUnderglow * screen
     if (ledStrip.current) ledStrip.current.color.set(UNDERGLOW_COLOR).multiplyScalar(STRIP_BRIGHTNESS * screen)
-    state.scene.environmentIntensity = (INTENSITY.environment + ROOM_LIGHT.environment * lit) * room
+    state.scene.environmentIntensity = (INTENSITY.environment + DAYLIGHT.environment * day + ROOM_LIGHT.environment * lit) * room
     if (t > INTRO.total) introDone.current = true
   })
 

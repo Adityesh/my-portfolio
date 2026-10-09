@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { INTRO, lightLevel, useIntroTime } from './introTimeline.ts'
 import { WINDOW } from './roomLayout.ts'
+import { sky } from './skyTimeline.ts'
 
 // Soft visible beam of light falling from the window into the room.
 // Direction the light travels per unit (downward and into the room); the beam ends where its
@@ -13,6 +14,8 @@ const LENGTH = 2.5
 const SPREAD = 1.2
 const COLOR = '#ffd9a8'
 const OPACITY = 0.07
+// Extra beam strength in full daylight (OPACITY x (1 + this)).
+const DAYLIGHT_BOOST = 1.5
 
 const vertexShader = /* glsl */ `
   attribute float aT;
@@ -110,13 +113,17 @@ function WindowShaft() {
     [geometry, material],
   )
 
-  // Fades in with the room lights during the intro.
+  // Fades in with the room lights during the intro; afterwards it follows the time of day (a faint
+  // streetlight beam at night, a stronger sunbeam by day).
   const getTime = useIntroTime()
   const introDone = useRef(false)
+  const seen = useRef(-1)
   useFrame(() => {
-    if (introDone.current) return
+    if (introDone.current && seen.current === sky.version) return
+    seen.current = sky.version
     const t = getTime()
-    material.uniforms.uOpacity.value = OPACITY * lightLevel(t)
+    material.uniforms.uOpacity.value = OPACITY * (1 + DAYLIGHT_BOOST * sky.daylight) * lightLevel(t)
+    material.uniforms.uColor.value.copy(sky.windowLight)
     if (t > INTRO.total) introDone.current = true
   })
 
