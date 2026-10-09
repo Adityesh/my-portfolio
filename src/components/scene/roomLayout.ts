@@ -56,18 +56,20 @@ export const CLOCK_CENTER: Vec3 = [LEFT_WALL_X + 0.01, 4.35, SCREEN_CENTER[2]]
 /** Desk surface height (top of the desk, where small props sit). */
 export const DESK_SURFACE_Y = 1.375
 
+/** Top of the bed's blanket (flat between the pillow and the foot; part of the merged furniture mesh). */
+export const BED_TOP_Y = 0.671
+
 /** Props added to the room. Positions are the anchor point (bottom-centre, or back-centre for wall items). */
 export const PROPS = {
   rug: { position: [-0.45, FLOOR_Y + 0.002, 1.2] as Vec3, length: 4.4 },
   mug: { position: [-2.72, DESK_SURFACE_Y, 0.42] as Vec3, height: 0.24 },
   plant: { position: [-1.45, FLOOR_Y, -3.4] as Vec3, height: 2.3 },
   whiteboard: { position: [LEFT_WALL_X + 0.01, 3.2, 1.05] as Vec3, width: 1.5 },
-  cat: { position: [3.0, 0.92, -0.6] as Vec3, length: 1.3 },
+  // The cat's underside is rounded (only the middle touches its lowest point; the sides curve up), so it's sunk
+  // into the blanket until the sheet meets the sides. `sink` is how far its base sits below the blanket.
+  cat: { position: [3.0, BED_TOP_Y, -0.6] as Vec3, length: 1.3, sink: 0.05 },
   headphones: { position: [-3.12, DESK_SURFACE_Y, 0.38] as Vec3, width: 0.5, turn: 0.35 },
 } as const
-
-/** Top surface of the bed's blanket (sabana mesh). */
-export const BED_TOP_Y = 0.94
 
 /** Door on the x-min wall (z range and top edge). */
 export const DOOR = { minZ: 1.92, maxZ: 4.57, topY: 4.98 } as const

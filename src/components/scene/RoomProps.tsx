@@ -1,6 +1,7 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import * as THREE from 'three'
+import ContactBlob from './ContactBlob.tsx'
 import FittedModel from './FittedModel.tsx'
 import { useAnimationsEnabled } from './introTimeline.ts'
 import MugSteam from './MugSteam.tsx'
@@ -10,6 +11,9 @@ import WhiteboardDrawing from './WhiteboardDrawing.tsx'
 // Cat breathing: slow rise and fall.
 const BREATH = 0.022
 const BREATH_SPEED = 1.5
+// Soft contact shadow under the cat (it casts no real shadow). Sized to the body in the cat's own frame,
+// shifted toward its tail since the head is raised off the blanket; lifted a hair to avoid z-fighting.
+const CAT_BLOB = { size: [0.85, 1.25] as [number, number], offsetZ: -0.08, lift: 0.004, opacity: 0.85 }
 // Plant sway: tiny rotation so the leaves feel alive.
 const SWAY = 0.012
 const SWAY_SPEED = 0.7
@@ -95,9 +99,16 @@ function RoomProps() {
         <FittedModel url="/models/plant.glb" fit={{ axis: 'y', size: PROPS.plant.height }} castShadow />
       </group>
 
-      <group ref={cat} position={PROPS.cat.position} rotation={[0, Math.PI * 0.25, 0]}>
-        {/* No shadow: the window spot sits behind the cat and threw a hard dark copy of it onto the bed. */}
-        <FittedModel url="/models/cat.glb" fit={{ axis: 'z', size: PROPS.cat.length }} prepareMaterial={visibleCat} />
+      <group position={PROPS.cat.position} rotation={[0, Math.PI * 0.25, 0]}>
+        <group ref={cat} position={[0, -PROPS.cat.sink, 0]}>
+          {/* No shadow: the window spot sits behind the cat and threw a hard dark copy of it onto the bed. */}
+          <FittedModel url="/models/cat.glb" fit={{ axis: 'z', size: PROPS.cat.length }} prepareMaterial={visibleCat} />
+        </group>
+        <ContactBlob
+          position={[0, CAT_BLOB.lift, CAT_BLOB.offsetZ]}
+          size={CAT_BLOB.size}
+          opacity={CAT_BLOB.opacity}
+        />
       </group>
 
       {/* Lying flat on the desk behind the mug (the model stands upright, so tip it onto its back). */}
