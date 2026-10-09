@@ -5,6 +5,7 @@ import Experience from './components/scene/Experience.tsx'
 import FallbackView from './components/ui/FallbackView.tsx'
 import LoadingScreen from './components/ui/LoadingScreen.tsx'
 import ProjectOverlay from './components/ui/ProjectOverlay.tsx'
+import SettingsMenu from './components/ui/SettingsMenu.tsx'
 import SocialLinks from './components/ui/SocialLinks.tsx'
 import ViewProjectsButton from './components/ui/ViewProjectsButton.tsx'
 import { useIsMobile } from './hooks/useIsMobile.ts'
@@ -43,6 +44,7 @@ function App() {
       <ViewProjectsButton />
       <SocialLinks />
       <ProjectOverlay />
+      <SettingsMenu />
       <LoadingScreen />
     </main>
   )

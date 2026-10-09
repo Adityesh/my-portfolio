@@ -7,7 +7,7 @@ License: SKETCHFAB Standard. Confirm it permits serving the model on a public we
 */
 
 import { useGLTF } from '@react-three/drei'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
@@ -93,6 +93,13 @@ function Clock() {
     [],
   )
   useEffect(() => () => Object.values(materials).forEach((m) => m.dispose()), [materials])
+
+  // Redraw once a second so the time stays right even when animations are off (no frame driver running).
+  const invalidate = useThree((state) => state.invalidate)
+  useEffect(() => {
+    const id = window.setInterval(() => invalidate(), 1000)
+    return () => window.clearInterval(id)
+  }, [invalidate])
 
   const hourHand = useRef<THREE.Mesh>(null)
   const minuteHand = useRef<THREE.Mesh>(null)

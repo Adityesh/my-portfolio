@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef, type RefObject } from 'react'
 import type * as THREE from 'three'
 import { CAMERA_AZIMUTH, CAMERA_POLAR, useResponsiveCamera } from '../../hooks/useResponsiveCamera.ts'
+import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 import { INTRO, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
 
@@ -23,6 +24,7 @@ type CameraRigProps = {
 function CameraRig({ targetRef }: CameraRigProps) {
   const controlsRef = useRef<CameraControls>(null)
   const animate = useAnimationsEnabled()
+  const { cameraDrift } = useSceneSettings()
   const getTime = useIntroTime()
   const lastInput = useRef(0)
   const dom = useThree((state) => state.gl.domElement)
@@ -58,7 +60,7 @@ function CameraRig({ targetRef }: CameraRigProps) {
   // Idle drift around the default view (room view only, not mid-transition).
   useFrame((state) => {
     const controls = controlsRef.current
-    if (!controls || !animate || getTime() < INTRO.total) return
+    if (!controls || !animate || !cameraDrift || getTime() < INTRO.total) return
     const { view: currentView, transitioning } = useAppStore.getState()
     if (currentView !== 'room' || transitioning) {
       lastInput.current = performance.now()

@@ -1,10 +1,10 @@
 import { ContactShadows } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type * as THREE from 'three'
 import { socials } from '../../data/socials.ts'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
-import { useReducedMotion } from '../../hooks/useReducedMotion.ts'
+import { useSceneSettings } from '../../hooks/useSceneSettings.ts'
 import CameraRig from './CameraRig.tsx'
 import Clock from './Clock.tsx'
 import Curtains from './Curtains.tsx'
@@ -29,11 +29,14 @@ const ANIMATION_FPS = 30
 function Experience() {
   const roomRef = useRef<THREE.Group>(null)
   const isMobile = useIsMobile()
-  const reducedMotion = useReducedMotion()
+  // Visitor settings (menu) with automatic defaults: OS reduced-motion preference, desktop vs mobile.
+  const { animations, effects, dust } = useSceneSettings()
   const gl = useThree((state) => state.gl)
 
-  // Intro clock starts on the first frame after the scene (and the loaded model) mounts.
-  const intro = useMemo(() => ({ clock: { start: null }, reducedMotion }), [reducedMotion])
+  // Intro clock starts on the first frame after the scene (and the loaded model) mounts. It's kept stable
+  // so switching animations off and on again doesn't replay the intro.
+  const [clock] = useState<{ start: number | null }>(() => ({ start: null }))
+  const intro = useMemo(() => ({ clock, reducedMotion: !animations }), [clock, animations])
 
   // Nothing that casts shadows moves, so render shadow maps once instead of every frame.
   useEffect(() => {
@@ -43,7 +46,7 @@ function Experience() {
 
   return (
     <IntroContext.Provider value={intro}>
-      {!reducedMotion && <FrameDriver fps={ANIMATION_FPS} />}
+      {animations && <FrameDriver fps={ANIMATION_FPS} />}
       <CameraRig targetRef={roomRef} />
       <Lights lite={isMobile} />
       <group ref={roomRef}>
@@ -53,18 +56,18 @@ function Experience() {
       <RoomProps />
       <Curtains />
       <NeonNameSign />
-      <StringLights animate={!reducedMotion} glow={!isMobile} />
+      <StringLights animate={animations} glow={!isMobile} />
       <MonitorHitArea />
       {socials.map((social) => (
         <SocialIcon3D key={social.id} social={social} />
       ))}
       <WindowBackdrop />
       <WindowShaft />
-      {!reducedMotion && <DustMotes density={isMobile ? 0.5 : 1} />}
-      {!isMobile && (
+      {dust && <DustMotes density={isMobile ? 0.5 : 1} />}
+      {effects && (
         <ContactShadows position={[0.1, FLOOR_Y + 0.005, 0.14]} scale={9.5} far={3} blur={2.5} opacity={0.6} frames={1} />
       )}
-      {!isMobile && <Effects />}
+      {effects && <Effects />}
     </IntroContext.Provider>
   )
 }

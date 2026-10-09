@@ -12,3 +12,14 @@ body {
   /* Faint glow behind the room so it stands out from the backdrop. */
   background-image: radial-gradient(ellipse 55% 60% at 50% 48%, #1b2140 0%, #11142a 45%, #0b0b10 100%);
 }
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
