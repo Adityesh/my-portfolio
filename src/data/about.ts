@@ -1,4 +1,5 @@
-// "About me" content, shown on the whiteboard (tap it in the room) and on the fallback page.
+// "About me" content, shown on the whiteboard (tap it in the room) and on the fallback page. Also feeds the page's
+// description and structured data (seo plugin in vite.config.ts).
 // Taken from the previous 2D portfolio (feat/v2-rewrite).
 
 export type SkillGroup = {
@@ -22,5 +23,8 @@ export const about = {
     { label: 'Testing & tools', skills: ['Jest', 'React Testing Library', 'Storybook', 'Postman', 'Git'] },
     { label: 'Cloud & DevOps', skills: ['Docker', 'Kubernetes', 'Azure', 'Linux', 'CI/CD'] },
   ] satisfies SkillGroup[],
+  /** A few headline skills for the page description (search results and link previews). */
+  keySkills: ['React', 'TypeScript', 'ASP.NET Core', 'Node.js'],
+  education: { school: 'College of Engineering and Technology, Bhubaneswar', field: 'Computer Science & Engineering' },
   resumeUrl: 'https://drive.google.com/file/d/1kB99zaDN6x77a6003HkJtkNYq_i5Slkf/view?usp=sharing',
 }

@@ -1,10 +1,62 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
+import { about } from './src/data/about.ts'
+import { profile } from './src/data/profile.ts'
+import { socials } from './src/data/socials.ts'
+
+const titleCase = (text: string) => text.replace(/\b\w/g, (letter) => letter.toUpperCase())
+const escapeAttribute = (text: string) => text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
+
+/**
+ * Fills the page's search/preview text and structured data (index.html) from src/data, so they always match what the
+ * site shows: %SEO_DESCRIPTION% and <!-- seo:structured-data --> (a schema.org ProfilePage about a Person).
+ */
+function seo(siteUrl: string): Plugin {
+  const url = `${siteUrl}/`
+  const role = titleCase(profile.role)
+  const description = `${profile.name}, ${profile.role} (${about.keySkills.join(', ')}). Explore my 3D room: projects on the monitor, about me on the whiteboard.`
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      { '@type': 'WebSite', '@id': `${url}#website`, url, name: profile.name, inLanguage: 'en' },
+      {
+        '@type': 'ProfilePage',
+        '@id': `${url}#page`,
+        url,
+        name: `${profile.name} | ${role}`,
+        description,
+        isPartOf: { '@id': `${url}#website` },
+        mainEntity: { '@id': `${url}#person` },
+        primaryImageOfPage: `${url}og-image.jpg`,
+      },
+      {
+        '@type': 'Person',
+        '@id': `${url}#person`,
+        name: profile.name,
+        jobTitle: role,
+        description: about.headline,
+        url,
+        knowsAbout: about.skills.flatMap((group) => group.skills),
+        alumniOf: { '@type': 'CollegeOrUniversity', name: about.education.school },
+        sameAs: socials.map((social) => social.url),
+      },
+    ],
+  }
+  // Escape '<' so nothing in the data can close the script tag.
+  const json = JSON.stringify(structuredData, null, 2).replace(/</g, '\\u003c')
+  return {
+    name: 'seo-from-data',
+    transformIndexHtml: (html) =>
+      html
+        .replaceAll('%SEO_DESCRIPTION%', escapeAttribute(description))
+        .replace('<!-- seo:structured-data -->', `<script type="application/ld+json">\n${json}\n    </script>`),
+  }
+}
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
+export default defineConfig(({ mode }) => ({
+  plugins: [react(), tailwindcss(), seo(loadEnv(mode, process.cwd(), 'VITE_').VITE_SITE_URL)],
   build: {
     // three.js alone is ~1 MB minified (~300 KB gzipped); it's lazy-loaded and cached, so don't warn about it.
     chunkSizeWarningLimit: 1100,
@@ -26,4 +78,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

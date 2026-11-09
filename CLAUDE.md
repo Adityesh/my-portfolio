@@ -112,7 +112,7 @@ src/
     projects.ts             # all project data
     socials.ts              # social links, positions, colours, SVG paths (Simple Icons)
     profile.ts              # name and role
-    about.ts                # bio, skill groups and résumé link (whiteboard + fallback page)
+    about.ts                # bio, skill groups, key skills, education and résumé link (whiteboard, fallback page, SEO)
     credits.ts              # third-party attributions shown in the settings menu
     screenCode.ts           # code snippet typed out on the in-room monitor
   hooks/
@@ -142,8 +142,10 @@ public/
   hdri/night_256.hdr        # self-hosted environment map
   fonts/                    # Pacifico (name sign) and Kalam (whiteboard handwriting, latin woff2), both SIL OFL
   sounds/                   # CC0 meow.mp3 and lofi.mp3 (see sounds/CREDITS.txt)
-  og-image.jpg, favicon.svg, robots.txt
+  og-image.jpg              # 1200 x 630 link preview: the room at night (?time=23), page glow behind it, UI hidden
+  favicon.svg, robots.txt
 .env.development / .env.production  # VITE_SITE_URL, used in index.html for canonical, Open Graph and JSON-LD
+vite.config.ts              # chunking, plus the seo plugin: fills %SEO_DESCRIPTION% and the JSON-LD (WebSite, ProfilePage, Person) in index.html from src/data
 vercel.json                 # cache and security headers
 ```
 
@@ -249,4 +251,5 @@ The original build order (all done, 22 commits on `feat/3d-portfolio`):
 - When changing camera positions or light intensities, state the old and new values so they are easy to tune.
 - Run `npm run build` (and `npm run lint`) after structural changes to catch type errors.
 - If the production URL changes, update `.env.production`.
+- The meta description and structured data come from `data/profile.ts`, `data/about.ts` and `data/socials.ts` at build time (keep the description under ~155 characters). Retake `og-image.jpg` when the room changes noticeably: 1200 x 630 viewport, `?time=23`, DOM UI hidden, read the WebGL canvas in a rAF right after a frame and draw it over the body gradient.
 - Third-party models: room (CC BY 4.0, amurin; credited in `data/credits.ts`, shown in the settings menu), wall clock (Sketchfab Standard, hitheredearjohn), and CC0 props (rug, mug, plant, whiteboard, cat, headphones, curtains, lava lamp; no credit needed). Sound: `public/sounds/meow.mp3` and `public/sounds/lofi.mp3`, supplied by the owner, both CC0 (`public/sounds/CREDITS.txt`). `lofi.mp3` is 4.4 MB at 256 kbps (streamed only once the music is switched on); re-encoding to ~128 kbps would halve it. **Open item:** the owner must confirm that the clock's license allows serving the GLB on a public site. The site is already deployed. Source files live in `models-src/` (gitignored, not present in this checkout).
