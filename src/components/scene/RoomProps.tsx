@@ -4,13 +4,9 @@ import FittedModel from './FittedModel.tsx'
 import Headphones from './Headphones.tsx'
 import Mug from './Mug.tsx'
 import Plant from './Plant.tsx'
-import { PROPS } from './roomLayout.ts'
+import { PROPS, WHITEBOARD_ASPECT, WHITEBOARD_DRAWING_OFFSET } from './roomLayout.ts'
+import WhiteboardHitArea from './WhiteboardHitArea.tsx'
 import WhiteboardDrawing from './WhiteboardDrawing.tsx'
-
-// Whiteboard model is ~1.62 x 1.22, so its height follows from the width.
-const WHITEBOARD_ASPECT = 1.22 / 1.62
-// How far the drawing sits in front of the wall (just proud of the board surface).
-const DRAWING_OFFSET = 0.045
 
 // Material tweaks so the props sit well in the dim, coloured lighting.
 const matteWhiteboard = (material: THREE.MeshStandardMaterial) => {
@@ -25,7 +21,7 @@ const rugMaterial = (material: THREE.MeshStandardMaterial) => {
   material.metalness = 0
 }
 
-/** Extra furniture and decor: rug, mug, floor plant, cat, headphones and whiteboard. */
+/** Extra furniture and decor: rug, mug, floor plant, cat, headphones and whiteboard (tap it for "about me"). */
 function RoomProps() {
   const whiteboardHeight = PROPS.whiteboard.width * WHITEBOARD_ASPECT
 
@@ -53,10 +49,11 @@ function RoomProps() {
         anchor="back"
         prepareMaterial={matteWhiteboard}
       >
-        <group position={[DRAWING_OFFSET, 0, 0]}>
+        <group position={[WHITEBOARD_DRAWING_OFFSET, 0, 0]}>
           <WhiteboardDrawing width={PROPS.whiteboard.width * 0.9} height={whiteboardHeight * 0.85} />
         </group>
       </FittedModel>
+      <WhiteboardHitArea />
     </>
   )
 }

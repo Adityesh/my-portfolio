@@ -10,14 +10,14 @@ const MIN_INSET_PX = 3
 
 /**
  * The projects, shown as an app window on the in-room monitor: once the camera has zoomed in, the window is placed
- * exactly over the screen (scene/MonitorScreenRect publishes its on-page rectangle), so the bezel and glow stay
+ * exactly over the screen (scene/FocusRect publishes its on-page rectangle), so the bezel and glow stay
  * visible around it. Styled like the editor on that screen. Always in the DOM (for SEO); inert and invisible until
  * the camera has reached the monitor. Its layout follows the screen's width (container queries), not the page's.
  */
 function ProjectOverlay() {
   const open = useAppStore((state) => state.view === 'monitor' && !state.transitioning)
   // The last measured screen rectangle (kept after closing, so the window fades out where it was).
-  const at = useAppStore((state) => state.monitorRect)
+  const at = useAppStore((state) => state.focusRect)
   const inset = at ? Math.max(MIN_INSET_PX, at.width * INSET_FRACTION) : 0
 
   return (

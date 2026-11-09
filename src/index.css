@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+@theme {
+  /* Handwriting for the whiteboard (system fonts only: Segoe Print on Windows, Bradley Hand on Apple). */
+  --font-marker: 'Segoe Print', 'Bradley Hand', 'Chalkboard SE', 'Comic Sans MS', cursive;
+}
+
 @layer base {
   /* Tailwind v4 gives buttons the default arrow cursor; restore the pointer for clickable controls. */
   button:not(:disabled),

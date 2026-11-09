@@ -8,7 +8,7 @@ import { useAppStore } from '../../store/useAppStore.ts'
 function ViewProjectsButton() {
   const view = useAppStore((state) => state.view)
   const transitioning = useAppStore((state) => state.transitioning)
-  const openMonitor = useAppStore((state) => state.openMonitor)
+  const openView = useAppStore((state) => state.openView)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const returnFocus = useRef(false)
 
@@ -28,7 +28,7 @@ function ViewProjectsButton() {
       type="button"
       onClick={() => {
         returnFocus.current = true
-        openMonitor()
+        openView('monitor')
       }}
       className="sr-only absolute top-4 left-18 z-20 rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white focus:not-sr-only focus-visible:ring-2 focus-visible:ring-sky-200 focus-visible:outline-none"
     >

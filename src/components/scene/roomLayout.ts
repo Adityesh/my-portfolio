@@ -2,6 +2,7 @@
 // Room bounds: x -4.72..4.91, y -0.86..6.86, z -4.68..4.96.
 // Walls stand at x≈-4.7 (door, desk) and z≈-4.7 (window); the +x and +z sides are open toward the camera.
 
+import type { FocusView } from '../../store/useAppStore.ts'
 import type { PovViewpoint } from '../../store/viewpoints.ts'
 
 type Vec3 = [number, number, number]
@@ -72,6 +73,26 @@ export const PROPS = {
   cat: { position: [3.0, BED_TOP_Y, -0.6] as Vec3, length: 1.3, sink: 0.05 },
   headphones: { position: [-3.12, DESK_SURFACE_Y, 0.38] as Vec3, width: 0.5, turn: 0.35 },
 } as const
+
+// Whiteboard model is ~1.62 x 1.22, so its height follows from the width.
+export const WHITEBOARD_ASPECT = 1.22 / 1.62
+/** How far the whiteboard's writing surface sits in front of the wall (the drawing plane sits on it). */
+export const WHITEBOARD_DRAWING_OFFSET = 0.045
+
+/**
+ * The whiteboard's writing surface (inside the frame), facing +x. Size is [width along z, height]. Tapping the board
+ * zooms in head-on and lays the "about me" window over this area.
+ */
+export const WHITEBOARD_SURFACE = {
+  center: [PROPS.whiteboard.position[0] + WHITEBOARD_DRAWING_OFFSET, PROPS.whiteboard.position[1], PROPS.whiteboard.position[2]] as Vec3,
+  size: [PROPS.whiteboard.width * 0.92, PROPS.whiteboard.width * WHITEBOARD_ASPECT * 0.88] as [number, number],
+}
+
+/** Surfaces the camera can zoom to head-on (all face +x), keyed by view. */
+export const FOCUS_SURFACES: Record<FocusView, { center: Vec3; size: [number, number] }> = {
+  monitor: { center: SCREEN_CENTER, size: SCREEN_SIZE },
+  whiteboard: WHITEBOARD_SURFACE,
+}
 
 /** Door on the x-min wall (z range and top edge). */
 export const DOOR = { minZ: 1.92, maxZ: 4.57, topY: 4.98 } as const

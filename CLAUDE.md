@@ -69,7 +69,8 @@ src/
       ClampNegativeEffect.ts # clamps the colour grade to >= 0 so the sRGB conversions never produce NaN (white screens)
       PerformanceGovernor.tsx # frame pacing (30/60) and automatic quality stepping
       MonitorHitArea.tsx    # invisible plane over the screen that opens the projects view
-      MonitorScreenRect.tsx # in the monitor view, projects the screen's corners to the page and publishes monitorRect for ProjectOverlay
+      FocusRect.tsx         # in a focus view (monitor, whiteboard), projects the surface's corners to the page and publishes focusRect for the DOM window
+      WhiteboardHitArea.tsx # invisible plane over the whiteboard: tap to zoom in to "about me"
       LightSwitch.tsx       # wall switch by the door: toggles the ceiling light (store roomLight), click sound, locator LED
       MonitorScreen.tsx     # canvas texture of code typing itself on the screen (text from data/screenCode.ts)
       SocialIcon3D.tsx      # neon wall sign: extruded SVG logo, hover/tap pulse, click opens url
@@ -90,7 +91,8 @@ src/
       assetPaths.ts         # model / Draco / HDRI paths
       geometryUtils.ts      # split a geometry by bounding box (cutting objects out of merged meshes); bounds come from the used triangles
     ui/                     # DOM overlay
-      ProjectOverlay.tsx    # projects as an app window placed exactly on the monitor screen (monitorRect); always in the DOM for SEO, inert until opened
+      ProjectOverlay.tsx    # projects as an app window placed exactly on the monitor screen (focusRect); always in the DOM for SEO, inert until opened
+      AboutOverlay.tsx      # "about me" written on the whiteboard (bio, skills, sticky-note links to résumé and profiles), placed on the board (focusRect)
       ProjectCard.tsx, TagChip.tsx, BackButton.tsx
       LoadingScreen.tsx     # solid -> blurred while loading, then focus-pull reveal
       FallbackView.tsx      # plain 2D page for no-WebGL / low-memory devices
@@ -108,6 +110,7 @@ src/
     projects.ts             # all project data
     socials.ts              # social links, positions, colours, SVG paths (Simple Icons)
     profile.ts              # name and role
+    about.ts                # bio, skill groups and résumé link (whiteboard + fallback page)
     credits.ts              # third-party attributions shown in the settings menu
     screenCode.ts           # code snippet typed out on the in-room monitor
   hooks/
@@ -123,7 +126,7 @@ src/
     breeze.ts               # synthesised outdoor air (looped brown noise, slow gusts) while the window is open
     music.ts                # lo-fi loop streamed with an <audio> element; follows store music + Sound setting, fades, pauses when hidden
   store/
-    useAppStore.ts          # view ('room' | 'monitor'), monitorRect, viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, rgbMode, curtainsClosed, windowOpen, doorOpen, timelapseAt, transitions, loading, sceneReady, debug stats, frame cap, quality
+    useAppStore.ts          # view ('room' | 'monitor' | 'whiteboard'; openView/closeView), focusRect, viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, rgbMode, curtainsClosed, windowOpen, doorOpen, timelapseAt, transitions, loading, sceneReady, debug stats, frame cap, quality
     useSettingsStore.ts     # persisted visitor preferences (localStorage with safe fallback)
     quality.ts              # quality levels and what each turns on; ?diag= flags
     timeOfDay.ts            # time-of-day setting, preset hours, labels
@@ -147,10 +150,11 @@ vercel.json                 # cache and security headers
 1. **Camera:** orthographic, driven by drei `CameraControls` in `CameraRig.tsx`. It views the room's open corner (azimuth 45°). Zoom is computed from viewport size so the room fits in portrait and landscape (`useResponsiveCamera.ts`). Rotation and zoom are limited so the cut-away sides always face the camera. On load the camera eases in from a rotated, zoomed-out pose. After inactivity it drifts gently (this can be turned off in settings).
 2. **Lighting:** late-night mood where the monitor is the main light source. Lights include ambient, monitor area/fill/backlight, a window spotlight with shadows, a window glow, a desk lamp and a desk underglow. The environment uses a self-hosted HDRI at low intensity. Final intensities live in `INTENSITY` in `Lights.tsx`, and the intro fades them up from 0. Bloomable elements (neon, string lights, screen) use unlit, non-tone-mapped materials with values above 1. The wall switch by the door (or "Room light" in the settings menu) fades in a warm ceiling light plus extra ambient/environment (`ROOM_LIGHT` in `Lights.tsx`); that light is always mounted at 0 so toggling never changes the light count or recompiles shaders. The wall clock shows the visitor's local time.
    **Time of day:** the window follows the visitor's local hour (or a Dawn/Day/Dusk/Night preset from the menu, or `?time=14.5` to preview any hour). `skyTimeline.ts` blends keyframes into a shared `sky` object (written by `SkyClock`, read in frame callbacks by the window, stars, cloud, beam, headlights and `Lights.tsx`); readers compare `sky.version` so they only update when it changes. `sky.daylight` drives the daylight lift in `DAYLIGHT` in `Lights.tsx` and the window light colour; the night keyframe is the original late-night look.
-3. **Monitor click:** `MonitorHitArea` (an invisible plane, larger on touch devices) calls `openMonitor()`. A drag doesn't count as a click. `CameraRig` animates to face the screen head-on, then `ProjectOverlay` fades in.
-4. **Back:** `BackButton` and the Esc key call `closeMonitor()`, which reverses the animation to `'room'`.
+3. **Monitor click:** `MonitorHitArea` (an invisible plane, larger on touch devices) calls `openView('monitor')`. A drag doesn't count as a click. `CameraRig` animates to face the screen head-on, then `ProjectOverlay` fades in.
+4. **Back:** `BackButton` and the Esc key call `closeView()`, which reverses the animation to `'room'`.
    **First-person viewpoints:** `goToViewpoint()` (hotspots in the room, the bottom bar, arrow keys) switches between the isometric room view and door/desk/bed/window/cat viewpoints. Entering or leaving first person cuts through a short fade (`ViewFade`, the camera type changes); between first-person spots `PovCamera` glides. `CameraControls` is bound explicitly to the room's orthographic camera (by default it follows the default camera and would rebind to the first-person one), and `useResponsiveCamera` checks arrival against that camera. Clicking the monitor from first person cuts back to the room camera and zooms in as usual. Poses (eye, target, fov, look limits, hotspot) are `VIEWPOINT_POSES` in `roomLayout.ts`.
-5. **Projects on the monitor:** regular DOM, not in-canvas HTML, but placed exactly over the monitor's screen: `MonitorScreenRect` projects the screen's corners once the camera faces it (ortho, head-on, so the rectangle is exact) and publishes `monitorRect`; `ProjectOverlay` sits just inside it, so the bezel and glow stay visible, and the in-room code dims behind it (`APP_OPEN_DIM` in `MonitorScreen.tsx`). Layout follows the screen's width via container queries (`grid-cols-1 @xl:grid-cols-2 @4xl:grid-cols-3`; cards become a compact row below `@lg`). On narrow or portrait viewports the monitor view fills 98% instead of 88% (`MONITOR_FILL_SMALL` in `useResponsiveCamera.ts`). The whole card links to `url`, and a separate "Code" link goes to `source`.
+5. **Projects on the monitor:** regular DOM, not in-canvas HTML, but placed exactly over the monitor's screen: `FocusRect` projects the screen's corners once the camera faces it (ortho, head-on, so the rectangle is exact) and publishes `focusRect`; `ProjectOverlay` sits just inside it, so the bezel and glow stay visible, and the in-room code dims behind it (`APP_OPEN_DIM` in `MonitorScreen.tsx`). Layout follows the screen's width via container queries (`grid-cols-1 @xl:grid-cols-2 @4xl:grid-cols-3`; cards become a compact row below `@lg`). On narrow or portrait viewports the monitor view fills 98% instead of 88% (`MONITOR_FILL_SMALL` in `useResponsiveCamera.ts`). The whole card links to `url`, and a separate "Code" link goes to `source`.
+   **About me on the whiteboard:** tapping the whiteboard (`WhiteboardHitArea`, also in the interactions menu) calls `openView('whiteboard')`; the camera zooms to the board the same way and `AboutOverlay` (content from `data/about.ts`) sits on its writing surface, in a handwriting font (`font-marker`, system fonts only, in `index.css`). Focus surfaces (centre and size, all facing +x) are `FOCUS_SURFACES` in `roomLayout.ts`.
 6. **Social signs:** `SocialIcon3D` is a neon sign on the window wall. It has hover glow, an idle pulse as a tap hint, `useCursor`, and click calls `window.open(url, '_blank', 'noopener,noreferrer')`. `SocialLinks` provides hidden real links for accessibility.
 7. **Render mode:** `?lite` forces the fallback page and `?3d` forces the room. Without WebGL or with `deviceMemory <= 1`, the fallback page is shown. Losing the WebGL context at runtime also drops to the fallback.
 

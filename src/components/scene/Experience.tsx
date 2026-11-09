@@ -23,7 +23,7 @@ import LavaLamp from './LavaLamp.tsx'
 import LightSwitch from './LightSwitch.tsx'
 import Lights from './Lights.tsx'
 import MonitorHitArea from './MonitorHitArea.tsx'
-import MonitorScreenRect from './MonitorScreenRect.tsx'
+import FocusRect from './FocusRect.tsx'
 import NeonNameSign from './NeonNameSign.tsx'
 import PcTower from './PcTower.tsx'
 import PerformanceGovernor from './PerformanceGovernor.tsx'
@@ -77,7 +77,7 @@ function Experience() {
       {debug && <DebugStats />}
       <SceneReady />
       <LabelAnchor />
-      <MonitorScreenRect />
+      <FocusRect />
       <CameraRig targetRef={roomRef} />
       {/* First-person views: a perspective camera (replaces the room camera while mounted) and walls/ceiling. */}
       {viewpoint !== 'room' && (

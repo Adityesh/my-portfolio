@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
+import AboutOverlay from './components/ui/AboutOverlay.tsx'
 import DebugOverlay from './components/ui/DebugOverlay.tsx'
 import FallbackView from './components/ui/FallbackView.tsx'
 import InteractionHint from './components/ui/InteractionHint.tsx'
@@ -48,6 +49,7 @@ function App() {
       <SocialLinks />
       <InteractionsMenu />
       <ProjectOverlay />
+      <AboutOverlay />
       <ObjectLabel />
       <InteractionHint />
       <ViewpointBar />

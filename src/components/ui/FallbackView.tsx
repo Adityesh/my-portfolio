@@ -1,3 +1,4 @@
+import { about } from '../../data/about.ts'
 import { profile } from '../../data/profile.ts'
 import { projects } from '../../data/projects.ts'
 import { socials } from '../../data/socials.ts'
@@ -32,6 +33,33 @@ function FallbackView({ canTry3D }: FallbackViewProps) {
             ))}
           </nav>
         </header>
+
+        <section aria-labelledby="about-heading" className="mt-10 max-w-3xl">
+          <h2 id="about-heading" className="text-2xl font-semibold">
+            About
+          </h2>
+          {about.bio.map((paragraph) => (
+            <p key={paragraph.slice(0, 24)} className="mt-3 text-neutral-300">
+              {paragraph}
+            </p>
+          ))}
+          <dl className="mt-4 space-y-1 text-sm">
+            {about.skills.map((group) => (
+              <div key={group.label} className="flex flex-wrap gap-x-2">
+                <dt className="font-mono text-sky-300">{group.label}:</dt>
+                <dd className="text-neutral-300">{group.skills.join(', ')}</dd>
+              </div>
+            ))}
+          </dl>
+          <a
+            href={about.resumeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-block rounded-full border border-white/15 px-4 py-2 text-sm text-neutral-200 transition hover:border-sky-400/50 hover:text-white focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none"
+          >
+            Résumé <span className="sr-only">(opens in a new tab)</span>
+          </a>
+        </section>
 
         <section aria-labelledby="projects-heading" className="mt-10">
           <h2 id="projects-heading" className="text-2xl font-semibold">

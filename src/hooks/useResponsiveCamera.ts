@@ -2,7 +2,7 @@ import type { CameraControls } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef, type RefObject } from 'react'
 import * as THREE from 'three'
-import { SCREEN_CENTER, SCREEN_SIZE } from '../components/scene/roomLayout.ts'
+import { FOCUS_SURFACES } from '../components/scene/roomLayout.ts'
 import { useAppStore, type View } from '../store/useAppStore.ts'
 
 const DEG = Math.PI / 180
@@ -28,10 +28,10 @@ const INTRO_POLAR_OFFSET = -8 * DEG
 const INTRO_ZOOM_FACTOR = 0.8
 const INTRO_SMOOTH_TIME = 0.9
 
-// Monitor view: camera faces the screen head-on. It sits close so the chair ends up behind it
+// Focus views (monitor, whiteboard): camera faces the surface head-on. It sits close so the chair ends up behind it
 // (the camera is orthographic, so distance doesn't change the image size).
 const MONITOR_DISTANCE = 1.2
-// Fraction of the viewport the screen should fill (the projects window sits on the screen, so on narrow or portrait
+// Fraction of the viewport the surface should fill (the projects / about window sits on it, so on narrow or portrait
 // viewports it fills nearly the whole width to leave room for the content).
 const MONITOR_FILL = 0.88
 const MONITOR_FILL_SMALL = 0.98
@@ -130,10 +130,11 @@ export function useResponsiveCamera(
     lastView.current = view
     const animate = viewChanged || useAppStore.getState().transitioning
 
-    if (view === 'monitor') {
-      const [x, y, z] = SCREEN_CENTER
+    if (view !== 'room') {
+      const { center, size } = FOCUS_SURFACES[view]
+      const [x, y, z] = center
       const fill = width < SMALL_VIEWPORT_WIDTH || height > width ? MONITOR_FILL_SMALL : MONITOR_FILL
-      const zoom = Math.min(width / SCREEN_SIZE[0], height / SCREEN_SIZE[1]) * fill
+      const zoom = Math.min(width / size[0], height / size[1]) * fill
       controls.enabled = false
       controls.smoothTime = VIEW_SMOOTH_TIME
       clearLimits(controls)

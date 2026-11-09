@@ -3,9 +3,11 @@ import type { QualityLevel } from './quality.ts'
 import type { RgbMode } from './rgbModes.ts'
 import { CUT_FADE_MS, CUT_HOLD_MS, type Viewpoint } from './viewpoints.ts'
 
-export type View = 'room' | 'monitor'
+export type View = 'room' | 'monitor' | 'whiteboard'
+/** Views where the camera zooms head-on to a surface and a DOM window is laid over it. */
+export type FocusView = Exclude<View, 'room'>
 
-export type MonitorRect = { left: number; top: number; width: number; height: number }
+export type FocusRect = { left: number; top: number; width: number; height: number }
 
 /** Renderer statistics for the debug overlay (published by the scene while the overlay is on). */
 export type DebugStats = {
@@ -47,8 +49,11 @@ type AppState = {
   viewpoint: Viewpoint
   /** The screen is (going) dark for a camera cut between the room view and a first-person view. */
   cutting: boolean
-  /** On-page rectangle (CSS px) of the monitor's screen, measured in the monitor view (kept after); the projects window fits it. */
-  monitorRect: MonitorRect | null
+  /**
+   * On-page rectangle (CSS px) of the focused surface (monitor screen or whiteboard), measured while zoomed in to it and
+   * kept after; the projects / about window fits it.
+   */
+  focusRect: FocusRect | null
   /** Pointer is over the monitor (room view only). */
   monitorHovered: boolean
   /** Asset loading, published by the scene (so UI doesn't import 3D libraries). */
@@ -75,11 +80,13 @@ type AppState = {
   setTimelapseAt: (at: number | null) => void
   /** Moves the camera: cuts through a fade between the room view and first person, glides between first-person spots. */
   goToViewpoint: (viewpoint: Viewpoint) => void
-  openMonitor: () => void
-  closeMonitor: () => void
+  /** Zooms the camera to the monitor (projects) or the whiteboard (about me). */
+  openView: (view: FocusView) => void
+  /** Back to the room from a focus view. */
+  closeView: () => void
   finishTransition: () => void
   setMonitorHovered: (hovered: boolean) => void
-  setMonitorRect: (rect: MonitorRect | null) => void
+  setFocusRect: (rect: FocusRect | null) => void
   setLoading: (loading: { active: boolean; progress: number }) => void
   markSceneReady: () => void
   setDebugStats: (stats: DebugStats | null) => void
@@ -111,7 +118,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   viewpoint: 'room',
   cutting: false,
   monitorHovered: false,
-  monitorRect: null,
+  focusRect: null,
   // Active from the start: covers downloading the 3D code itself, before the scene can report progress.
   loading: { active: true, progress: 0 },
   sceneReady: false,
@@ -137,11 +144,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     cutThrough(() => set({ viewpoint }))
   },
-  openMonitor: () => {
+  openView: (target) => {
     const { view, transitioning, cutting, viewpoint } = get()
     if (view !== 'room' || transitioning || cutting) return
-    const open = () => set({ view: 'monitor', transitioning: true, monitorHovered: false })
-    // From first person, cut back to the room camera (which then zooms into the screen) behind the fade.
+    const open = () => set({ view: target, transitioning: true, monitorHovered: false })
+    // From first person, cut back to the room camera (which then zooms in) behind the fade.
     if (viewpoint !== 'room') {
       cutThrough(() => {
         set({ viewpoint: 'room' })
@@ -151,12 +158,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
     open()
   },
-  closeMonitor: () => {
-    if (get().view === 'monitor') set({ view: 'room', transitioning: true })
+  closeView: () => {
+    if (get().view !== 'room') set({ view: 'room', transitioning: true })
   },
   finishTransition: () => set({ transitioning: false }),
   setMonitorHovered: (hovered) => set({ monitorHovered: hovered }),
-  setMonitorRect: (monitorRect) => set({ monitorRect }),
+  setFocusRect: (focusRect) => set({ focusRect }),
   setLoading: (loading) => set({ loading }),
   markSceneReady: () => set({ sceneReady: true }),
   setDebugStats: (debugStats) => set({ debugStats }),

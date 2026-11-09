@@ -16,7 +16,7 @@ function MonitorHitArea() {
   const isMobile = useIsMobile()
   const active = useAppStore((state) => state.view === 'room' && !state.transitioning)
   const hovered = useAppStore((state) => state.monitorHovered)
-  const openMonitor = useAppStore((state) => state.openMonitor)
+  const openView = useAppStore((state) => state.openView)
   const setHovered = useAppStore((state) => state.setMonitorHovered)
   const invalidate = useThree((state) => state.invalidate)
   // Also listed first in the interactions menu.
@@ -28,7 +28,7 @@ function MonitorHitArea() {
       anchor: [SCREEN_CENTER[0], SCREEN_CENTER[1] + SCREEN_SIZE[1] / 2 + 0.3, SCREEN_CENTER[2]],
       order: 0,
     },
-    openMonitor,
+    () => openView('monitor'),
   )
   // Redraw so the hover brightness shows even when no animation frames are running.
   const setMonitorHovered = (value: boolean) => {
@@ -43,7 +43,7 @@ function MonitorHitArea() {
   const onClick = (e: ThreeEvent<MouseEvent>) => {
     if (!active || e.delta > CLICK_TOLERANCE) return
     e.stopPropagation()
-    openMonitor()
+    openView('monitor')
   }
 
   return (
