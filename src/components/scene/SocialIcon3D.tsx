@@ -8,6 +8,7 @@ import { useIsMobile } from '../../hooks/useIsMobile.ts'
 import { useQuality } from '../../hooks/useQuality.ts'
 import { useAppStore } from '../../store/useAppStore.ts'
 import { INTRO, lightLevel, useAnimationsEnabled, useIntroTime } from './introTimeline.ts'
+import { openExternal } from './openExternal.ts'
 import { useInteractive } from './useInteractive.ts'
 
 // Neon sign on the wall: a dark backing panel with the extruded logo glowing in front of it.
@@ -80,7 +81,7 @@ function SocialIcon3D({ social }: SocialIcon3DProps) {
   const onClick = (e: ThreeEvent<MouseEvent>) => {
     if (!active || e.delta > CLICK_TOLERANCE) return
     e.stopPropagation()
-    window.open(social.url, '_blank', 'noopener,noreferrer')
+    openExternal(social.url)
   }
 
   // Hover label only: SocialLinks has the real links for keyboard and screen readers.
@@ -94,7 +95,7 @@ function SocialIcon3D({ social }: SocialIcon3DProps) {
       keyboard: false,
       order: 0,
     },
-    () => window.open(social.url, '_blank', 'noopener,noreferrer'),
+    () => openExternal(social.url),
   )
 
   const setHover = (value: boolean) => {

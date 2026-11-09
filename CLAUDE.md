@@ -16,6 +16,7 @@ Status: all of the original build plan is done (see "History" below). The site i
 - Zustand for app and settings state
 - Tailwind CSS 4 (`@tailwindcss/vite`) for the DOM overlay UI
 - oxlint for linting
+- `@vercel/analytics` (private Vercel Web Analytics dashboard) and a Vercel serverless function (`api/visitors.ts`) on Upstash Redis for the public visitor count
 - `gltfjsx` (via `npx`, not a dependency) for converting GLBs
 
 Use React Three Fiber, not vanilla three.js.
@@ -36,8 +37,12 @@ Node >= 20.19 (`engines` in package.json).
 ## Directory structure
 
 ```
+api/
+  visitors.ts               # Vercel function: POST registers a visitor, GET reads; HyperLogLog of salted IP+UA hashes in Upstash Redis (REST via fetch), bots skipped
 src/
-  App.tsx                   # picks 3D vs fallback, lazy-loads SceneCanvas, preloads room.glb, mounts DOM UI
+  App.tsx                   # picks 3D vs fallback, lazy-loads SceneCanvas, preloads room.glb, mounts DOM UI, <Analytics />, registerVisit()
+  analytics/
+    visitors.ts             # registerVisit(): POST once per browser session (GET after), production only; writes store visitorCount for the settings menu
   components/
     scene/                  # everything inside the <Canvas>
       SceneCanvas.tsx       # <Canvas> (frameloop="demand", dpr from quality level); lazy-loaded so the fallback never downloads three.js
@@ -128,7 +133,7 @@ src/
     breeze.ts               # synthesised outdoor air (looped brown noise, slow gusts) while the window is open
     music.ts                # lo-fi loop streamed with an <audio> element; follows store music + Sound setting, fades, pauses when hidden
   store/
-    useAppStore.ts          # view ('room' | 'monitor' | 'whiteboard'; openView/closeView), focusRect, viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, rgbMode, curtainsClosed, windowOpen, doorOpen, timelapseAt, transitions, loading, sceneReady, debug stats, frame cap, quality
+    useAppStore.ts          # view ('room' | 'monitor' | 'whiteboard'; openView/closeView), focusRect, viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, rgbMode, curtainsClosed, windowOpen, doorOpen, timelapseAt, transitions, loading, sceneReady, debug stats, frame cap, quality, visitorCount
     useSettingsStore.ts     # persisted visitor preferences (localStorage with safe fallback)
     quality.ts              # quality levels and what each turns on; ?diag= flags
     timeOfDay.ts            # time-of-day setting, preset hours, labels
@@ -159,7 +164,7 @@ vercel.json                 # cache and security headers
    **First-person viewpoints:** `goToViewpoint()` (hotspots in the room, the bottom bar, arrow keys) switches between the isometric room view and door/desk/bed/window/cat viewpoints. Entering or leaving first person cuts through a short fade (`ViewFade`, the camera type changes); between first-person spots `PovCamera` glides. `CameraControls` is bound explicitly to the room's orthographic camera (by default it follows the default camera and would rebind to the first-person one), and `useResponsiveCamera` checks arrival against that camera. Clicking the monitor from first person cuts back to the room camera and zooms in as usual. Poses (eye, target, fov, look limits, hotspot) are `VIEWPOINT_POSES` in `roomLayout.ts`.
 5. **Projects on the monitor:** regular DOM, not in-canvas HTML, but placed exactly over the monitor's screen: `FocusRect` projects the screen's corners once the camera faces it (ortho, head-on, so the rectangle is exact) and publishes `focusRect`; `ProjectOverlay` sits just inside it, so the bezel and glow stay visible, and the in-room code dims behind it (`APP_OPEN_DIM` in `MonitorScreen.tsx`). Layout follows the screen's width via container queries (`grid-cols-1 @xl:grid-cols-2 @4xl:grid-cols-3`; cards become a compact row below `@lg`). On narrow or portrait viewports the monitor view fills 98% instead of 88% (`MONITOR_FILL_SMALL` in `useResponsiveCamera.ts`). The whole card links to `url`, and a separate "Code" link goes to `source`.
    **About me on the whiteboard:** tapping the whiteboard (`WhiteboardHitArea`, also in the interactions menu) calls `openView('whiteboard')`; the camera zooms to the board the same way and `AboutOverlay` (content from `data/about.ts`) sits on its writing surface, in a handwriting font (`font-marker`: self-hosted Kalam, `@font-face` in `index.css`). Focus surfaces (centre and size, all facing +x) are `FOCUS_SURFACES` in `roomLayout.ts`.
-6. **Social signs:** `SocialIcon3D` is a neon sign on the window wall. It has hover glow, an idle pulse as a tap hint, `useCursor`, and click calls `window.open(url, '_blank', 'noopener,noreferrer')`. `SocialLinks` provides hidden real links for accessibility.
+6. **Social signs:** `SocialIcon3D` is a neon sign on the window wall. It has hover glow, an idle pulse as a tap hint, `useCursor`, and click calls `openExternal(url)` (`scene/openExternal.ts`: new tab with the opener cut; if the browser blocks the tab, it navigates in the same tab instead). `SocialLinks` provides hidden real links for accessibility.
 7. **Render mode:** `?lite` forces the fallback page and `?3d` forces the room. Without WebGL or with `deviceMemory <= 1`, the fallback page is shown. Losing the WebGL context at runtime also drops to the fallback.
 
 ## Rendering quality and performance system
@@ -251,5 +256,6 @@ The original build order (all done, 22 commits on `feat/3d-portfolio`):
 - When changing camera positions or light intensities, state the old and new values so they are easy to tune.
 - Run `npm run build` (and `npm run lint`) after structural changes to catch type errors.
 - If the production URL changes, update `.env.production`.
+- Visitor stats: the "N visitors so far" line in the settings menu shows only in production and only once the Vercel project has an Upstash for Redis store connected (env `KV_REST_API_URL`/`KV_REST_API_TOKEN` or `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN`; optional `VISITOR_SALT`). Without it the API returns 503 and the line stays hidden. Web Analytics must be enabled in the Vercel dashboard. `npm run dev` doesn't serve `api/`; `vercel dev` would.
 - The meta description and structured data come from `data/profile.ts`, `data/about.ts` and `data/socials.ts` at build time (keep the description under ~155 characters). Retake `og-image.jpg` when the room changes noticeably: 1200 x 630 viewport, `?time=23`, DOM UI hidden, read the WebGL canvas in a rAF right after a frame and draw it over the body gradient.
 - Third-party models: room (CC BY 4.0, amurin; credited in `data/credits.ts`, shown in the settings menu), wall clock (Sketchfab Standard, hitheredearjohn), and CC0 props (rug, mug, plant, whiteboard, cat, headphones, curtains, lava lamp; no credit needed). Sound: `public/sounds/meow.mp3` and `public/sounds/lofi.mp3`, supplied by the owner, both CC0 (`public/sounds/CREDITS.txt`). `lofi.mp3` is 4.4 MB at 256 kbps (streamed only once the music is switched on); re-encoding to ~128 kbps would halve it. **Open item:** the owner must confirm that the clock's license allows serving the GLB on a public site. The site is already deployed. Source files live in `models-src/` (gitignored, not present in this checkout).

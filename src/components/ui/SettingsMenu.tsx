@@ -39,6 +39,7 @@ function SettingsMenu() {
   const setRgbMode = useAppStore((s) => s.setRgbMode)
   const roomLight = useAppStore((s) => s.roomLight)
   const setRoomLight = useAppStore((s) => s.setRoomLight)
+  const visitorCount = useAppStore((s) => s.visitorCount)
 
   // Close on Esc (returning focus to the button) or on a click outside the menu.
   useEffect(() => {
@@ -195,6 +196,11 @@ function SettingsMenu() {
             </button>
           </div>
           <p className="px-3 pt-2 pb-1 text-[11px] leading-snug text-neutral-500">
+            {visitorCount !== null && (
+              <span className="mb-1 block text-neutral-400">
+                {visitorCount.toLocaleString()} {visitorCount === 1 ? 'visitor' : 'visitors'} so far
+              </span>
+            )}
             {credits.map((credit) => (
               <span key={credit.url} className="block">
                 3D room:{' '}

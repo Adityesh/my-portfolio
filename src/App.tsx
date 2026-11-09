@@ -1,4 +1,6 @@
+import { Analytics } from '@vercel/analytics/react'
 import { lazy, Suspense, useEffect } from 'react'
+import { registerVisit } from './analytics/visitors.ts'
 import AboutOverlay from './components/ui/AboutOverlay.tsx'
 import DebugOverlay from './components/ui/DebugOverlay.tsx'
 import FallbackView from './components/ui/FallbackView.tsx'
@@ -38,10 +40,25 @@ function App() {
     if (mode === 'full') preloadRoomModel()
   }, [mode])
 
-  if (mode === 'fallback') return <FallbackView canTry3D={hasWebGL()} />
+  // Count this visit (unique visitors, shown in the settings menu); both render modes.
+  useEffect(() => {
+    void registerVisit()
+  }, [])
+
+  // Private stats for the owner (Vercel Web Analytics dashboard); reports only on Vercel.
+  const analytics = <Analytics />
+
+  if (mode === 'fallback')
+    return (
+      <>
+        <FallbackView canTry3D={hasWebGL()} />
+        {analytics}
+      </>
+    )
 
   return (
     <main className="relative h-full w-full">
+      {analytics}
       <Suspense fallback={null}>
         <SceneCanvas onContextLost={fallBack} />
       </Suspense>

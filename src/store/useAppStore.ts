@@ -70,6 +70,9 @@ type AppState = {
   quality: { level: QualityLevel; auto: boolean; overridden: boolean; note: string } | null
   /** Safety-net level replacing a level the visitor picked (cleared when they pick a level again). */
   qualityOverride: QualityLevel | null
+  /** Unique visitors so far (analytics/visitors.ts); null until known, and always in dev. */
+  visitorCount: number | null
+  setVisitorCount: (count: number) => void
   setRoomLight: (on: boolean) => void
   setBedLamp: (on: boolean) => void
   setMusic: (on: boolean) => void
@@ -126,6 +129,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   frameCap: null,
   quality: null,
   qualityOverride: null,
+  visitorCount: null,
+  setVisitorCount: (visitorCount) => set({ visitorCount }),
   setRoomLight: (roomLight) => set({ roomLight }),
   setBedLamp: (bedLamp) => set({ bedLamp }),
   setMusic: (music) => set({ music }),
