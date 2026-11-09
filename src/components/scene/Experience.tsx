@@ -24,6 +24,7 @@ import LightSwitch from './LightSwitch.tsx'
 import Lights from './Lights.tsx'
 import MonitorHitArea from './MonitorHitArea.tsx'
 import FocusRect from './FocusRect.tsx'
+import NearMissTaps from './NearMissTaps.tsx'
 import NeonNameSign from './NeonNameSign.tsx'
 import PcTower from './PcTower.tsx'
 import PerformanceGovernor from './PerformanceGovernor.tsx'
@@ -78,6 +79,8 @@ function Experience() {
       <SceneReady />
       <LabelAnchor />
       <FocusRect />
+      {/* Small things are hard to hit with a finger: a tap just beside one still counts. */}
+      {isMobile && <NearMissTaps />}
       <CameraRig targetRef={roomRef} />
       {/* First-person views: a perspective camera (replaces the room camera while mounted) and walls/ceiling. */}
       {viewpoint !== 'room' && (

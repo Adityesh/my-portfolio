@@ -71,6 +71,7 @@ src/
       MonitorHitArea.tsx    # invisible plane over the screen that opens the projects view
       FocusRect.tsx         # in a focus view (monitor, whiteboard), projects the surface's corners to the page and publishes focusRect for the DOM window
       WhiteboardHitArea.tsx # invisible plane over the whiteboard: tap to zoom in to "about me"
+      NearMissTaps.tsx      # touch only: a tap that hits nothing goes to the nearest interactive object within 36 px (invisible catcher sphere)
       LightSwitch.tsx       # wall switch by the door: toggles the ceiling light (store roomLight), click sound, locator LED
       MonitorScreen.tsx     # canvas texture of code typing itself on the screen (text from data/screenCode.ts)
       SocialIcon3D.tsx      # neon wall sign: extruded SVG logo, hover/tap pulse, click opens url
@@ -93,6 +94,7 @@ src/
     ui/                     # DOM overlay
       ProjectOverlay.tsx    # projects as an app window placed exactly on the monitor screen (focusRect); always in the DOM for SEO, inert until opened
       AboutOverlay.tsx      # "about me" written on the whiteboard (bio, skills, sticky-note links to résumé and profiles), placed on the board (focusRect)
+      FocusWindow.tsx       # shared placement for those two: over the surface (focusRect), or full screen when the surface is too small (phones)
       ProjectCard.tsx, TagChip.tsx, BackButton.tsx
       LoadingScreen.tsx     # solid -> blurred while loading, then focus-pull reveal
       FallbackView.tsx      # plain 2D page for no-WebGL / low-memory devices
@@ -138,7 +140,7 @@ public/
   images/projects/          # project screenshots (.webp, 16:10 works best)
   draco/                    # self-hosted Draco decoder
   hdri/night_256.hdr        # self-hosted environment map
-  fonts/                    # Pacifico (SIL OFL)
+  fonts/                    # Pacifico (name sign) and Kalam (whiteboard handwriting, latin woff2), both SIL OFL
   sounds/                   # CC0 meow.mp3 and lofi.mp3 (see sounds/CREDITS.txt)
   og-image.jpg, favicon.svg, robots.txt
 .env.development / .env.production  # VITE_SITE_URL, used in index.html for canonical, Open Graph and JSON-LD
@@ -154,7 +156,7 @@ vercel.json                 # cache and security headers
 4. **Back:** `BackButton` and the Esc key call `closeView()`, which reverses the animation to `'room'`.
    **First-person viewpoints:** `goToViewpoint()` (hotspots in the room, the bottom bar, arrow keys) switches between the isometric room view and door/desk/bed/window/cat viewpoints. Entering or leaving first person cuts through a short fade (`ViewFade`, the camera type changes); between first-person spots `PovCamera` glides. `CameraControls` is bound explicitly to the room's orthographic camera (by default it follows the default camera and would rebind to the first-person one), and `useResponsiveCamera` checks arrival against that camera. Clicking the monitor from first person cuts back to the room camera and zooms in as usual. Poses (eye, target, fov, look limits, hotspot) are `VIEWPOINT_POSES` in `roomLayout.ts`.
 5. **Projects on the monitor:** regular DOM, not in-canvas HTML, but placed exactly over the monitor's screen: `FocusRect` projects the screen's corners once the camera faces it (ortho, head-on, so the rectangle is exact) and publishes `focusRect`; `ProjectOverlay` sits just inside it, so the bezel and glow stay visible, and the in-room code dims behind it (`APP_OPEN_DIM` in `MonitorScreen.tsx`). Layout follows the screen's width via container queries (`grid-cols-1 @xl:grid-cols-2 @4xl:grid-cols-3`; cards become a compact row below `@lg`). On narrow or portrait viewports the monitor view fills 98% instead of 88% (`MONITOR_FILL_SMALL` in `useResponsiveCamera.ts`). The whole card links to `url`, and a separate "Code" link goes to `source`.
-   **About me on the whiteboard:** tapping the whiteboard (`WhiteboardHitArea`, also in the interactions menu) calls `openView('whiteboard')`; the camera zooms to the board the same way and `AboutOverlay` (content from `data/about.ts`) sits on its writing surface, in a handwriting font (`font-marker`, system fonts only, in `index.css`). Focus surfaces (centre and size, all facing +x) are `FOCUS_SURFACES` in `roomLayout.ts`.
+   **About me on the whiteboard:** tapping the whiteboard (`WhiteboardHitArea`, also in the interactions menu) calls `openView('whiteboard')`; the camera zooms to the board the same way and `AboutOverlay` (content from `data/about.ts`) sits on its writing surface, in a handwriting font (`font-marker`: self-hosted Kalam, `@font-face` in `index.css`). Focus surfaces (centre and size, all facing +x) are `FOCUS_SURFACES` in `roomLayout.ts`.
 6. **Social signs:** `SocialIcon3D` is a neon sign on the window wall. It has hover glow, an idle pulse as a tap hint, `useCursor`, and click calls `window.open(url, '_blank', 'noopener,noreferrer')`. `SocialLinks` provides hidden real links for accessibility.
 7. **Render mode:** `?lite` forces the fallback page and `?3d` forces the room. Without WebGL or with `deviceMemory <= 1`, the fallback page is shown. Losing the WebGL context at runtime also drops to the fallback.
 
@@ -200,7 +202,9 @@ Adding a project means editing `projects.ts` and dropping the screenshot in `pub
 - Responsive camera zoom based on viewport aspect ratio.
 - Larger hit areas for the monitor and social signs on touch devices, with an idle pulse/glow as a tap hint.
 - `useIsMobile`: `(pointer: coarse)` or width < 768. Phone limits are applied in `configFor()` in `quality.ts`. Bloom is allowed on phones; earlier white flashes were NaN pixels in the window shaft shader, now fixed.
-- Overlay is single-column with native scrolling.
+- When the monitor or whiteboard is smaller on screen than 480 x 300 px (portrait phones), `FocusWindow` fills the screen instead of sitting on the surface; single column, native scrolling.
+- Small objects are hard to tap: on touch devices `NearMissTaps` gives a missed tap to the nearest object within 36 px.
+- The canvas has `touch-action: none` so the browser never claims swipes (that cancelled first-person drag-to-look).
 - Keep total model download under about 3 MB.
 - `FallbackView` for no-WebGL / low-memory devices.
 

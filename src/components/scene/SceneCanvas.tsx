@@ -20,6 +20,9 @@ function SceneCanvas({ onContextLost }: SceneCanvasProps) {
       {/* Orthographic from the start so CameraControls never has to swap cameras.
           Initial values only; useResponsiveCamera sets the real position and zoom. */}
       <Canvas
+        // The page never scrolls: keep the browser from claiming swipes (which cancels first-person drag-to-look on
+        // phones; the room camera's controls only set this while they're enabled).
+        className="touch-none"
         orthographic
         camera={{ position: [10, 10, 10], zoom: 60, near: 0.1, far: 100 }}
         dpr={config.dpr}
