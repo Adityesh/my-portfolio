@@ -31,8 +31,11 @@ const INTRO_SMOOTH_TIME = 0.9
 // Monitor view: camera faces the screen head-on. It sits close so the chair ends up behind it
 // (the camera is orthographic, so distance doesn't change the image size).
 const MONITOR_DISTANCE = 1.2
-// Fraction of the viewport the screen should fill.
+// Fraction of the viewport the screen should fill (the projects window sits on the screen, so on narrow or portrait
+// viewports it fills nearly the whole width to leave room for the content).
 const MONITOR_FILL = 0.88
+const MONITOR_FILL_SMALL = 0.98
+const SMALL_VIEWPORT_WIDTH = 768
 // Seconds-ish for camera-controls to settle a view change.
 const VIEW_SMOOTH_TIME = 0.4
 // A view change counts as finished once zoom is within this fraction and position within this distance.
@@ -129,7 +132,8 @@ export function useResponsiveCamera(
 
     if (view === 'monitor') {
       const [x, y, z] = SCREEN_CENTER
-      const zoom = Math.min(width / SCREEN_SIZE[0], height / SCREEN_SIZE[1]) * MONITOR_FILL
+      const fill = width < SMALL_VIEWPORT_WIDTH || height > width ? MONITOR_FILL_SMALL : MONITOR_FILL
+      const zoom = Math.min(width / SCREEN_SIZE[0], height / SCREEN_SIZE[1]) * fill
       controls.enabled = false
       controls.smoothTime = VIEW_SMOOTH_TIME
       clearLimits(controls)

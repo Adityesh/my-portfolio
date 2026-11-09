@@ -5,6 +5,8 @@ import { CUT_FADE_MS, CUT_HOLD_MS, type Viewpoint } from './viewpoints.ts'
 
 export type View = 'room' | 'monitor'
 
+export type MonitorRect = { left: number; top: number; width: number; height: number }
+
 /** Renderer statistics for the debug overlay (published by the scene while the overlay is on). */
 export type DebugStats = {
   fps: number
@@ -41,6 +43,8 @@ type AppState = {
   viewpoint: Viewpoint
   /** The screen is (going) dark for a camera cut between the room view and a first-person view. */
   cutting: boolean
+  /** On-page rectangle (CSS px) of the monitor's screen, measured in the monitor view (kept after); the projects window fits it. */
+  monitorRect: MonitorRect | null
   /** Pointer is over the monitor (room view only). */
   monitorHovered: boolean
   /** Asset loading, published by the scene (so UI doesn't import 3D libraries). */
@@ -69,6 +73,7 @@ type AppState = {
   closeMonitor: () => void
   finishTransition: () => void
   setMonitorHovered: (hovered: boolean) => void
+  setMonitorRect: (rect: MonitorRect | null) => void
   setLoading: (loading: { active: boolean; progress: number }) => void
   markSceneReady: () => void
   setDebugStats: (stats: DebugStats | null) => void
@@ -98,6 +103,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   viewpoint: 'room',
   cutting: false,
   monitorHovered: false,
+  monitorRect: null,
   // Active from the start: covers downloading the 3D code itself, before the scene can report progress.
   loading: { active: true, progress: 0 },
   sceneReady: false,
@@ -140,6 +146,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   finishTransition: () => set({ transitioning: false }),
   setMonitorHovered: (hovered) => set({ monitorHovered: hovered }),
+  setMonitorRect: (monitorRect) => set({ monitorRect }),
   setLoading: (loading) => set({ loading }),
   markSceneReady: () => set({ sceneReady: true }),
   setDebugStats: (debugStats) => set({ debugStats }),

@@ -6,11 +6,12 @@ type ProjectCardProps = {
 }
 
 // The whole card opens the live site/demo (a stretched link); the "Code" link sits above it on its own.
+// Sized by the projects window (a container), not the page: a compact row with a thumbnail on narrow screens.
 function ProjectCard({ project }: ProjectCardProps) {
   const contain = project.imageFit === 'contain'
   return (
-    <li className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-white/10 bg-[#0f1729] transition focus-within:ring-2 focus-within:ring-sky-400 hover:-translate-y-0.5 hover:border-sky-400/40 hover:shadow-lg hover:shadow-sky-500/10 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
-      <div className="aspect-[16/10] overflow-hidden bg-black/30">
+    <li className="group relative flex h-full flex-row overflow-hidden rounded-xl border border-white/10 bg-[#0f1729] transition focus-within:ring-2 focus-within:ring-sky-400 hover:-translate-y-0.5 hover:border-sky-400/40 hover:shadow-lg hover:shadow-sky-500/10 motion-reduce:transition-none motion-reduce:hover:translate-y-0 @lg:flex-col">
+      <div className="aspect-[16/10] w-28 shrink-0 self-start overflow-hidden bg-black/30 @lg:w-auto @lg:self-auto">
         <img
           src={project.image}
           alt={`Screenshot of ${project.title}`}
@@ -20,8 +21,8 @@ function ProjectCard({ project }: ProjectCardProps) {
           }`}
         />
       </div>
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <h3 className="text-base font-semibold text-neutral-100">
+      <div className="flex min-w-0 flex-1 flex-col gap-2 p-3 @lg:gap-3 @lg:p-4">
+        <h3 className="text-sm font-semibold text-neutral-100 @lg:text-base">
           <a
             href={project.url}
             target="_blank"
@@ -35,7 +36,7 @@ function ProjectCard({ project }: ProjectCardProps) {
             <span className="sr-only">({project.urlLabel ?? 'Live site'}, opens in a new tab)</span>
           </a>
         </h3>
-        {project.description && <p className="line-clamp-3 text-sm text-neutral-400">{project.description}</p>}
+        {project.description && <p className="line-clamp-2 text-xs text-neutral-400 @lg:line-clamp-3 @lg:text-sm">{project.description}</p>}
         <ul className="flex flex-wrap gap-1.5" aria-label="Technologies">
           {project.tags.map((tag) => (
             <TagChip key={tag} label={tag} />

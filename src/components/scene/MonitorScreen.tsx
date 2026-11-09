@@ -25,6 +25,9 @@ const HOVER_BRIGHTNESS = 1.6
 // Touch devices have no hover: pulse gently in the room view as a "tap me" hint.
 const TAP_HINT_PULSE = 0.25
 const TAP_HINT_SPEED = 2.4
+// "Switching app": while the projects window is open on this screen, the code dims behind it (eased at this rate).
+const APP_OPEN_DIM = 0.35
+const APP_DIM_RATE = 8
 
 const COLORS = {
   background: '#16203a',
@@ -133,18 +136,27 @@ function MonitorScreen() {
   }, [])
   // Last drawn state, so the canvas is only redrawn when something visible changes.
   const drawn = useRef({ chars: -1, cursor: false })
+  // 1 = full brightness; APP_OPEN_DIM while the projects window covers the screen.
+  const appDim = useRef(1)
 
   useEffect(() => () => texture.dispose(), [texture])
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const t = getTime()
-    const { monitorHovered, view } = useAppStore.getState()
+    const { monitorHovered, view, transitioning } = useAppStore.getState()
     let brightness = monitorHovered ? HOVER_BRIGHTNESS : BRIGHTNESS
     if (isMobile && view === 'room' && t !== Infinity && t > INTRO.total) {
       brightness *= 1 + Math.sin(state.clock.elapsedTime * TAP_HINT_SPEED) * TAP_HINT_PULSE
     }
+    // Dim behind the projects window (instant with reduced motion); keep frames coming while it eases.
+    const dimTarget = view === 'monitor' && !transitioning ? APP_OPEN_DIM : 1
+    if (appDim.current !== dimTarget) {
+      const next = t === Infinity ? dimTarget : THREE.MathUtils.damp(appDim.current, dimTarget, APP_DIM_RATE, delta)
+      appDim.current = Math.abs(next - dimTarget) < 0.002 ? dimTarget : next
+      state.invalidate()
+    }
     // Power-on flicker during the intro.
-    materialRef.current?.color.setScalar(screenLevel(t) * brightness)
+    materialRef.current?.color.setScalar(screenLevel(t) * brightness * appDim.current)
 
     let chars: number
     let cursorOn: boolean

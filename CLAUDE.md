@@ -67,6 +67,7 @@ src/
       ClampNegativeEffect.ts # clamps the colour grade to >= 0 so the sRGB conversions never produce NaN (white screens)
       PerformanceGovernor.tsx # frame pacing (30/60) and automatic quality stepping
       MonitorHitArea.tsx    # invisible plane over the screen that opens the projects view
+      MonitorScreenRect.tsx # in the monitor view, projects the screen's corners to the page and publishes monitorRect for ProjectOverlay
       LightSwitch.tsx       # wall switch by the door: toggles the ceiling light (store roomLight), click sound, locator LED
       MonitorScreen.tsx     # canvas texture of code typing itself on the screen (text from data/screenCode.ts)
       SocialIcon3D.tsx      # neon wall sign: extruded SVG logo, hover/tap pulse, click opens url
@@ -87,7 +88,7 @@ src/
       assetPaths.ts         # model / Draco / HDRI paths
       geometryUtils.ts      # split a geometry by bounding box (cutting objects out of merged meshes)
     ui/                     # DOM overlay
-      ProjectOverlay.tsx    # full-screen editor-styled project window; always in the DOM for SEO, inert until opened
+      ProjectOverlay.tsx    # projects as an app window placed exactly on the monitor screen (monitorRect); always in the DOM for SEO, inert until opened
       ProjectCard.tsx, TagChip.tsx, BackButton.tsx
       LoadingScreen.tsx     # solid -> blurred while loading, then focus-pull reveal
       FallbackView.tsx      # plain 2D page for no-WebGL / low-memory devices
@@ -120,7 +121,7 @@ src/
     breeze.ts               # synthesised outdoor air (looped brown noise, slow gusts) while the window is open
     music.ts                # lo-fi loop streamed with an <audio> element; follows store music + Sound setting, fades, pauses when hidden
   store/
-    useAppStore.ts          # view ('room' | 'monitor'), viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, rgbMode, curtainsClosed, windowOpen, transitions, loading, sceneReady, debug stats, frame cap, quality
+    useAppStore.ts          # view ('room' | 'monitor'), monitorRect, viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, rgbMode, curtainsClosed, windowOpen, transitions, loading, sceneReady, debug stats, frame cap, quality
     useSettingsStore.ts     # persisted visitor preferences (localStorage with safe fallback)
     quality.ts              # quality levels and what each turns on; ?diag= flags
     timeOfDay.ts            # time-of-day setting, preset hours, labels
@@ -147,7 +148,7 @@ vercel.json                 # cache and security headers
 3. **Monitor click:** `MonitorHitArea` (an invisible plane, larger on touch devices) calls `openMonitor()`. A drag doesn't count as a click. `CameraRig` animates to face the screen head-on, then `ProjectOverlay` fades in.
 4. **Back:** `BackButton` and the Esc key call `closeMonitor()`, which reverses the animation to `'room'`.
    **First-person viewpoints:** `goToViewpoint()` (hotspots in the room, the bottom bar, arrow keys) switches between the isometric room view and door/desk/bed/window/cat viewpoints. Entering or leaving first person cuts through a short fade (`ViewFade`, the camera type changes); between first-person spots `PovCamera` glides. `CameraControls` is bound explicitly to the room's orthographic camera (by default it follows the default camera and would rebind to the first-person one), and `useResponsiveCamera` checks arrival against that camera. Clicking the monitor from first person cuts back to the room camera and zooms in as usual. Poses (eye, target, fov, look limits, hotspot) are `VIEWPOINT_POSES` in `roomLayout.ts`.
-5. **Project overlay:** regular DOM, not in-canvas HTML. It is styled like the editor on the in-room screen so the zoom flows into it. Grid: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`. The whole card links to `url`, and a separate "Code" link goes to `source`.
+5. **Projects on the monitor:** regular DOM, not in-canvas HTML, but placed exactly over the monitor's screen: `MonitorScreenRect` projects the screen's corners once the camera faces it (ortho, head-on, so the rectangle is exact) and publishes `monitorRect`; `ProjectOverlay` sits just inside it, so the bezel and glow stay visible, and the in-room code dims behind it (`APP_OPEN_DIM` in `MonitorScreen.tsx`). Layout follows the screen's width via container queries (`grid-cols-1 @xl:grid-cols-2 @4xl:grid-cols-3`; cards become a compact row below `@lg`). On narrow or portrait viewports the monitor view fills 98% instead of 88% (`MONITOR_FILL_SMALL` in `useResponsiveCamera.ts`). The whole card links to `url`, and a separate "Code" link goes to `source`.
 6. **Social signs:** `SocialIcon3D` is a neon sign on the window wall. It has hover glow, an idle pulse as a tap hint, `useCursor`, and click calls `window.open(url, '_blank', 'noopener,noreferrer')`. `SocialLinks` provides hidden real links for accessibility.
 7. **Render mode:** `?lite` forces the fallback page and `?3d` forces the room. Without WebGL or with `deviceMemory <= 1`, the fallback page is shown. Losing the WebGL context at runtime also drops to the fallback.
 
