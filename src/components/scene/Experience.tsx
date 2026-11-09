@@ -16,6 +16,7 @@ import DebugStats from './DebugStats.tsx'
 import Clock from './Clock.tsx'
 import Curtains from './Curtains.tsx'
 import DustMotes from './DustMotes.tsx'
+import Hallway from './Hallway.tsx'
 import { IntroContext } from './introTimeline.ts'
 import LabelAnchor from './LabelAnchor.tsx'
 import LavaLamp from './LavaLamp.tsx'
@@ -102,6 +103,7 @@ function Experience() {
       <MonitorHitArea />
       <LightSwitch />
       <BedsideLamp />
+      <Hallway />
       <PcTower />
       {socials.map((social) => (
         <SocialIcon3D key={social.id} social={social} />

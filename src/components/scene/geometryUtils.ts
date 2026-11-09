@@ -28,8 +28,13 @@ export function splitGeometryByBox(geometry: THREE.BufferGeometry, box: THREE.Bo
     const part = new THREE.BufferGeometry()
     for (const [name, attribute] of Object.entries(geometry.attributes)) part.setAttribute(name, attribute)
     part.setIndex(indices)
-    part.computeBoundingBox()
-    part.computeBoundingSphere()
+    // Bounds from the vertices this part actually uses: computeBoundingBox() would read the whole shared buffer, so a
+    // small cut-out (door, sash) would report the entire room's bounds. That matters for culling, raycasting and the
+    // camera's fit-to-room box, which measures the room group (moving a cut-out would move a room-sized box).
+    const bounds = new THREE.Box3()
+    for (const i of indices) bounds.expandByPoint(point.fromBufferAttribute(position, i))
+    part.boundingBox = bounds
+    part.boundingSphere = bounds.getBoundingSphere(new THREE.Sphere())
     return part
   }
   return { inside: make(insideIndices), outside: make(outsideIndices) }

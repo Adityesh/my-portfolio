@@ -86,6 +86,26 @@ export const LIGHT_SWITCH: Vec3 = [LEFT_WALL_X + 0.01, 2.3, 1.62]
  */
 export const WINDOW_SASH = { min: [-0.06, 1.64, -4.44] as Vec3, max: [1.6, 4.95, -4.295] as Vec3, slide: -1.45 } as const
 
+/**
+ * Door: the leaf (slab, panels and handle) is cut out of the merged furniture mesh and swings a little way into the
+ * room on its hinge at the z-min edge (the handle is at the other edge, z ~4.4). Measured box holds only the leaf;
+ * the frame trim is taller (to y 4.97) so it stays. Opened only partway, so its free edge stops around x -3.0, clear of
+ * the rug and desk (opening outward clipped through the glow in the doorway recess, which is only ~0.5 deep).
+ */
+export const DOOR_LEAF = {
+  min: [-4.27, -0.43, 2.0] as Vec3,
+  max: [-4.0, 4.9, 4.6] as Vec3,
+  /** Hinge axis (vertical) at the leaf's wall-side back edge. */
+  hinge: [-4.24, 0, 2.04] as Vec3,
+  /** How far it opens into the room, radians. */
+  openAngle: (28 * Math.PI) / 180,
+}
+
+/** Beyond the open door: a warm glow on the doorway recess's back face (x -4.72), plus light spilling into the room. */
+// The spill light sits inside the recess, behind the door's front face, so it lights the room through the opening
+// but never the door's room-facing side (an earlier spot just in front of the door lit it up as it closed).
+export const HALLWAY = { x: -4.69, minZ: 1.93, maxZ: 4.56, minY: -0.37, maxY: 4.97, light: [-4.5, 3.2, 3.25] as Vec3 }
+
 /** How quickly the curtains draw/open (damping rate, ~1.2 s). Shared by Curtains.tsx and the window light. */
 export const CURTAIN_DAMPING = 3.2
 

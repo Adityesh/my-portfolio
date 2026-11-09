@@ -39,6 +39,10 @@ type AppState = {
   curtainsClosed: boolean
   /** The window is slid open (tap the window): a breeze moves the curtains and you can hear it. */
   windowOpen: boolean
+  /** The door is open (tap the door): it swings out onto a lit hallway. */
+  doorOpen: boolean
+  /** When a clock time-lapse started (performance.now ms), or null. Tap the wall clock to run a day in ~10 s. */
+  timelapseAt: number | null
   /** Camera viewpoint: the isometric room view or a first-person spot inside the room (room view only). */
   viewpoint: Viewpoint
   /** The screen is (going) dark for a camera cut between the room view and a first-person view. */
@@ -67,6 +71,8 @@ type AppState = {
   setRgbMode: (mode: RgbMode) => void
   setCurtainsClosed: (closed: boolean) => void
   setWindowOpen: (open: boolean) => void
+  setDoorOpen: (open: boolean) => void
+  setTimelapseAt: (at: number | null) => void
   /** Moves the camera: cuts through a fade between the room view and first person, glides between first-person spots. */
   goToViewpoint: (viewpoint: Viewpoint) => void
   openMonitor: () => void
@@ -100,6 +106,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   rgbMode: 'classic',
   curtainsClosed: false,
   windowOpen: false,
+  doorOpen: false,
+  timelapseAt: null,
   viewpoint: 'room',
   cutting: false,
   monitorHovered: false,
@@ -117,6 +125,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   setRgbMode: (rgbMode) => set({ rgbMode }),
   setCurtainsClosed: (curtainsClosed) => set({ curtainsClosed }),
   setWindowOpen: (windowOpen) => set({ windowOpen }),
+  setDoorOpen: (doorOpen) => set({ doorOpen }),
+  setTimelapseAt: (timelapseAt) => set({ timelapseAt }),
   goToViewpoint: (viewpoint) => {
     const { view, transitioning, cutting, viewpoint: current } = get()
     if (view !== 'room' || transitioning || cutting || viewpoint === current) return

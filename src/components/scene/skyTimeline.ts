@@ -144,3 +144,9 @@ export function setSkyHour(hour: number): void {
   sky.hour = h
   sky.version++
 }
+
+// Wall-clock time-lapse (tap the clock): a full day in this many seconds, eased in and out, ending where it started.
+export const TIMELAPSE_SECONDS = 10
+
+/** Time-lapse progress 0..1 → 0..1, slow at both ends. */
+export const timelapseEase = (p: number) => 0.5 - 0.5 * Math.cos(Math.PI * Math.min(Math.max(p, 0), 1))

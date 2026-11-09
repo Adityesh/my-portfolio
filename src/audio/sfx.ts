@@ -167,6 +167,80 @@ const SWISH = { seconds: 0.7, from: 500, to: 1600, q: 0.9, volume: 0.9 }
 // Watering the plant: a few water drops, each a sine that drops in pitch quickly ("plip").
 const DRIP = { drops: 3, spacing: 0.11, from: 1500, to: 520, seconds: 0.07, volume: 0.45 }
 
+// Door hinge creak: a buzzy tone whose pitch drifts, chopped by a fast "stick-slip" wobble, through a narrow band.
+const CREAK = { seconds: 0.9, from: 150, to: 270, wobble: 23, band: 1100, q: 6, volume: 0.55 }
+// Door closing: a soft low thud at the end of the creak.
+const THUD = { frequency: 85, decay: 0.16, volume: 0.9 }
+// Clock chime at the end of a time-lapse: a soft bell (two notes, each with a few overtones).
+const CHIME = { notes: [1046.5, 1318.5], partials: [1, 2.01, 3.02], gains: [1, 0.35, 0.15], gap: 0.32, decay: 0.9, volume: 0.35 }
+
+/** Door creak; opening rises in pitch, closing falls and ends with a thud. */
+export function playCreak(opening: boolean): void {
+  const ctx = getContext()
+  if (!ctx) return
+  const now = ctx.currentTime
+  const osc = ctx.createOscillator()
+  osc.type = 'sawtooth'
+  const [from, to] = opening ? [CREAK.from, CREAK.to] : [CREAK.to, CREAK.from]
+  osc.frequency.setValueAtTime(from, now)
+  osc.frequency.linearRampToValueAtTime(to, now + CREAK.seconds)
+  // Stick-slip: the volume flutters quickly between near-silent and full.
+  const flutter = ctx.createGain()
+  flutter.gain.value = 0.5
+  const lfo = ctx.createOscillator()
+  lfo.type = 'square'
+  lfo.frequency.value = CREAK.wobble
+  const lfoDepth = ctx.createGain()
+  lfoDepth.gain.value = 0.45
+  lfo.connect(lfoDepth).connect(flutter.gain)
+  const filter = ctx.createBiquadFilter()
+  filter.type = 'bandpass'
+  filter.frequency.value = CREAK.band
+  filter.Q.value = CREAK.q
+  const env = ctx.createGain()
+  env.gain.setValueAtTime(0, now)
+  env.gain.linearRampToValueAtTime(CREAK.volume * MASTER_VOLUME, now + 0.08)
+  env.gain.setValueAtTime(CREAK.volume * MASTER_VOLUME, now + CREAK.seconds * 0.75)
+  env.gain.linearRampToValueAtTime(0, now + CREAK.seconds)
+  osc.connect(flutter).connect(filter).connect(env).connect(ctx.destination)
+  osc.onended = () => env.disconnect()
+  osc.start(now)
+  lfo.start(now)
+  osc.stop(now + CREAK.seconds + 0.05)
+  lfo.stop(now + CREAK.seconds + 0.05)
+  if (!opening) {
+    const thud = ctx.createOscillator()
+    thud.frequency.value = THUD.frequency
+    const thudEnv = ctx.createGain()
+    const at = now + CREAK.seconds * 0.95
+    thudEnv.gain.setValueAtTime(0, at)
+    thudEnv.gain.linearRampToValueAtTime(THUD.volume * MASTER_VOLUME, at + 0.01)
+    thudEnv.gain.exponentialRampToValueAtTime(0.0001, at + THUD.decay)
+    thud.connect(thudEnv).connect(ctx.destination)
+    thud.onended = () => thudEnv.disconnect()
+    thud.start(at)
+    thud.stop(at + THUD.decay * 1.5)
+  }
+}
+
+/** Soft two-note clock chime. */
+export function playChime(): void {
+  const ctx = getContext()
+  if (!ctx) return
+  CHIME.notes.forEach((note, n) => {
+    window.setTimeout(
+      () =>
+        playPartials(
+          CHIME.partials.map((ratio) => note * ratio),
+          CHIME.gains,
+          CHIME.decay,
+          CHIME.volume,
+        ),
+      n * CHIME.gap * 1000,
+    )
+  })
+}
+
 /** A short patter of water drops. */
 export function playDrips(): void {
   const ctx = getContext()

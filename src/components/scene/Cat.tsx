@@ -1,6 +1,6 @@
 import { useCursor } from '@react-three/drei'
 import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { playSound, preloadSounds, type SoundId } from '../../audio/sfx.ts'
 import { useIsMobile } from '../../hooks/useIsMobile.ts'
@@ -11,7 +11,7 @@ import ContactBlob from './ContactBlob.tsx'
 import FittedModel from './FittedModel.tsx'
 import { useAnimationsEnabled } from './introTimeline.ts'
 import { useInteractive } from './useInteractive.ts'
-import { PROPS } from './roomLayout.ts'
+import { DOOR_LEAF, PROPS } from './roomLayout.ts'
 
 // The cat faces +z in its own frame; this turns it toward the camera side of the bed.
 const BASE_YAW = Math.PI * 0.25
@@ -27,6 +27,14 @@ const LOOK_MAX = 0.45
 const LOOK_DAMPING = 6
 // Idle: every so often the cat glances to one side and back.
 const GLANCE = { minGap: 7, maxGap: 14, duration: 2.2, angle: 0.3 }
+// When the door opens: after a beat (the creak), hop and meow a little higher, then look at the door for a while.
+const DOOR_REACTION = { delay: 0.35, lookSeconds: 3.5, meowRate: 1.25, maxYaw: 1.1 }
+// Head turn toward the door, in the cat's frame (it faces +z, rotated by BASE_YAW): the door is behind-left of it.
+const DOOR_YAW = (() => {
+  const toDoor = new THREE.Vector3(DOOR_LEAF.hinge[0] - PROPS.cat.position[0], 0, (DOOR_LEAF.min[2] + DOOR_LEAF.max[2]) / 2 - PROPS.cat.position[2])
+  toDoor.applyAxisAngle(new THREE.Vector3(0, 1, 0), -BASE_YAW)
+  return THREE.MathUtils.clamp(Math.atan2(toDoor.x, toDoor.z), -DOOR_REACTION.maxYaw, DOOR_REACTION.maxYaw)
+})()
 // Pixels the pointer may move between down and up and still count as a tap (vs. a camera drag).
 const TAP_TOLERANCE = 6
 // Hit box in the cat's frame (the body is ~0.63 x 0.75 x 1.3); bigger on touch devices.
@@ -102,6 +110,25 @@ function Cat() {
     playSound(MEOW.clip, { rate: spin ? MEOW.spinRate : THREE.MathUtils.randFloat(MEOW.minRate, MEOW.maxRate) })
   }
 
+  // The door opening startles the cat: a hop, a surprised (higher) meow, and a long look at the door.
+  const doorOpen = useAppStore((state) => state.doorOpen)
+  const doorStartled = useRef(-Infinity)
+  const startle = useRef<() => void>(() => undefined)
+  useLayoutEffect(() => {
+    startle.current = () => {
+      const t = now()
+      doorStartled.current = t
+      if (animate && !reaction.current) reaction.current = { kind: 'hop', start: t + DOOR_REACTION.delay }
+      if (sound) window.setTimeout(() => playSound(MEOW.clip, { rate: DOOR_REACTION.meowRate }), DOOR_REACTION.delay * 1000)
+      invalidate()
+    }
+  })
+  const wasOpen = useRef(doorOpen)
+  useEffect(() => {
+    if (doorOpen && !wasOpen.current) startle.current()
+    wasOpen.current = doorOpen
+  }, [doorOpen])
+
   useFrame((state, delta) => {
     const t = now()
     const reacting = reaction.current
@@ -111,9 +138,13 @@ function Cat() {
       return
     }
 
-    // Turning: follow the pointer while hovered, otherwise an occasional glance, otherwise straight ahead.
+    // Turning: stare at the door for a moment after it opens, else follow the pointer while hovered, otherwise an
+    // occasional glance, otherwise straight ahead.
     let targetYaw = 0
-    if (hovered && active) {
+    if (t - doorStartled.current < DOOR_REACTION.lookSeconds) {
+      targetYaw = DOOR_YAW
+      nextGlance.current = t + GLANCE.minGap
+    } else if (hovered && active) {
       targetYaw = lookYaw.current
       nextGlance.current = t + GLANCE.minGap
     } else if (t > nextGlance.current) {
@@ -132,7 +163,8 @@ function Cat() {
       const p = (t - reacting.start) / spec.duration
       if (p >= 1) {
         reaction.current = null
-      } else {
+      } else if (p >= 0) {
+        // (A reaction can be scheduled a moment ahead, e.g. the startle after the door's creak.)
         const curve = hopCurve(p)
         lift = curve.lift * spec.height
         stretch = curve.stretch

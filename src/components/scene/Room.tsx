@@ -14,10 +14,11 @@ import * as THREE from 'three'
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { usePcRgb } from '../../hooks/usePcRgb.ts'
 import { DRACO_PATH } from './assetPaths.ts'
+import Door from './Door.tsx'
 import { splitGeometryByBox } from './geometryUtils.ts'
 import { useAnimationsEnabled } from './introTimeline.ts'
 import MonitorScreen from './MonitorScreen.tsx'
-import { BOTTLE, WINDOW_SASH } from './roomLayout.ts'
+import { BOTTLE, DOOR_LEAF, WINDOW_SASH } from './roomLayout.ts'
 import WindowSash from './WindowSash.tsx'
 
 const MODEL_URL = '/models/room.glb'
@@ -56,9 +57,9 @@ function Room(props: ThreeElements['group']) {
   const { nodes, materials } = useGLTF(MODEL_URL, DRACO_PATH) as unknown as GLTFResult
   usePcRgb(materials.pcinsidenormal, useAnimationsEnabled())
 
-  // Cut the water bottle out of the merged furniture mesh so it can stand to the left of the monitor, and the
-  // window's right sash so it can slide open (WindowSash).
-  const { furniture, bottle, bottleOffsetZ, sash } = useMemo(() => {
+  // Cut the water bottle out of the merged furniture mesh so it can stand to the left of the monitor, the window's
+  // right sash so it can slide open (WindowSash), and the door leaf so it can swing open (Door).
+  const { furniture, bottle, bottleOffsetZ, sash, doorLeaf } = useMemo(() => {
     const toLocal = (v: readonly number[]) =>
       new THREE.Vector3(...v).sub(new THREE.Vector3(...MERGED_POSITION)).divideScalar(MERGED_SCALE)
     const bottleBox = new THREE.Box3(toLocal(BOTTLE.original.min), toLocal(BOTTLE.original.max)).expandByScalar(CUT_MARGIN / MERGED_SCALE)
@@ -66,12 +67,16 @@ function Room(props: ThreeElements['group']) {
     const sashBox = new THREE.Box3(toLocal(WINDOW_SASH.min), toLocal(WINDOW_SASH.max))
     const withoutSash = splitGeometryByBox(withoutBottle.outside, sashBox)
     withoutBottle.outside.dispose()
+    const doorBox = new THREE.Box3(toLocal(DOOR_LEAF.min), toLocal(DOOR_LEAF.max))
+    const withoutDoor = splitGeometryByBox(withoutSash.outside, doorBox)
+    withoutSash.outside.dispose()
     const originalCenterZ = (BOTTLE.original.min[2] + BOTTLE.original.max[2]) / 2
     return {
-      furniture: withoutSash.outside,
+      furniture: withoutDoor.outside,
       bottle: withoutBottle.inside,
       bottleOffsetZ: BOTTLE.targetZ - originalCenterZ,
       sash: withoutSash.inside,
+      doorLeaf: withoutDoor.inside,
     }
   }, [nodes])
   useEffect(
@@ -79,8 +84,9 @@ function Room(props: ThreeElements['group']) {
       furniture.dispose()
       bottle.dispose()
       sash.dispose()
+      doorLeaf.dispose()
     },
-    [furniture, bottle, sash],
+    [furniture, bottle, sash, doorLeaf],
   )
   return (
     <group {...props} dispose={null}>
@@ -102,6 +108,8 @@ function Room(props: ThreeElements['group']) {
       />
       {/* Window's right sash, cut from the merged mesh; slides open when the window is tapped */}
       <WindowSash geometry={sash} material={materials.PaletteMaterial001} position={MERGED_POSITION} scale={MERGED_SCALE} />
+      {/* Door leaf, cut from the merged mesh; swings open onto the hallway when tapped */}
+      <Door geometry={doorLeaf} material={materials.PaletteMaterial001} position={MERGED_POSITION} scale={MERGED_SCALE} />
       <mesh name="Object_16" castShadow receiveShadow geometry={nodes.Object_16.geometry} material={materials.base_cama} position={[-1.049, -0.692, 1.149]} scale={1.419} />
       {/* PC tower glass panel (RGB glow via usePcRgb) */}
       <mesh name="Object_31" castShadow receiveShadow geometry={nodes.Object_31.geometry} material={materials.pcinsidenormal} position={[-3.958, 1.431, -3.489]} scale={0.077} />

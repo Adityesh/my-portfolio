@@ -53,6 +53,8 @@ src/
       useInteractive.ts     # registers an object (name, current action, label anchor, activate) for hover labels and the keyboard list
       LabelAnchor.tsx       # projects the hovered/focused object's anchor to screen each frame for the DOM label
       Plant.tsx             # floor plant: sways; tap to water (bounce, sparkles, drips, grows a little each time)
+      Door.tsx              # door leaf (cut from the merged mesh in Room.tsx) on a hinge pivot: tap to swing it partway into the room (store doorOpen); startles the cat
+      Hallway.tsx           # warm glowing fill in the doorway recess (unlit, blooms) + warm spill light (always mounted at 0)
       WindowSash.tsx        # right window sash (cut from the merged mesh in Room.tsx): tap the window to slide it open; breeze sound + curtain billow
       ContactBlob.tsx       # soft fake contact shadow for objects that cast no real shadow
       FittedModel.tsx       # loads a prop GLB and scales it to a real-world size
@@ -73,7 +75,7 @@ src/
       SocialIcon3D.tsx      # neon wall sign: extruded SVG logo, hover/tap pulse, click opens url
       NeonNameSign.tsx      # name sign (self-hosted Pacifico font)
       Curtains.tsx          # window curtains: tap to draw/open (store curtainsClosed); drawn curtains block the window light, beam and headlights
-      Clock.tsx, StringLights.tsx, BedLedStrip.tsx (follows the RGB mode), WhiteboardDrawing.tsx, MugSteam.tsx
+      Clock.tsx (tap: a day in 10 s), StringLights.tsx, BedLedStrip.tsx (follows the RGB mode), WhiteboardDrawing.tsx, MugSteam.tsx
       LavaLamp.tsx          # shelf lava lamp: tap for the next colour theme and a short wax speed-up
       PcTower.tsx           # hit box on the PC: tap to cycle the RGB lighting mode (store rgbMode)
       DeskLeds.tsx          # monitor backlight + desk underglow (light + visible strip), following the RGB mode
@@ -81,12 +83,12 @@ src/
       WindowBackdrop.tsx    # sky shader (gradient, moon, sun) driven by the time of day
       WindowStars.tsx, WindowCloud.tsx, WindowShaft.tsx, Headlights.tsx, DustMotes.tsx
       skyTimeline.ts        # time-of-day keyframes (sky colours, sun/moon/stars, daylight) and the shared `sky` state
-      SkyClock.tsx          # writes `sky` each frame; eases (time-lapse) when the target hour jumps
+      SkyClock.tsx          # writes `sky` each frame; eases when the target hour jumps; runs the clock's day time-lapse (store timelapseAt), chime at the end
       LoadingReporter.tsx   # publishes drei useProgress to the store
       SceneReady.tsx        # marks the store ready after the first frame is drawn
       DebugStats.tsx        # publishes FPS/renderer stats to the store
       assetPaths.ts         # model / Draco / HDRI paths
-      geometryUtils.ts      # split a geometry by bounding box (cutting objects out of merged meshes)
+      geometryUtils.ts      # split a geometry by bounding box (cutting objects out of merged meshes); bounds come from the used triangles
     ui/                     # DOM overlay
       ProjectOverlay.tsx    # projects as an app window placed exactly on the monitor screen (monitorRect); always in the DOM for SEO, inert until opened
       ProjectCard.tsx, TagChip.tsx, BackButton.tsx
@@ -117,11 +119,11 @@ src/
     usePcRgb.ts             # RGB cycling on the PC's glass panel
     useSkyHour.ts           # hour the window shows: live local time, menu preset, or ?time= override
   audio/
-    sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch; synthesised click, clink, bloop, blip, swish, slide, drips); files in public/sounds/
+    sfx.ts                  # Web Audio sound effects (lazy context, preload, per-play pitch; synthesised click, clink, bloop, blip, swish, slide, drips, creak, chime); files in public/sounds/
     breeze.ts               # synthesised outdoor air (looped brown noise, slow gusts) while the window is open
     music.ts                # lo-fi loop streamed with an <audio> element; follows store music + Sound setting, fades, pauses when hidden
   store/
-    useAppStore.ts          # view ('room' | 'monitor'), monitorRect, viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, rgbMode, curtainsClosed, windowOpen, transitions, loading, sceneReady, debug stats, frame cap, quality
+    useAppStore.ts          # view ('room' | 'monitor'), monitorRect, viewpoint + cutting (goToViewpoint), roomLight, bedLamp, music, rgbMode, curtainsClosed, windowOpen, doorOpen, timelapseAt, transitions, loading, sceneReady, debug stats, frame cap, quality
     useSettingsStore.ts     # persisted visitor preferences (localStorage with safe fallback)
     quality.ts              # quality levels and what each turns on; ?diag= flags
     timeOfDay.ts            # time-of-day setting, preset hours, labels
